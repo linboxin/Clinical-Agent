@@ -12,6 +12,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Protocol
 
+from app.contracts.plan import EXCLUDE_FIELDS, REQUEST_TO_PLAN
 from app.contracts.request import VisualizationRequest
 from app.contracts.response import VisualizationResponse
 
@@ -39,6 +40,27 @@ class RunStore(Protocol):
     def get(self, run_id: str) -> RunRecord | None: ...
 
     def evidence(self, run_id: str, datum_id: str) -> list[dict[str, Any]] | None: ...
+
+
+def migrate(record: dict[str, Any]) -> dict[str, Any]:
+    """Upgrade a stored 1.0 record to the current schema (1.1) in memory."""
+    response = record.get("response") or {}
+    if response.get("schema_version") != "1.0":
+        return record
+    response["schema_version"] = "1.1"
+    plan = ((response.get("meta") or {}).get("interpretation") or {}).get("plan")
+    if plan:
+        plan.setdefault("expansions", [])
+        plan.setdefault("unhandled_constraints", [])
+        plan.get("operation", {}).setdefault("only_listed_values", False)
+        for cohort in plan.get("cohorts", []):
+            filters = cohort.get("filters", {})
+            for old, new in REQUEST_TO_PLAN.items():
+                value = filters.pop(old, None)
+                filters.setdefault(new, [value] if value else None)
+            for name in EXCLUDE_FIELDS.values():
+                filters.setdefault(name, None)
+    return record
 
 
 def _write_atomic(path: Path, text: str) -> None:
@@ -78,7 +100,7 @@ class FileRunStore:
         path = self._path(run_id, ".json")
         if path is None or not path.exists():
             return None
-        raw = json.loads(path.read_text())
+        raw = migrate(json.loads(path.read_text()))
         return RunRecord(
             run_id=raw["run_id"],
             created_at=raw["created_at"],

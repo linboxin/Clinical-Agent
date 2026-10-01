@@ -35,6 +35,9 @@ class Bucket:
     labels: Counter[str] = field(default_factory=Counter)
     contributors: dict[str, list[EvidenceItem]] = field(default_factory=dict)
     extra: Counter[str] = field(default_factory=Counter)
+    # Set only for server-side counts: the registry's exact total for this bucket, while
+    # `contributors` holds a few sample trials to cite.
+    total: int | None = None
 
     def add(self, trial: Trial, label: str, evidence: list[EvidenceItem]) -> bool:
         """Add a contributing trial; False if it already counts here (once per datum)."""
@@ -55,7 +58,7 @@ class Bucket:
 
     @property
     def count(self) -> int:
-        return len(self.contributors)
+        return self.total if self.total is not None else len(self.contributors)
 
 
 @dataclass

@@ -100,6 +100,23 @@ class CTGovClient:
         )
         return int(body.get("totalCount", 0))
 
+    async def sample(
+        self, params: dict[str, str], fields: tuple[str, ...], size: int, data_timestamp: str | None
+    ) -> SearchResult:
+        """Exact total for `params` plus the first `size` records (server-side counting)."""
+        body = await self._get(
+            "/studies",
+            {**params, "fields": ",".join(fields), "pageSize": str(size), "countTotal": "true"},
+            scope=data_timestamp,
+        )
+        return SearchResult(
+            params=params,
+            total=int(body.get("totalCount", 0)),
+            studies=body.get("studies", []),
+            pages=1,
+            complete=True,
+        )
+
     async def get_study(self, nct_id: str, fields: tuple[str, ...]) -> dict[str, Any]:
         """One study, fresh from the API (no cache): used by the citation audit."""
         return await self._get(f"/studies/{nct_id}", {"fields": ",".join(fields)}, cache=False)

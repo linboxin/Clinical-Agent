@@ -13,7 +13,8 @@ from uuid import uuid4
 
 from app.analytics import run_analysis
 from app.analytics.prepare import cohort_overlap, prepare_cohort
-from app.analytics.types import CohortTrials, NetworkResult, ScatterResult
+from app.analytics.server_count import SAMPLE_SIZE, CountPlan, count_plan, server_count
+from app.analytics.types import AnalysisResult, CohortTrials, NetworkResult, ScatterResult
 from app.analytics.values import ValueView
 from app.contracts.enums import OperationKind, Status
 from app.contracts.plan import Clarification, QueryPlan
@@ -117,11 +118,17 @@ class Pipeline:
             )
         if outcome.status == "clarification":
             return run.done(Status.NEEDS_CLARIFICATION, clarification=outcome.clarification)
+        server: CountPlan | None = None
         if outcome.status == "too_broad" and outcome.grounding is not None:
-            label, total = next(iter(outcome.grounding.too_broad.items()))
-            return run.done(
-                Status.NEEDS_CLARIFICATION, clarification=_too_broad(label, total, self.max_trials)
-            )
+            # Too many trials to fetch: count each bucket on the server when the plan allows it
+            # (exact registry totals + sample citations); otherwise ask the user to narrow.
+            server = count_plan(outcome.plan) if outcome.plan else None
+            if server is None:
+                label, total = next(iter(outcome.grounding.too_broad.items()))
+                return run.done(
+                    Status.NEEDS_CLARIFICATION,
+                    clarification=_too_broad(label, total, self.max_trials),
+                )
         if outcome.status == "unsupported":
             return run.done(
                 Status.UNSUPPORTED,
@@ -131,7 +138,7 @@ class Pipeline:
                     details=SUPPORTED_ALTERNATIVES,
                 ),
             )
-        if outcome.status != "accepted" or outcome.plan is None:
+        if outcome.status not in ("accepted", "too_broad") or outcome.plan is None:
             return run.done(
                 Status.UNSUPPORTED,
                 error=ErrorInfo(
@@ -150,52 +157,42 @@ class Pipeline:
             retrieved_at=datetime.now(UTC).isoformat(timespec="seconds"),
         )
 
-        # 2. retrieve every cohort (pages are cached; concurrency is paced by the rate limiter)
-        with run.stage("retrieve"):
-            params = [compile_cohort(c.filters, plan.time) for c in plan.cohorts]
-            try:
-                results: list[SearchResult] = await asyncio.gather(
-                    *(
-                        self.ctgov.search(p, API_FIELDS, self.max_trials, version.data_timestamp)
-                        for p in params
-                    )
+        result: AnalysisResult
+        if server is not None:
+            with run.stage("count") as s:
+                try:
+                    counted = await server_count(plan, self.ctgov, version.data_timestamp, server)
+                except UpstreamError as exc:
+                    return run.fail("upstream_unavailable", f"ClinicalTrials.gov: {exc}")
+                s.set(queries=server.queries)
+            cohorts, result = counted.cohorts, counted.result
+            meta.count_method = "server_count"
+            meta.cohorts = [
+                CohortMeta(
+                    label=c.label,
+                    filters=c.filters.model_dump(mode="json", exclude_none=True),
+                    api_params=params,
+                    total_matches=total,
+                    records_fetched=len(ct.trials),
+                    trials_analyzed=total,
+                    complete=True,
                 )
-            except TooBroadError as exc:  # the registry grew between grounding and fetching
-                return run.done(
-                    Status.NEEDS_CLARIFICATION,
-                    clarification=_too_broad(plan.cohorts[0].label, exc.total, exc.limit),
+                for c, ct, params, total in zip(
+                    plan.cohorts, cohorts, counted.params, counted.totals, strict=True
                 )
-            except UpstreamError as exc:
-                return run.fail("upstream_unavailable", f"ClinicalTrials.gov: {exc}")
-
-        # 3. prepare, normalize names (guarded small model), analyze (deterministic)
-        with run.stage("prepare"):
-            prepared = [
-                prepare_cohort(c, r.studies, plan.time)
-                for c, r in zip(plan.cohorts, results, strict=True)
             ]
-            cohorts: list[CohortTrials] = [ct for ct, _ in prepared]
-        with run.stage("normalize"):
-            view = await self._value_view(plan, cohorts, meta)
-        with run.stage("analyze") as s:
-            result = run_analysis(plan, cohorts, view)
-            s.set(trials=sum(len(ct.trials) for ct in cohorts))
-        meta.cohorts = [
-            CohortMeta(
-                label=ct.cohort.label,
-                filters=ct.cohort.filters.model_dump(mode="json", exclude_none=True),
-                api_params=r.params,
-                total_matches=r.total,
-                records_fetched=len(r.studies),
-                trials_analyzed=len(ct.trials),
-                excluded=ct.excluded,
-                missing=result.missing.get(ct.cohort.label, {}),
-                synonym_matches=synonyms,
-                complete=r.complete,
+            meta.assumptions.append(
+                f"More than {self.max_trials:,} trials match, so ClinicalTrials.gov counted each "
+                f"bucket itself ({server.queries} queries): every value is the registry's exact "
+                f"total for the datum's source_query, and citations are up to {SAMPLE_SIZE} "
+                "sample trials per datum. Local re-checks and name normalization do not apply."
             )
-            for (ct, synonyms), r in zip(prepared, results, strict=True)
-        ]
-        meta.cohort_overlap = cohort_overlap(cohorts)
+            meta.assumptions += counted.notes
+        else:
+            fetched = await self._fetch_and_analyze(plan, run, version.data_timestamp)
+            if isinstance(fetched, VisualizationResponse):
+                return fetched
+            cohorts, result = fetched
 
         # 4. build the spec (the chart type is chosen here, deterministically)
         with run.stage("build"):
@@ -228,6 +225,55 @@ class Pipeline:
         if empty:
             meta.assumptions.append(_empty_reason(result))
         return run.done(Status.EMPTY if empty else Status.OK, visualization=built.spec)
+
+    async def _fetch_and_analyze(
+        self, plan: QueryPlan, run: "_Run", scope: str | None
+    ) -> "tuple[list[CohortTrials], AnalysisResult] | VisualizationResponse":
+        """Fetch every trial of every cohort, prepare, normalize names and run the operator."""
+        # 2. retrieve every cohort (pages are cached; concurrency is paced by the rate limiter)
+        with run.stage("retrieve"):
+            params = [compile_cohort(c.filters, plan.time) for c in plan.cohorts]
+            try:
+                results: list[SearchResult] = await asyncio.gather(
+                    *(self.ctgov.search(p, API_FIELDS, self.max_trials, scope) for p in params)
+                )
+            except TooBroadError as exc:  # the registry grew between grounding and fetching
+                return run.done(
+                    Status.NEEDS_CLARIFICATION,
+                    clarification=_too_broad(plan.cohorts[0].label, exc.total, exc.limit),
+                )
+            except UpstreamError as exc:
+                return run.fail("upstream_unavailable", f"ClinicalTrials.gov: {exc}")
+
+        # 3. prepare, normalize names (guarded small model), analyze (deterministic)
+        with run.stage("prepare"):
+            prepared = [
+                prepare_cohort(c, r.studies, plan.time)
+                for c, r in zip(plan.cohorts, results, strict=True)
+            ]
+            cohorts: list[CohortTrials] = [ct for ct, _ in prepared]
+        with run.stage("normalize"):
+            view = await self._value_view(plan, cohorts, run.meta)
+        with run.stage("analyze") as s:
+            result = run_analysis(plan, cohorts, view)
+            s.set(trials=sum(len(ct.trials) for ct in cohorts))
+        run.meta.cohorts = [
+            CohortMeta(
+                label=ct.cohort.label,
+                filters=ct.cohort.filters.model_dump(mode="json", exclude_none=True),
+                api_params=r.params,
+                total_matches=r.total,
+                records_fetched=len(r.studies),
+                trials_analyzed=len(ct.trials),
+                excluded=ct.excluded,
+                missing=result.missing.get(ct.cohort.label, {}),
+                synonym_matches=synonyms,
+                complete=r.complete,
+            )
+            for (ct, synonyms), r in zip(prepared, results, strict=True)
+        ]
+        run.meta.cohort_overlap = cohort_overlap(cohorts)
+        return cohorts, result
 
     async def _value_view(
         self, plan: QueryPlan, cohorts: list[CohortTrials], meta: Meta

@@ -98,8 +98,8 @@ class CitationFactory:
         return {
             "datum_id": datum_id,
             "trial_count": bucket.count,
-            "citation_count": len(ids),
-            "citations_truncated": len(shown) < len(ids),
+            "citation_count": bucket.count,  # = len(ids), except server counts cite samples
+            "citations_truncated": len(shown) < bucket.count,
             "citations": shown,
         }
 

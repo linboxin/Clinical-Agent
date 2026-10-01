@@ -120,8 +120,8 @@ async def test_network_end_to_end() -> None:
 
 async def test_too_broad_query_asks_to_narrow_without_paging() -> None:
     fake = FakeRegistry({"": CORPUS}, total_override=500_000)
-    response = await make_pipeline(fake, plan()).run(
-        VisualizationRequest(query="all trials by phase")
+    response = await make_pipeline(fake, plan(dimension="drug")).run(
+        VisualizationRequest(query="most common drugs across all trials")
     )
     assert response.status is Status.NEEDS_CLARIFICATION
     assert response.clarification and "500,000" in response.clarification.question

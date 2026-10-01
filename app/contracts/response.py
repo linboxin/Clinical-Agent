@@ -12,7 +12,9 @@ from pydantic import BaseModel, ConfigDict, Field
 from app.contracts.enums import Status
 from app.contracts.plan import Clarification, QueryPlan, TimeScope
 
-SCHEMA_VERSION: Literal["1.0"] = "1.0"
+# 1.1: list-valued cohort filters, exclusions, expansions, count_method/source_query,
+# normalization metadata. Stored 1.0 records are upgraded on read (app.storage.migrate).
+SCHEMA_VERSION: Literal["1.1"] = "1.1"
 
 
 # --- Citations -----------------------------------------------------------------------------
@@ -285,6 +287,12 @@ class Meta(BaseModel):
     cohorts: list[CohortMeta] = Field(default_factory=list)
     time: TimeScope | None = None
     measure: str = "Distinct trials (NCT IDs) per datum"
+    count_method: Literal["fetched", "server_count"] = Field(
+        default="fetched",
+        description="fetched: every trial was downloaded and counted here (full citation sets). "
+        "server_count: the cohort was too large to fetch, so each datum is the registry's own "
+        "totalCount for its source_query and citations are samples.",
+    )
     units: dict[str, str] = Field(default_factory=lambda: {"trial_count": "trials"})
     sort: str | None = None
     time_granularity: Literal["year"] | None = None
@@ -318,7 +326,7 @@ class VisualizationResponse(BaseModel):
     clarification; unsupported / failed → error.
     """
 
-    schema_version: Literal["1.0"] = SCHEMA_VERSION
+    schema_version: Literal["1.1"] = SCHEMA_VERSION
     run_id: str
     status: Status
     visualization: VisualizationSpec | None = None

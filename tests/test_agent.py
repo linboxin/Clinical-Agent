@@ -22,10 +22,11 @@ async def test_genuine_zero_is_empty_not_a_clarification() -> None:
     assert response.meta.interpretation.planner_attempts == 1
 
 
-async def test_too_broad_is_detected_at_grounding_before_any_page_fetch() -> None:
+async def test_too_broad_and_not_countable_asks_before_any_page_fetch() -> None:
     fake = FakeRegistry({"": CORPUS}, total_override=605_357)
-    response = await make_pipeline(fake, plan(), max_trials=30_000).run(
-        VisualizationRequest(query="all trials by phase")
+    network = plan(kind="network", dimension="lead_sponsor", second="drug")
+    response = await make_pipeline(fake, network, max_trials=30_000).run(
+        VisualizationRequest(query="sponsor-drug network of all trials")
     )
     assert response.status is Status.NEEDS_CLARIFICATION
     assert response.clarification and "605,357" in response.clarification.question
@@ -56,3 +57,23 @@ async def test_follow_up_receives_parent_plan_and_reports_the_diff(tmp_path: Pat
 
 def test_plan_diff_is_empty_for_identical_plans() -> None:
     assert plan_diff(plan(), plan()) == {}
+
+
+def test_stored_1_0_records_are_migrated_on_read(tmp_path: Path) -> None:
+    """Runs saved before the 1.1 plan language still load (examples, old follow-up parents)."""
+    import json
+
+    example = json.loads(Path("examples/02_comparison_two_drugs.json").read_text())
+    run_id = example["response"]["run_id"]
+    record = {
+        "run_id": run_id,
+        "created_at": "2026-10-01T00:00:00+00:00",
+        "request": example["request"],
+        "response": example["response"],
+        "trace": {"run_id": run_id, "spans": []},
+    }
+    (tmp_path / f"{run_id}.json").write_text(json.dumps(record))
+    loaded = FileRunStore(tmp_path).get(run_id)
+    assert loaded is not None and loaded.response.schema_version == "1.1"
+    plan = loaded.response.meta.interpretation.plan  # type: ignore[union-attr]
+    assert [c.filters.drug_names for c in plan.cohorts] == [["pembrolizumab"], ["nivolumab"]]
