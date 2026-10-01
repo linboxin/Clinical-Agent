@@ -6,7 +6,7 @@ exercise the same paths the live API produces. Counts in tests are hand-computab
 
 from typing import Any
 
-from app.contracts.enums import DateBasis, Dimension, OperationKind, PhasePolicy
+from app.contracts.enums import DateBasis, Dimension, Measure, OperationKind, PhasePolicy
 from app.contracts.plan import (
     Clarification,
     Cohort,
@@ -31,13 +31,41 @@ def study(
     interventions: list[tuple[str, str]] = (),  # type: ignore[assignment]
     conditions: list[str] = (),  # type: ignore[assignment]
     countries: list[str] = (),  # type: ignore[assignment]
+    enrollment: int | None = None,
+    enrollment_type: str = "ACTUAL",
+    primary_completion: str | None = None,
+    facilities: list[str] = (),  # type: ignore[assignment]
+    officials: list[str] = (),  # type: ignore[assignment]
+    other_names: dict[str, list[str]] | None = None,
 ) -> dict[str, Any]:
     status_module: dict[str, Any] = {"overallStatus": status}
     if start is not None:
         status_module["startDateStruct"] = {"date": start, "type": start_type}
+    if primary_completion is not None:
+        status_module["primaryCompletionDateStruct"] = {
+            "date": primary_completion,
+            "type": "ACTUAL",
+        }
     design: dict[str, Any] = {"studyType": study_type}
     if phases is not None:
         design["phases"] = phases
+    if enrollment is not None:
+        design["enrollmentInfo"] = {"count": enrollment, "type": enrollment_type}
+    locations: list[dict[str, Any]] = [{"country": c} for c in countries]
+    for i, facility in enumerate(facilities):
+        if i < len(locations):
+            locations[i]["facility"] = facility
+        else:
+            locations.append({"facility": facility})
+    interventions_json = []
+    for t, n in interventions:
+        item: dict[str, Any] = {"type": t, "name": n}
+        if other_names and n in other_names:
+            item["otherNames"] = other_names[n]
+        interventions_json.append(item)
+    contacts: dict[str, Any] = {"locations": locations}
+    if officials:
+        contacts["overallOfficials"] = [{"name": o} for o in officials]
     return {
         "protocolSection": {
             "identificationModule": {"nctId": nct, "briefTitle": title or f"Study {nct}"},
@@ -47,10 +75,8 @@ def study(
             },
             "conditionsModule": {"conditions": list(conditions)},
             "designModule": design,
-            "armsInterventionsModule": {
-                "interventions": [{"type": t, "name": n} for t, n in interventions]
-            },
-            "contactsLocationsModule": {"locations": [{"country": c} for c in countries]},
+            "armsInterventionsModule": {"interventions": interventions_json},
+            "contactsLocationsModule": contacts,
         }
     }
 
@@ -65,6 +91,8 @@ def plan(
     dimension: str | None = "phase",
     second: str | None = None,
     cohorts: list[tuple[str, dict[str, Any]]] | None = None,
+    measure: str | None = None,
+    x_measure: str | None = None,
     date_basis: str = "start_date",
     year_from: int | None = None,
     year_to: int | None = None,
@@ -80,6 +108,8 @@ def plan(
             kind=OperationKind(kind),
             dimension=Dimension(dimension) if dimension else None,
             second_dimension=Dimension(second) if second else None,
+            measure=Measure(measure) if measure else None,
+            x_measure=Measure(x_measure) if x_measure else None,
         ),
         time=TimeScope(date_basis=DateBasis(date_basis), year_from=year_from, year_to=year_to),
         phase_policy=PhasePolicy(phase_policy),

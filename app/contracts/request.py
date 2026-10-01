@@ -88,10 +88,16 @@ class VisualizationRequest(BaseModel):
         default=None, description="Honored only when compatible with the computed analysis."
     )
     citations_per_datum: int = Field(
-        default=10,
+        default=5,
         ge=0,
-        le=1000,
-        description="Max inline citations per datum. citation_count always reports the total.",
+        le=100,
+        description="Max inline citations per datum. citation_count always reports the total; "
+        "GET /v1/runs/{run_id}/evidence?datum_id=… returns the full set.",
+    )
+    parent_run_id: str | None = Field(
+        default=None,
+        pattern=r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+        description="Follow-up: refine the plan of this earlier run (e.g. 'now only recruiting').",
     )
 
     @field_validator("trial_phase", mode="before")

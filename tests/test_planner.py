@@ -34,7 +34,9 @@ def test_valid_plans_pass() -> None:
 def test_invalid_combinations_are_rejected() -> None:
     cases = {
         "count_by requires operation.dimension": plan(dimension=None),
-        "time_trend requires dimension": plan(kind="time_trend", dimension="phase"),
+        "time_trend requires operation.dimension to be null": plan(
+            kind="time_trend", dimension="phase"
+        ),
         "network requires dimension": plan(kind="network", dimension="phase", second="drug"),
         "network requires exactly one cohort": plan(
             kind="network", dimension="drug", second="drug", cohorts=[("a", {}), ("b", {})]

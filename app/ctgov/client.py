@@ -10,6 +10,7 @@ from typing import Any
 import httpx
 
 from app.ctgov.cache import FileCache
+from app.telemetry import span
 
 log = logging.getLogger(__name__)
 
@@ -90,6 +91,15 @@ class CTGovClient:
             return ApiVersion(None, None)
         return ApiVersion(body.get("apiVersion"), body.get("dataTimestamp"))
 
+    async def count(self, params: dict[str, str], data_timestamp: str | None = None) -> int:
+        """Trials matching `params` (one tiny request: used for grounding, not analysis)."""
+        body = await self._get(
+            "/studies",
+            {**params, "fields": "NCTId", "pageSize": "1", "countTotal": "true"},
+            scope=data_timestamp,
+        )
+        return int(body.get("totalCount", 0))
+
     async def search(
         self,
         params: dict[str, str],
@@ -121,19 +131,30 @@ class CTGovClient:
         self, path: str, params: dict[str, str], cache: bool = True, scope: str | None = None
     ) -> dict[str, Any]:
         """GET with caching. `scope` (the registry dataTimestamp) is part of the cache key."""
-        key = None
-        if cache and self.cache is not None:
-            key = FileCache.key(ADAPTER_VERSION, path, params, scope)
-            cached = self.cache.get(key)
-            if cached is not None:
-                return cached
+        shown = {k: v for k, v in params.items() if k != "fields"}
+        with span("ctgov.request", path=path, params=shown) as s:
+            key = None
+            if cache and self.cache is not None:
+                key = FileCache.key(ADAPTER_VERSION, path, params, scope)
+                cached = self.cache.get(key)
+                if cached is not None:
+                    s.set(cache="hit", records=len(cached.get("studies", [])))
+                    return cached
 
-        body = await self._get_with_retries(path, params)
-        if key is not None and self.cache is not None:
-            self.cache.set(key, body)
-        return body
+            body, attempts = await self._get_with_retries(path, params)
+            s.set(
+                cache="miss" if key else "off",
+                attempts=attempts,
+                records=len(body.get("studies", [])),
+                total=body.get("totalCount"),
+            )
+            if key is not None and self.cache is not None:
+                self.cache.set(key, body)
+            return body
 
-    async def _get_with_retries(self, path: str, params: dict[str, str]) -> dict[str, Any]:
+    async def _get_with_retries(
+        self, path: str, params: dict[str, str]
+    ) -> tuple[dict[str, Any], int]:
         url = f"{self.base_url}{path}"
         last_error = "no attempt made"
         for attempt in range(1, self.max_attempts + 1):
@@ -147,7 +168,7 @@ class CTGovClient:
             else:
                 if response.status_code == 200:
                     try:
-                        return response.json()
+                        return response.json(), attempt
                     except ValueError as exc:
                         raise UpstreamError(f"invalid JSON from {path}") from exc
                 if response.status_code not in RETRYABLE_STATUS:

@@ -1,9 +1,11 @@
-"""Analysis result → typed VisualizationSpec + render metadata. Titles, summaries and policy
-notes are generated deterministically from the accepted plan (no model prose)."""
+"""Analysis result → typed VisualizationSpec + render metadata. The chart type is chosen here
+by deterministic rules (never by the model); titles, summaries and policy notes are generated
+from the accepted plan, so no model prose reaches the output."""
 
 from collections.abc import Iterable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import UTC, datetime
+from typing import Any
 
 from app.analytics.types import (
     AnalysisResult,
@@ -11,6 +13,7 @@ from app.analytics.types import (
     CohortTrials,
     CountResult,
     NetworkResult,
+    ScatterResult,
     Trial,
 )
 from app.contracts.enums import ChartType, Dimension, OperationKind, PhasePolicy
@@ -24,17 +27,23 @@ from app.contracts.response import (
     EdgeDatum,
     Evidence,
     GroupedBarChartSpec,
+    HistogramSpec,
     NetworkData,
     NetworkEncoding,
     NetworkGraphSpec,
     NodeDatum,
+    PieChartSpec,
+    PieEncoding,
+    ScatterPlotSpec,
+    StackedBarChartSpec,
     TimeSeriesSpec,
     Truncation,
     VisualizationSpec,
 )
-from app.registry import DATE_LABELS, REGISTRY, study_url
+from app.registry import DATE_LABELS, MEASURES, REGISTRY, study_url
 
 Y = Channel(field="trial_count", type="quantitative", title="Trials", unit="trials")
+MAX_PIE_SLICES = 12
 
 
 @dataclass
@@ -42,32 +51,108 @@ class BuiltSpec:
     spec: VisualizationSpec
     truncation: Truncation | None
     sort: str | None
+    chart_selection: str
     notes: list[str]
+    evidence: dict[str, list[dict[str, Any]]] = field(default_factory=dict)  # full sets
 
 
 class CitationFactory:
+    """Inline citations (first N by NCT ID, newest first) plus the full set per datum, which
+    the run store keeps for GET /v1/runs/{id}/evidence."""
+
     def __init__(self, cohorts: Iterable[CohortTrials], per_datum: int) -> None:
         self.trials: dict[str, Trial] = {t.nct_id: t for c in cohorts for t in c.trials}
         self.per_datum = per_datum
+        self.full: dict[str, list[dict[str, Any]]] = {}
 
-    def datum_fields(self, bucket: Bucket) -> dict[str, object]:
-        # Newest NCT IDs first: deterministic, and recent trials are usually most relevant.
-        ids = sorted(bucket.contributors, reverse=True)
-        shown = ids[: self.per_datum]
+    def citation(self, nct: str, bucket: Bucket) -> Citation:
+        trial = self.trials.get(nct)
+        return Citation(
+            nct_id=nct,
+            url=study_url(nct),
+            brief_title=trial.brief_title if trial else None,
+            evidence=[Evidence(field_path=p, excerpt=v) for p, v in bucket.contributors[nct]],
+        )
+
+    def datum_fields(self, datum_id: str, bucket: Bucket) -> dict[str, Any]:
+        ids = sorted(bucket.contributors, reverse=True)  # deterministic; recent trials first
+        shown = [self.citation(nct, bucket) for nct in ids[: self.per_datum]]
+        self.full[datum_id] = [
+            {
+                "nct_id": nct,
+                "url": study_url(nct),
+                "brief_title": self.trials[nct].brief_title if nct in self.trials else None,
+                "evidence": [{"field_path": p, "excerpt": v} for p, v in bucket.contributors[nct]],
+            }
+            for nct in ids
+        ]
         return {
+            "datum_id": datum_id,
             "trial_count": bucket.count,
             "citation_count": len(ids),
             "citations_truncated": len(shown) < len(ids),
-            "citations": [
-                Citation(
-                    nct_id=nct,
-                    url=study_url(nct),
-                    brief_title=self.trials[nct].brief_title if nct in self.trials else None,
-                    evidence=[Evidence(field_path=p, value=v) for p, v in bucket.contributors[nct]],
-                )
-                for nct in shown
-            ],
+            "citations": shown,
         }
+
+
+# --- Chart selection ------------------------------------------------------------------------
+
+
+def choose_chart(
+    plan: QueryPlan, result: AnalysisResult, preferred: ChartType | None
+) -> tuple[ChartType, str]:
+    """Deterministic chart rules. A preference is honored only when the data supports it."""
+    if isinstance(result, NetworkResult):
+        return ChartType.NETWORK_GRAPH, "network operation → network_graph"
+    if isinstance(result, ScatterResult):
+        return ChartType.SCATTER_PLOT, "two per-trial measures → scatter_plot (one point/trial)"
+    if result.kind == "histogram":
+        return ChartType.HISTOGRAM, "binned per-trial measure → histogram"
+
+    has_series = result.series_source is not None
+    if result.kind == "time_trend":
+        default = ChartType.TIME_SERIES
+        reason = "counts per year → time_series" + (" (one line per series)" if has_series else "")
+    elif has_series:
+        default = ChartType.GROUPED_BAR_CHART
+        reason = "counts per category and series → grouped_bar_chart"
+    else:
+        default = ChartType.BAR_CHART
+        reason = "counts per category → bar_chart"
+    if preferred is None or preferred is default:
+        return default, reason
+
+    allowed: dict[ChartType, str | None] = {}
+    if has_series:
+        allowed[ChartType.GROUPED_BAR_CHART] = None
+        allowed[ChartType.STACKED_BAR_CHART] = (
+            None
+            if result.series_exclusive
+            else "series overlap (a trial can be in several), so stacks would double-count"
+        )
+    else:
+        allowed[ChartType.BAR_CHART] = None
+        if result.kind == "count_by":
+            allowed[ChartType.PIE_CHART] = (
+                "categories overlap (a trial can have several values), so slices would not sum "
+                "to the whole"
+                if not result.categories_exclusive
+                else (
+                    f"more than {MAX_PIE_SLICES} categories"
+                    if len(result.category_order) > MAX_PIE_SLICES
+                    else None
+                )
+            )
+    if result.kind == "time_trend":
+        allowed[ChartType.TIME_SERIES] = None
+
+    if preferred in allowed and allowed[preferred] is None:
+        return preferred, f"preferred_visualization={preferred.value} honored (compatible)"
+    why = allowed.get(preferred) or "not a valid rendering of this analysis"
+    return default, f"{reason}; preferred {preferred.value} not used: {why}"
+
+
+# --- Builders -------------------------------------------------------------------------------
 
 
 def build_spec(
@@ -78,78 +163,108 @@ def build_spec(
     preferred: ChartType | None,
 ) -> BuiltSpec:
     cite = CitationFactory(cohorts, citations_per_datum)
+    chart, reason = choose_chart(plan, result, preferred)
     title = _title(plan)
     if isinstance(result, NetworkResult):
-        return _network(title, result, cite)
-    return _cartesian(plan, title, result, cite, preferred)
+        built = _network(title, result, cite)
+    elif isinstance(result, ScatterResult):
+        built = _scatter(plan, title, result, cite)
+    else:
+        built = _counts(plan, title, result, cite, chart)
+    built.chart_selection = reason
+    built.evidence = cite.full
+    if preferred is not None and preferred.value != built.spec.type:
+        built.notes.append(f"Chart: {reason}.")
+    return built
 
 
-def _cartesian(
-    plan: QueryPlan,
-    title: str,
-    result: CountResult,
-    cite: CitationFactory,
-    preferred: ChartType | None,
+def _series_channel(plan: QueryPlan, result: CountResult) -> Channel | None:
+    if result.series_source == "cohort":
+        return Channel(field="cohort", type="nominal", title="Cohort", sort=result.series_order)
+    if result.series_source == "dimension" and plan.operation.second_dimension:
+        dim = REGISTRY[plan.operation.second_dimension]
+        return Channel(
+            field=dim.name.value,
+            type="ordinal" if dim.order else "nominal",
+            title=dim.label,
+            sort=result.series_order,
+        )
+    return None
+
+
+def _counts(
+    plan: QueryPlan, title: str, result: CountResult, cite: CitationFactory, chart: ChartType
 ) -> BuiltSpec:
     notes: list[str] = []
-    op = plan.operation
-    series_field: str | None = None
-    series_title = ""
-    if result.series_source == "cohort":
-        series_field, series_title = "cohort", "Cohort"
-    elif result.series_source == "dimension" and op.second_dimension:
-        series_field = op.second_dimension.value
-        series_title = REGISTRY[op.second_dimension].label
-
-    as_bars = result.kind == "time_trend" and preferred in (
-        ChartType.BAR_CHART,
-        ChartType.GROUPED_BAR_CHART,
-    )
+    series = _series_channel(plan, result)
+    horizontal = False
     if result.kind == "time_trend":
+        temporal = chart is ChartType.TIME_SERIES
         x = Channel(
             field="year",
-            type="ordinal" if as_bars else "temporal",
+            type="temporal" if temporal else "ordinal",
             title=f"Year ({DATE_LABELS[plan.time.date_basis]})",
             sort="ascending",
         )
-    else:
-        assert op.dimension is not None
-        spec = REGISTRY[op.dimension]
+    elif result.kind == "histogram":
+        assert plan.operation.measure is not None
+        m = MEASURES[plan.operation.measure]
         x = Channel(
-            field=op.dimension.value,
-            type="ordinal" if spec.order else "nominal",
-            title=spec.label,
+            field="bin",
+            type="ordinal",
+            title=f"{m.label} ({m.unit})" if m.unit else m.label,
+            unit=m.unit,
             sort=result.category_order,
         )
-    series = (
-        Channel(field=series_field, type="nominal", title=series_title, sort=result.series_order)
-        if series_field
-        else None
-    )
+    else:
+        assert plan.operation.dimension is not None
+        dim = REGISTRY[plan.operation.dimension]
+        horizontal = dim.kind == "entity"
+        x = Channel(
+            field=dim.name.value,
+            type="ordinal" if dim.order else "nominal",
+            title=dim.label,
+            sort=result.category_order,
+        )
 
     data: list[Datum] = []
     for i, row in enumerate(result.rows, start=1):
-        fields: dict[str, object] = {"datum_id": f"d{i}", **cite.datum_fields(row.bucket)}
+        fields = cite.datum_fields(f"d{i}", row.bucket)
         if result.kind == "time_trend":
             fields["year"] = int(row.key)
             fields["estimated_date_count"] = row.bucket.extra.get("estimated_date_count", 0)
         else:
             fields[x.field] = row.label
-        if series_field:
-            fields[series_field] = row.series
-        data.append(Datum(**fields))  # type: ignore[arg-type]
+        fields.update(row.fields)
+        if series is not None:
+            fields[series.field] = row.series
+        data.append(Datum(**fields))
 
-    encoding = CartesianEncoding(x=x, y=Y, series=series)
-    chart: VisualizationSpec
-    if as_bars:
-        chart_cls = GroupedBarChartSpec if series else BarChartSpec
-        chart = chart_cls(title=title, encoding=encoding, data=data)
-    elif result.kind == "time_trend":
-        chart = TimeSeriesSpec(title=title, encoding=encoding, data=data)
-    elif series:
-        chart = GroupedBarChartSpec(title=title, encoding=encoding, data=data)
+    spec: VisualizationSpec
+    orientation = "horizontal" if horizontal else "vertical"
+    if chart is ChartType.PIE_CHART:
+        spec = PieChartSpec(
+            title=title, encoding=PieEncoding(theta=Y, color=x.model_copy()), data=data
+        )
     else:
-        chart = BarChartSpec(title=title, encoding=encoding, data=data)
+        encoding = CartesianEncoding(x=x, y=Y, series=series)
+        if chart is ChartType.TIME_SERIES:
+            spec = TimeSeriesSpec(title=title, encoding=encoding, data=data)
+        elif chart is ChartType.HISTOGRAM:
+            assert plan.operation.measure is not None
+            edges = MEASURES[plan.operation.measure].bin_edges or ()
+            spec = HistogramSpec(title=title, encoding=encoding, bin_edges=list(edges), data=data)
+        elif chart is ChartType.STACKED_BAR_CHART:
+            spec = StackedBarChartSpec(
+                title=title, orientation=orientation, encoding=encoding, data=data
+            )
+        elif series is not None:
+            spec = GroupedBarChartSpec(
+                title=title, orientation=orientation, encoding=encoding, data=data
+            )
+        else:
+            spec = BarChartSpec(title=title, orientation=orientation, encoding=encoding, data=data)
+
     if result.kind == "time_trend" and result.category_order:
         this_year = datetime.now(UTC).year
         if int(result.category_order[-1]) >= this_year:
@@ -157,38 +272,65 @@ def _cartesian(
                 f"{this_year} is the current year, so its count is partial; any later years "
                 "contain only trials with estimated (anticipated) dates."
             )
-    if preferred and preferred.value != chart.type:
-        notes.append(
-            f"preferred_visualization={preferred.value} is not compatible with this analysis; "
-            f"returned {chart.type}."
-        )
     truncation = Truncation(**vars(result.truncation)) if result.truncation is not None else None
-    return BuiltSpec(chart, truncation, result.sort_description, notes)
+    return BuiltSpec(spec, truncation, result.sort_description, "", notes)
+
+
+def _scatter(
+    plan: QueryPlan, title: str, result: ScatterResult, cite: CitationFactory
+) -> BuiltSpec:
+    op = plan.operation
+    assert op.measure is not None and op.x_measure is not None
+    xm, ym = MEASURES[op.x_measure], MEASURES[op.measure]
+    x = Channel(field=xm.name.value, type=xm.kind, title=xm.label, unit=xm.unit)
+    y = Channel(field=ym.name.value, type=ym.kind, title=ym.label, unit=ym.unit)
+    color: Channel | None = None
+    if len(plan.cohorts) > 1:
+        color = Channel(field="cohort", type="nominal", title="Cohort", sort=result.color_order)
+    elif op.dimension is not None:
+        dim = REGISTRY[op.dimension]
+        color = Channel(
+            field=dim.name.value, type="nominal", title=dim.label, sort=result.color_order
+        )
+
+    data: list[Datum] = []
+    for i, point in enumerate(result.points, start=1):
+        fields = cite.datum_fields(f"p{i}", point.bucket)
+        fields["nct_id"] = point.trial.nct_id
+        fields[x.field] = point.x.value
+        fields[y.field] = point.y.value
+        if color is not None:
+            fields[color.field] = point.color
+        data.append(Datum(**fields))
+    spec = ScatterPlotSpec(
+        title=title, encoding=CartesianEncoding(x=x, y=y, series=color), data=data
+    )
+    truncation = Truncation(**vars(result.truncation)) if result.truncation else None
+    return BuiltSpec(spec, truncation, f"{xm.label} ascending", "", [])
 
 
 def _network(title: str, result: NetworkResult, cite: CitationFactory) -> BuiltSpec:
     nodes = [
         NodeDatum(
-            datum_id=f"n{i}",
             id=n.id,
             label=n.bucket.label,
             entity_type=n.entity_type,
-            **cite.datum_fields(n.bucket),  # type: ignore[arg-type]
+            **cite.datum_fields(f"n{i}", n.bucket),
         )
         for i, n in enumerate(result.nodes, start=1)
     ]
     edges = [
         EdgeDatum(
-            datum_id=f"e{i}",
             source=e.source,
             target=e.target,
             relation=e.relation,
-            **cite.datum_fields(e.bucket),  # type: ignore[arg-type]
+            **cite.datum_fields(f"e{i}", e.bucket),
         )
         for i, e in enumerate(result.edges, start=1)
     ]
     chart = NetworkGraphSpec(
         title=title,
+        bipartite=result.bipartite,
         encoding=NetworkEncoding(
             nodes={"id": "id", "label": "label", "group": "entity_type", "size": "trial_count"},
             edges={"source": "source", "target": "target", "weight": "trial_count"},
@@ -196,7 +338,7 @@ def _network(title: str, result: NetworkResult, cite: CitationFactory) -> BuiltS
         data=NetworkData(nodes=nodes, edges=edges),
     )
     truncation = Truncation(**vars(result.truncation)) if result.truncation else None
-    return BuiltSpec(chart, truncation, "Edges by shared-trial count, descending", [])
+    return BuiltSpec(chart, truncation, "Edges by shared-trial count, descending", "", [])
 
 
 # --- Deterministic text ---------------------------------------------------------------------
@@ -218,10 +360,18 @@ def _title(plan: QueryPlan) -> str:
     op = plan.operation
     if op.kind is OperationKind.TIME_TREND:
         head = f"Trials per year by {DATE_LABELS[plan.time.date_basis]}"
+        if op.second_dimension:
+            head += f", by {REGISTRY[op.second_dimension].label.lower()}"
     elif op.kind is OperationKind.NETWORK:
         assert op.dimension and op.second_dimension
         a, b = REGISTRY[op.dimension].label, REGISTRY[op.second_dimension].label
         head = f"{a} co-occurrence network" if a == b else f"{a} ↔ {b} network"
+    elif op.kind is OperationKind.HISTOGRAM:
+        assert op.measure
+        head = f"Distribution of trials by {MEASURES[op.measure].label.lower()}"
+    elif op.kind is OperationKind.SCATTER:
+        assert op.measure and op.x_measure
+        head = f"{MEASURES[op.measure].label} vs {MEASURES[op.x_measure].label.lower()}"
     else:
         assert op.dimension
         head = f"Trials by {REGISTRY[op.dimension].label.lower()}"
@@ -234,12 +384,22 @@ def summarize(plan: QueryPlan) -> str:
     op = plan.operation
     if op.kind is OperationKind.TIME_TREND:
         what = f"distinct trials per year of {DATE_LABELS[plan.time.date_basis]}"
+        if op.second_dimension:
+            what += f", split by {op.second_dimension.value}"
     elif op.kind is OperationKind.NETWORK:
         assert op.dimension and op.second_dimension
         what = (
             f"a network linking {op.dimension.value} and {op.second_dimension.value} "
             "values that appear in the same trial"
         )
+    elif op.kind is OperationKind.HISTOGRAM:
+        assert op.measure
+        what = f"distinct trials per {op.measure.value} bin"
+    elif op.kind is OperationKind.SCATTER:
+        assert op.measure and op.x_measure
+        what = f"one point per trial: {op.measure.value} against {op.x_measure.value}"
+        if op.dimension:
+            what += f", coloured by {op.dimension.value}"
     else:
         assert op.dimension
         what = f"distinct trials by {op.dimension.value}"
@@ -247,8 +407,11 @@ def summarize(plan: QueryPlan) -> str:
             what += f", split by {op.second_dimension.value}"
     groups = "; ".join(
         f"'{c.label}' ("
-        + ", ".join(
-            f"{k}={v}" for k, v in c.filters.model_dump(mode="json", exclude_none=True).items()
+        + (
+            ", ".join(
+                f"{k}={v}" for k, v in c.filters.model_dump(mode="json", exclude_none=True).items()
+            )
+            or "no filters"
         )
         + ")"
         for c in plan.cohorts
@@ -267,6 +430,7 @@ def summarize(plan: QueryPlan) -> str:
 def policies(plan: QueryPlan) -> dict[str, str]:
     op = plan.operation
     dims = {op.dimension, op.second_dimension} - {None}
+    measures = {op.measure, op.x_measure} - {None}
     out = {
         "counting": "Every value is a count of distinct trials (NCT IDs); a trial counts at "
         "most once per datum.",
@@ -281,8 +445,8 @@ def policies(plan: QueryPlan) -> dict[str, str]:
         )
     if any(c.filters.condition for c in plan.cohorts):
         out["condition_matching"] = (
-            "condition uses ClinicalTrials.gov condition search (query.cond), which includes "
-            "synonyms and narrower terms."
+            "condition uses ClinicalTrials.gov condition search (query.cond, phrase), which "
+            "includes synonyms and narrower terms."
         )
     if Dimension.PHASE in dims:
         out["phase"] = (
@@ -301,11 +465,32 @@ def policies(plan: QueryPlan) -> dict[str, str]:
             "A multi-country trial counts once in each listed country. Counts are trials, "
             "not sites or patients."
         )
+    if Dimension.SITE in dims:
+        out["site"] = (
+            "Sites are facility names as registered (case-insensitive; sponsor site numbers "
+            "removed). The same institution spelled differently stays separate."
+        )
     if Dimension.DRUG in dims:
         out["drug_dimension"] = (
-            "Drugs are interventions of type DRUG or BIOLOGICAL, excluding placebos. Names are "
-            "grouped case-insensitively; spelling variants and brand/generic names are not "
+            "Drugs are interventions of type DRUG, BIOLOGICAL or COMBINATION_PRODUCT, excluding "
+            "placebos. Names are grouped case-insensitively with dose and salt suffixes removed "
+            "(e.g. 'Erlotinib Hydrochloride' = 'erlotinib'); brand and generic names are not "
             "merged."
+        )
+    if "enrollment" in {m.value for m in measures if m}:
+        out["enrollment"] = (
+            "Enrollment is the registered count: ACTUAL for finished trials, ESTIMATED (planned) "
+            "otherwise; both are included and each citation shows which."
+        )
+    if "duration_months" in {m.value for m in measures if m}:
+        out["duration"] = (
+            "Duration = start date → primary completion date, in months; needs month-precision "
+            "dates on both ends (otherwise counted as missing). Anticipated dates are included."
+        )
+    if op.kind is OperationKind.HISTOGRAM:
+        out["bins"] = (
+            "Bins are declared in advance with unequal widths (heavy-tailed values); each bin "
+            "is [bin_start, bin_end) and the last bin is open-ended."
         )
     if op.kind is OperationKind.NETWORK:
         out["network"] = (

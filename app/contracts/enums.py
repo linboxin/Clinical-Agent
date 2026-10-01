@@ -63,11 +63,25 @@ class Dimension(StrEnum):
     INTERVENTION_TYPE = "intervention_type"
     CONDITION = "condition"
     COUNTRY = "country"
+    PRIMARY_PURPOSE = "primary_purpose"
+    ALLOCATION = "allocation"
+    SITE = "site"
+    INVESTIGATOR = "investigator"
+
+
+class Measure(StrEnum):
+    """Per-trial numeric or date values: histogram bins and scatter axes."""
+
+    ENROLLMENT = "enrollment"
+    DURATION_MONTHS = "duration_months"
+    START_DATE = "start_date"
 
 
 class OperationKind(StrEnum):
     COUNT_BY = "count_by"
     TIME_TREND = "time_trend"
+    HISTOGRAM = "histogram"
+    SCATTER = "scatter"
     NETWORK = "network"
 
 
@@ -85,7 +99,11 @@ class PhasePolicy(StrEnum):
 class ChartType(StrEnum):
     BAR_CHART = "bar_chart"
     GROUPED_BAR_CHART = "grouped_bar_chart"
+    STACKED_BAR_CHART = "stacked_bar_chart"
+    PIE_CHART = "pie_chart"
     TIME_SERIES = "time_series"
+    HISTOGRAM = "histogram"
+    SCATTER_PLOT = "scatter_plot"
     NETWORK_GRAPH = "network_graph"
 
 

@@ -12,7 +12,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any, Literal
 
-from app.contracts.enums import PHASE_LABELS, DateBasis, Dimension, PhasePolicy
+from app.contracts.enums import PHASE_LABELS, DateBasis, Dimension, Measure, PhasePolicy
 
 Study = dict[str, Any]
 
@@ -62,6 +62,49 @@ def norm_name(text: str) -> str:
     text = unicodedata.normalize("NFKC", text)
     text = re.sub(r"[®™©]", "", text)
     return re.sub(r"\s+", " ", text).strip().casefold()
+
+
+# Drug names: dose/route suffixes and salt forms are dropped from the *grouping key* only
+# (labels keep the most common source spelling). Measured on lung-cancer trials: raw names
+# split "erlotinib" / "erlotinib hydrochloride" and "osimertinib" / "osimertinib 80 mg".
+_DOSE = re.compile(
+    r"\s*[\(\[]?\b\d+(?:[.,]\d+)?\s*(?:mg|mcg|µg|ug|g|ml|iu|units?|mg/kg|mg/m2|mg/m²|%)(?:/\w+)?\b.*$"
+)
+_SALT = re.compile(
+    r"\s+(?:hydrochloride|dihydrochloride|hcl|mesylate|dimesylate|maleate|tosylate|citrate|"
+    r"sulfate|sulphate|phosphate|acetate|besylate|succinate|tartrate|fumarate|malate|"
+    r"sodium|potassium|calcium)$"
+)
+
+
+def drug_key(text: str) -> str:
+    key = _DOSE.sub("", norm_name(text)).strip(" ,;-")
+    key = _SALT.sub("", key).strip()
+    return key or norm_name(text)
+
+
+# Multi-site sponsors suffix facility names with site numbers: "Erasmus MC ( Site 5303)".
+_SITE_NUMBER = re.compile(r"\s*\(\s*site\s*[\w-]+\s*\)\s*$", re.IGNORECASE)
+
+
+def site_key(text: str) -> str:
+    return norm_name(_SITE_NUMBER.sub("", text))
+
+
+def site_label(text: str) -> str:
+    return _SITE_NUMBER.sub("", text).strip()
+
+
+# Placeholder "investigators" registered instead of a person, e.g. "Medical Director".
+_PLACEHOLDER_OFFICIAL = re.compile(
+    r"\b(director|clinical trials?|study team|medical monitor|call center|sponsor|"
+    r"contact|transparency|disclosure)\b",
+    re.IGNORECASE,
+)
+
+
+def _is_person(item: dict[str, Any]) -> bool:
+    return not _PLACEHOLDER_OFFICIAL.search(item.get("name") or "")
 
 
 def _enum_label(value: str, overrides: dict[str, str] | None = None) -> str:
@@ -163,7 +206,7 @@ def _extract_phase(study: Study, policy: PhasePolicy) -> list[FieldValue]:
 # --- Interventions --------------------------------------------------------------------------
 
 INTERVENTIONS_PATH = f"{PS}.armsInterventionsModule.interventions"
-DRUG_TYPES = {"DRUG", "BIOLOGICAL"}
+DRUG_TYPES = {"DRUG", "BIOLOGICAL", "COMBINATION_PRODUCT"}
 _PLACEBO = re.compile(r"\bplacebo\b", re.IGNORECASE)
 
 
@@ -186,6 +229,8 @@ SPONSOR_CLASS_LABELS = {
 STATUS_LABELS = {"ACTIVE_NOT_RECRUITING": "Active, not recruiting"}
 
 
+LOCATIONS_PATH = f"{PS}.contactsLocationsModule.locations"
+
 # --- Registry -------------------------------------------------------------------------------
 
 
@@ -198,6 +243,24 @@ class DimensionSpec:
     extract: Callable[[Study, PhasePolicy], list[FieldValue]]
     order: tuple[str, ...] | None = None  # fixed display order (ordinal); else by count
     default_top_n: int | None = None  # cap for high-cardinality dimensions
+
+    def exclusive(self, policy: PhasePolicy) -> bool:
+        """True when every trial has at most one value, so groups partition the trials and
+        may be shown as pie slices or stacked segments without double counting."""
+        if self.name is Dimension.PHASE:
+            return policy is PhasePolicy.COMBINED
+        return self.name in SINGLE_VALUED
+
+
+# Ordered (not a set) so the generated planner prompt is byte-identical across processes.
+SINGLE_VALUED = (
+    Dimension.OVERALL_STATUS,
+    Dimension.STUDY_TYPE,
+    Dimension.LEAD_SPONSOR,
+    Dimension.SPONSOR_CLASS,
+    Dimension.PRIMARY_PURPOSE,
+    Dimension.ALLOCATION,
+)
 
 
 REGISTRY: dict[Dimension, DimensionSpec] = {
@@ -246,7 +309,7 @@ REGISTRY: dict[Dimension, DimensionSpec] = {
             "Drug",
             "Drug or biological interventions listed on the trial (placebos excluded).",
             "entity",
-            _list_items(INTERVENTIONS_PATH, "name", norm_name, str.strip, keep=_is_drug),
+            _list_items(INTERVENTIONS_PATH, "name", drug_key, str.strip, keep=_is_drug),
             default_top_n=20,
         ),
         DimensionSpec(
@@ -269,8 +332,44 @@ REGISTRY: dict[Dimension, DimensionSpec] = {
             "Country",
             "Countries of the trial's listed locations (a trial counts once per country).",
             "entity",
-            _list_items(f"{PS}.contactsLocationsModule.locations", "country", norm_name, str.strip),
+            _list_items(LOCATIONS_PATH, "country", norm_name, str.strip),
             default_top_n=25,
+        ),
+        DimensionSpec(
+            Dimension.PRIMARY_PURPOSE,
+            "Primary purpose",
+            "Primary purpose of the study design: Treatment, Prevention, Diagnostic, …",
+            "category",
+            _single(f"{PS}.designModule.designInfo.primaryPurpose"),
+        ),
+        DimensionSpec(
+            Dimension.ALLOCATION,
+            "Allocation",
+            "Randomized vs non-randomized allocation.",
+            "category",
+            _single(f"{PS}.designModule.designInfo.allocation", {"NA": "Not applicable"}),
+        ),
+        DimensionSpec(
+            Dimension.SITE,
+            "Site",
+            "Facilities (trial sites) listed as locations; sponsor site numbers are ignored.",
+            "entity",
+            _list_items(LOCATIONS_PATH, "facility", site_key, site_label),
+            default_top_n=20,
+        ),
+        DimensionSpec(
+            Dimension.INVESTIGATOR,
+            "Investigator",
+            "Overall officials (principal investigators) named on the trial.",
+            "entity",
+            _list_items(
+                f"{PS}.contactsLocationsModule.overallOfficials",
+                "name",
+                norm_name,
+                str.strip,
+                keep=_is_person,
+            ),
+            default_top_n=20,
         ),
     )
 }
@@ -308,6 +407,123 @@ def extract_date(study: Study, basis: DateBasis) -> DateValue | None:
     return DateValue(int(raw[:4]), raw, f"{struct_path}.date", estimated)
 
 
+# --- Measures (per-trial numbers and dates: histogram bins, scatter axes) -------------------
+
+
+@dataclass(frozen=True)
+class MeasureValue:
+    value: float | str  # a number, or the raw ISO date string for temporal measures
+    sort_key: float  # numeric position (binning, ordering); decimal year for dates
+    evidence: list[tuple[str, Any]]  # (exact path, exact raw value) pairs that support it
+
+
+ENROLLMENT_PATH = f"{PS}.designModule.enrollmentInfo"
+PRIMARY_COMPLETION_PATH = f"{PS}.statusModule.primaryCompletionDateStruct"
+_DATE_PARTS = re.compile(r"^(\d{4})(?:-(\d{2}))?(?:-(\d{2}))?$")
+
+
+def _parse_date(raw: Any) -> tuple[int, int | None, int | None] | None:
+    match = _DATE_PARTS.match(raw) if isinstance(raw, str) else None
+    if not match:
+        return None
+    y, m, d = match.groups()
+    return int(y), int(m) if m else None, int(d) if d else None
+
+
+def _enrollment(study: Study) -> MeasureValue | None:
+    raw = get_path(study, f"{ENROLLMENT_PATH}.count")
+    if not isinstance(raw, int) or isinstance(raw, bool) or raw < 0:
+        return None
+    evidence: list[tuple[str, Any]] = [(f"{ENROLLMENT_PATH}.count", raw)]
+    kind = get_path(study, f"{ENROLLMENT_PATH}.type")
+    if isinstance(kind, str):
+        evidence.append((f"{ENROLLMENT_PATH}.type", kind))  # ACTUAL vs ESTIMATED
+    return MeasureValue(raw, float(raw), evidence)
+
+
+def _duration_months(study: Study) -> MeasureValue | None:
+    """Start → primary completion, in months. Both dates need month precision; a year-only
+    date cannot give a duration without inventing a month (DESIGN §8)."""
+    start_raw = get_path(study, f"{DATE_PATHS[DateBasis.START_DATE]}.date")
+    end_raw = get_path(study, f"{PRIMARY_COMPLETION_PATH}.date")
+    start, end = _parse_date(start_raw), _parse_date(end_raw)
+    if start is None or end is None or start[1] is None or end[1] is None:
+        return None
+    months: float = (end[0] - start[0]) * 12 + (end[1] - start[1])
+    if start[2] is not None and end[2] is not None:
+        months += (end[2] - start[2]) / 30.44
+    if months < 0:
+        return None  # inconsistent record: completion before start
+    months = round(months, 1)
+    return MeasureValue(
+        months,
+        months,
+        [
+            (f"{DATE_PATHS[DateBasis.START_DATE]}.date", start_raw),
+            (f"{PRIMARY_COMPLETION_PATH}.date", end_raw),
+        ],
+    )
+
+
+def _start_date(study: Study) -> MeasureValue | None:
+    path = f"{DATE_PATHS[DateBasis.START_DATE]}.date"
+    raw = get_path(study, path)
+    parts = _parse_date(raw)
+    if parts is None:
+        return None
+    y, m, d = parts
+    position = y + ((m or 1) - 1) / 12 + ((d or 1) - 1) / 365
+    return MeasureValue(str(raw), position, [(path, raw)])
+
+
+@dataclass(frozen=True)
+class MeasureSpec:
+    name: Measure
+    label: str
+    description: str
+    kind: Literal["quantitative", "temporal"]
+    unit: str | None
+    extract: Callable[[Study], MeasureValue | None]
+    # Histogram bins [edge_i, edge_i+1); the last bin is open-ended. Unequal widths on purpose:
+    # enrollment and duration are heavy-tailed, so equal-width bins would put ~all trials in one.
+    bin_edges: tuple[float, ...] | None = None
+
+
+MEASURES: dict[Measure, MeasureSpec] = {
+    spec.name: spec
+    for spec in (
+        MeasureSpec(
+            Measure.ENROLLMENT,
+            "Enrollment",
+            "Participants enrolled (ACTUAL) or planned (ESTIMATED), as registered.",
+            "quantitative",
+            "participants",
+            _enrollment,
+            bin_edges=(0, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000),
+        ),
+        MeasureSpec(
+            Measure.DURATION_MONTHS,
+            "Duration",
+            "Months from study start to primary completion (actual or anticipated).",
+            "quantitative",
+            "months",
+            _duration_months,
+            bin_edges=(0, 6, 12, 18, 24, 36, 48, 60, 84, 120),
+        ),
+        MeasureSpec(
+            Measure.START_DATE,
+            "Start date",
+            "Study start date (temporal; scatter x axis).",
+            "temporal",
+            None,
+            _start_date,
+        ),
+    )
+}
+
+assert set(MEASURES) == set(Measure), "every Measure needs a registry entry"
+
+
 # --- Identity / projection ------------------------------------------------------------------
 
 NCT_PATH = f"{PS}.identificationModule.nctId"
@@ -333,6 +549,14 @@ API_FIELDS = (
     "InterventionOtherName",
     "Condition",
     "LocationCountry",
+    "LocationFacility",
+    "OverallOfficialName",
+    "DesignPrimaryPurpose",
+    "DesignAllocation",
+    "EnrollmentCount",
+    "EnrollmentType",
+    "PrimaryCompletionDate",
+    "PrimaryCompletionDateType",
 )
 
 NETWORK_DIMENSIONS = tuple(d for d, s in REGISTRY.items() if s.kind == "entity")

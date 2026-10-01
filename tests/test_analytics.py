@@ -9,7 +9,7 @@ from tests.factories import CORPUS, plan, study
 
 def cohorts_for(p: QueryPlan, *corpora: list[dict]) -> list[CohortTrials]:
     sets = corpora or tuple([CORPUS] * len(p.cohorts))
-    return [prepare_cohort(c, s, p.time) for c, s in zip(p.cohorts, sets, strict=True)]
+    return [prepare_cohort(c, s, p.time)[0] for c, s in zip(p.cohorts, sets, strict=True)]
 
 
 def rows(result: CountResult) -> list[tuple]:

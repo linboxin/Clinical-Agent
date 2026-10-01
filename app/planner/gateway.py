@@ -71,3 +71,17 @@ class OpenAIPlannerGateway:
             input_tokens=usage.input_tokens if usage else None,
             output_tokens=usage.output_tokens if usage else None,
         )
+
+
+class ReplayGateway:
+    """Returns a fixed, hand-written plan instead of calling a model. The plan still goes
+    through validation, request-field merging and grounding, so this exercises every
+    deterministic stage end to end (debugging, live smoke tests without an API key)."""
+
+    model = "replay"
+
+    def __init__(self, plan: QueryPlan) -> None:
+        self.plan = plan
+
+    async def propose(self, instructions: str, messages: list[Message]) -> Proposal:
+        return Proposal(plan=self.plan, input_tokens=0, output_tokens=0)

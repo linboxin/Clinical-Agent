@@ -9,7 +9,7 @@ from typing import Any
 from app.contracts.enums import OperationKind
 from app.contracts.plan import Clarification, QueryPlan
 from app.contracts.request import VisualizationRequest
-from app.registry import NETWORK_DIMENSIONS
+from app.registry import MEASURES, NETWORK_DIMENSIONS, REGISTRY, SINGLE_VALUED
 
 MAX_COHORTS = 4
 FILTER_FIELDS = (
@@ -35,20 +35,48 @@ def validate_plan(plan: QueryPlan) -> list[str]:
         errors.append("cohort labels must be unique")
 
     op = plan.operation
-    if op.kind is OperationKind.COUNT_BY:
-        if op.dimension is None:
+    unused: dict[OperationKind, tuple[str, ...]] = {
+        OperationKind.COUNT_BY: ("measure", "x_measure"),
+        OperationKind.TIME_TREND: ("dimension", "measure", "x_measure"),
+        OperationKind.HISTOGRAM: ("dimension", "second_dimension", "x_measure"),
+        OperationKind.SCATTER: ("second_dimension",),
+        OperationKind.NETWORK: ("measure", "x_measure"),
+    }
+    for name in unused[op.kind]:
+        if getattr(op, name) is not None:
+            errors.append(f"{op.kind.value} requires operation.{name} to be null")
+
+    if op.kind in (OperationKind.COUNT_BY, OperationKind.TIME_TREND):
+        if op.kind is OperationKind.COUNT_BY and op.dimension is None:
             errors.append("count_by requires operation.dimension")
         if op.second_dimension is not None:
             if n > 1:
                 errors.append(
-                    "count_by with several cohorts already uses cohorts as series; "
+                    f"{op.kind.value} with several cohorts already uses cohorts as series; "
                     "set second_dimension to null"
                 )
             if op.second_dimension == op.dimension:
-                errors.append("second_dimension must differ from dimension for count_by")
-    elif op.kind is OperationKind.TIME_TREND:
-        if op.dimension is not None or op.second_dimension is not None:
-            errors.append("time_trend requires dimension and second_dimension to be null")
+                errors.append("second_dimension must differ from dimension")
+    elif op.kind is OperationKind.HISTOGRAM:
+        binned = ", ".join(m.value for m, spec in MEASURES.items() if spec.bin_edges)
+        if op.measure is None or MEASURES[op.measure].bin_edges is None:
+            errors.append(f"histogram requires operation.measure to be one of: {binned}")
+    elif op.kind is OperationKind.SCATTER:
+        if op.measure is None or op.x_measure is None:
+            errors.append("scatter requires operation.measure (y) and operation.x_measure (x)")
+        elif op.measure == op.x_measure:
+            errors.append("scatter requires two different measures")
+        elif MEASURES[op.measure].kind != "quantitative":
+            errors.append("scatter y (operation.measure) must be a numeric measure")
+        if op.dimension is not None:
+            if n > 1:
+                errors.append("scatter with several cohorts colours by cohort; set dimension null")
+            elif not REGISTRY[op.dimension].exclusive(plan.phase_policy):
+                single = ", ".join(d.value for d in SINGLE_VALUED)
+                errors.append(
+                    f"scatter colour needs a single-valued dimension (one of: {single}, or "
+                    "phase with phase_policy combined)"
+                )
     elif op.kind is OperationKind.NETWORK:
         allowed = ", ".join(d.value for d in NETWORK_DIMENSIONS)
         for name, dim in (("dimension", op.dimension), ("second_dimension", op.second_dimension)):

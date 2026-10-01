@@ -10,8 +10,8 @@ from app.analytics.types import Bucket, CohortTrials, Edge, NetworkResult, Node,
 from app.contracts.plan import QueryPlan
 from app.registry import REGISTRY
 
-MAX_NODES = 50
-MAX_EDGES = 200
+MAX_NODES = 40
+MAX_EDGES = 150
 
 
 def network(plan: QueryPlan, cohorts: list[CohortTrials]) -> NetworkResult:
@@ -42,13 +42,13 @@ def network(plan: QueryPlan, cohorts: list[CohortTrials]) -> NetworkResult:
         for v, dim in [(v, a) for v in va] + ([] if same else [(v, b) for v in vb]):
             node_id = f"{dim.name.value}:{v.key}"
             node = nodes.setdefault(node_id, Node(node_id, dim.name.value, Bucket(v.key)))
-            node.bucket.add(trial.nct_id, v.label, [(v.path, v.raw)])
+            node.bucket.add(trial, v.label, [(v.path, v.raw)])
         pairs = combinations(sorted(va, key=lambda v: v.key), 2) if same else product(va, vb)
         for x, y in pairs:
             source = f"{a.name.value}:{x.key}"
             target = f"{b.name.value}:{y.key}"
             edge = edges.setdefault((source, target), Edge(source, target, relation, Bucket("")))
-            edge.bucket.add(trial.nct_id, "", [(x.path, x.raw), (y.path, y.raw)])
+            edge.bucket.add(trial, "", [(x.path, x.raw), (y.path, y.raw)])
 
     max_nodes = plan.top_n or MAX_NODES
     ranked = sorted(
@@ -80,6 +80,7 @@ def network(plan: QueryPlan, cohorts: list[CohortTrials]) -> NetworkResult:
     return NetworkResult(
         nodes=kept_node_list,
         edges=kept_edges,
+        bipartite=not same,
         missing={cohorts[0].cohort.label: dict(miss)},
         truncation=truncation,
     )

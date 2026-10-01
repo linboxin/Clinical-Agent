@@ -43,7 +43,7 @@ def count_by(plan: QueryPlan, cohorts: list[CohortTrials]) -> CountResult:
                     series_labels[s_key][s_label] += 1
                 for v in values:
                     bucket = buckets.setdefault((s_key, v.key), Bucket(v.key))
-                    bucket.add(trial.nct_id, v.label, [(v.path, v.raw), *s_evidence])
+                    bucket.add(trial, v.label, [(v.path, v.raw), *s_evidence])
         missing[ct.cohort.label] = dict(miss)
 
     # Category order: registry order for ordinal fields, otherwise total count descending.
@@ -52,12 +52,12 @@ def count_by(plan: QueryPlan, cohorts: list[CohortTrials]) -> CountResult:
     for (_, key), bucket in buckets.items():
         totals[key] += bucket.count
         labels[key].update(bucket.labels)
-    keys, sort_description = _order_categories(spec, totals, labels)
+    keys, sort_description = order_categories(spec, totals, labels)
 
     top_n = plan.top_n or (None if spec.order else spec.default_top_n)
     truncation = None
     if top_n is not None and len(keys) > top_n:
-        by_size = sorted(keys, key=lambda k: (-totals[k], _label(labels[k])))[:top_n]
+        by_size = sorted(keys, key=lambda k: (-totals[k], top_label(labels[k])))[:top_n]
         kept = set(by_size)
         truncation = TruncationInfo(
             shown=top_n,
@@ -72,14 +72,14 @@ def count_by(plan: QueryPlan, cohorts: list[CohortTrials]) -> CountResult:
         series_keys = [c.cohort.label for c in cohorts]
     elif split is not None:
         s_totals = Counter({k: sum(c.values()) for k, c in series_labels.items()})
-        series_keys = list(_order_categories(split, s_totals, series_labels)[0])
+        series_keys = list(order_categories(split, s_totals, series_labels)[0])
     else:
         series_keys = [None]
 
     def series_label(s_key: str | None) -> str | None:
         if s_key is None or by_cohort:
             return s_key  # cohort labels are already display labels (even for empty cohorts)
-        return _label(series_labels[s_key])
+        return top_label(series_labels[s_key])
 
     rows: list[Row] = []
     for key in keys:
@@ -89,30 +89,46 @@ def count_by(plan: QueryPlan, cohorts: list[CohortTrials]) -> CountResult:
                 if s_key is None:
                     continue
                 found = Bucket(key)  # explicit zero so grouped bars form a complete grid
-            rows.append(Row(key, _label(labels[key]), series_label(s_key), found))
+            rows.append(Row(key, top_label(labels[key]), series_label(s_key), found))
 
     return CountResult(
         kind="count_by",
         rows=rows,
-        category_order=[_label(labels[k]) for k in keys],
+        category_order=[top_label(labels[k]) for k in keys],
         series_order=[series_label(k) or "" for k in series_keys if k is not None] or None,
         series_source="cohort" if by_cohort else ("dimension" if split else None),
         sort_description=sort_description,
         missing=missing,
         truncation=truncation,
+        categories_exclusive=spec.exclusive(plan.phase_policy) and not by_cohort,
+        series_exclusive=(
+            cohorts_disjoint(cohorts)
+            if by_cohort
+            else split is not None and split.exclusive(plan.phase_policy)
+        ),
     )
 
 
-def _label(counter: Counter[str]) -> str:
+def cohorts_disjoint(cohorts: list[CohortTrials]) -> bool:
+    seen: set[str] = set()
+    for ct in cohorts:
+        ids = {t.nct_id for t in ct.trials}
+        if seen & ids:
+            return False
+        seen |= ids
+    return True
+
+
+def top_label(counter: Counter[str]) -> str:
     return min(counter.items(), key=lambda kv: (-kv[1], kv[0]))[0] if counter else ""
 
 
-def _order_categories(
+def order_categories(
     spec: DimensionSpec, totals: Counter[str], labels: dict[str, Counter[str]]
 ) -> tuple[list[str], str]:
     if spec.order:
         rank = {k: i for i, k in enumerate(spec.order)}
-        keys = sorted(totals, key=lambda k: (rank.get(k, len(rank)), _label(labels[k])))
+        keys = sorted(totals, key=lambda k: (rank.get(k, len(rank)), top_label(labels[k])))
         return keys, f"{spec.label} in canonical order"
-    keys = sorted(totals, key=lambda k: (-totals[k], _label(labels[k])))
+    keys = sorted(totals, key=lambda k: (-totals[k], top_label(labels[k])))
     return keys, "Trial count, descending"

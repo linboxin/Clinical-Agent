@@ -10,6 +10,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from app.contracts.enums import (
     DateBasis,
     Dimension,
+    Measure,
     OperationKind,
     OverallStatus,
     Phase,
@@ -50,12 +51,17 @@ class Operation(BaseModel):
     kind: OperationKind
     dimension: Dimension | None = Field(
         description="count_by: the grouping dimension. network: the first node type. "
-        "time_trend: null."
+        "scatter: optional colour category. time_trend, histogram: null."
     )
     second_dimension: Dimension | None = Field(
         description="network: the second node type (same as dimension for a co-occurrence "
-        "network). count_by: optional series split, only with a single cohort. Otherwise null."
+        "network). count_by, time_trend: optional series split, only with a single cohort. "
+        "Otherwise null."
     )
+    measure: Measure | None = Field(
+        description="histogram: the value to bin. scatter: the y axis. Otherwise null."
+    )
+    x_measure: Measure | None = Field(description="scatter: the x axis. Otherwise null.")
 
 
 class TimeScope(BaseModel):

@@ -13,6 +13,7 @@ from app.contracts.response import BarChartSpec, NetworkGraphSpec, TimeSeriesSpe
 from app.ctgov.client import CTGovClient
 from app.pipeline import Pipeline
 from app.planner import Planner
+from app.storage import RunStore
 from app.viz.verify import verify
 from tests.factories import CORPUS, plan
 from tests.test_planner import ScriptedGateway
@@ -43,11 +44,13 @@ class FakeRegistry:
         return httpx.Response(200, content=json.dumps(body))
 
 
-def make_pipeline(fake: FakeRegistry, *plans: Any, max_trials: int = 1000) -> Pipeline:
+def make_pipeline(
+    fake: FakeRegistry, *plans: Any, max_trials: int = 1000, store: RunStore | None = None
+) -> Pipeline:
     http = httpx.AsyncClient(transport=httpx.MockTransport(fake))
     client = CTGovClient(http, "https://ctgov.test/api/v2", cache=None, max_attempts=1)
     return Pipeline(
-        Planner(ScriptedGateway(*plans)), client, store=None, max_trials_per_cohort=max_trials
+        Planner(ScriptedGateway(*plans)), client, store=store, max_trials_per_cohort=max_trials
     )
 
 
@@ -71,9 +74,10 @@ async def test_phase_bar_chart_end_to_end_with_verified_citations() -> None:
     citation = spec.data[0].citations[0]
     assert citation.nct_id == "NCT00000002"
     assert citation.evidence[0].field_path == "protocolSection.designModule.phases"
-    assert citation.evidence[0].value == ["PHASE1", "PHASE2"]
-    # 3 pages of 2 records: pagination was followed to the end.
-    assert len([r for r in fake.requests if r.url.path.endswith("/studies")]) == 3
+    assert citation.evidence[0].excerpt == ["PHASE1", "PHASE2"]
+    # 1 grounding count, then 3 pages of 2 records: pagination was followed to the end.
+    pages = [r for r in fake.requests if r.url.params.get("pageSize") == "1000"]
+    assert len(pages) == 3
     cohort = response.meta.cohorts[0]
     assert (cohort.total_matches, cohort.trials_analyzed, cohort.complete) == (5, 5, True)
     assert cohort.missing == {"phase": 1}
@@ -124,14 +128,30 @@ async def test_too_broad_query_asks_to_narrow_without_paging() -> None:
     assert len([r for r in fake.requests if r.url.path.endswith("/studies")]) == 1
 
 
-async def test_zero_hits_for_a_named_drug_asks_instead_of_empty_chart() -> None:
+async def test_unknown_drug_survives_repair_then_asks_instead_of_empty_chart() -> None:
     fake = FakeRegistry({})
     planned = plan(cohorts=[("pembrolizumabb", {"drug_name": "pembrolizumabb"})])
-    response = await make_pipeline(fake, planned).run(
+    response = await make_pipeline(fake, planned, planned).run(
         VisualizationRequest(query="pembrolizumabb phases")
     )
     assert response.status is Status.NEEDS_CLARIFICATION
     assert response.clarification and "pembrolizumabb" in response.clarification.question
+    assert not [r for r in fake.requests if r.url.params.get("pageSize") == "1000"]  # no fetch
+
+
+async def test_grounding_feedback_lets_the_planner_fix_a_misspelling() -> None:
+    term = '(AREA[InterventionName]"pembrolizumab" OR AREA[InterventionOtherName]"pembrolizumab")'
+    fake = FakeRegistry({term: CORPUS})
+    typo = plan(cohorts=[("pembro", {"drug_name": "pembrolizumb"})])
+    fixed = plan(cohorts=[("pembro", {"drug_name": "pembrolizumab"})])
+    pipeline = make_pipeline(fake, typo, fixed)
+    response = await pipeline.run(VisualizationRequest(query="pembrolizumb trials by phase"))
+    assert response.status is Status.OK, response.error
+    interp = response.meta.interpretation
+    assert interp and interp.planner_attempts == 2
+    assert "pembrolizumb" in interp.repair_feedback[0]
+    repair_prompt = pipeline.planner.gateway.calls[1][-1]["content"]  # type: ignore[union-attr]
+    assert "matches no ClinicalTrials.gov trials" in repair_prompt
 
 
 async def test_zero_hits_without_named_filters_is_empty() -> None:
@@ -160,18 +180,18 @@ async def test_unsupported_question_returns_alternatives() -> None:
     )
     assert response.status is Status.UNSUPPORTED
     assert response.error and response.error.details
-    assert fake.requests == []  # nothing was fetched
+    assert not [r for r in fake.requests if r.url.path.endswith("/studies")]  # nothing fetched
 
 
-@pytest.mark.parametrize("field", ["value", "count"])
+@pytest.mark.parametrize("field", ["excerpt", "count"])
 async def test_verify_gate_catches_tampered_output(field: str) -> None:
     fake = FakeRegistry({"": CORPUS})
     response = await make_pipeline(fake, plan()).run(VisualizationRequest(query="phases"))
     spec = response.visualization
     assert isinstance(spec, BarChartSpec)
     datum = spec.data[0]
-    if field == "value":
-        datum.citations[0].evidence[0].value = ["PHASE3"]  # quote something the API never said
+    if field == "excerpt":
+        datum.citations[0].evidence[0].excerpt = ["PHASE3"]  # quote what the API never said
     else:
         datum.trial_count += 1
     from app.analytics.types import Trial

@@ -4,7 +4,9 @@ validated QueryPlan; every number is computed here from retrieved records."""
 from collections.abc import Callable
 
 from app.analytics.count_by import count_by
+from app.analytics.histogram import histogram
 from app.analytics.network import network
+from app.analytics.scatter import scatter
 from app.analytics.time_trend import time_trend
 from app.analytics.types import AnalysisResult, CohortTrials
 from app.contracts.enums import OperationKind
@@ -15,6 +17,8 @@ Operator = Callable[[QueryPlan, list[CohortTrials]], AnalysisResult]
 OPERATORS: dict[OperationKind, Operator] = {
     OperationKind.COUNT_BY: count_by,
     OperationKind.TIME_TREND: time_trend,
+    OperationKind.HISTOGRAM: histogram,
+    OperationKind.SCATTER: scatter,
     OperationKind.NETWORK: network,
 }
 

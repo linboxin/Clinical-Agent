@@ -13,7 +13,7 @@ def test_brief_example_request_is_valid_unchanged() -> None:
         }
     )
     assert req.drug_name == "Pembrolizumab"
-    assert req.citations_per_datum == 10
+    assert req.citations_per_datum == 5
 
 
 @pytest.mark.parametrize(

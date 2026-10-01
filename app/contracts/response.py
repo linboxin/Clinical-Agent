@@ -1,8 +1,8 @@
 """Public response schema: the visualization spec a frontend renders without guessing.
 
 Cartesian charts follow a Vega-Lite-like shape: `data` is a flat list of rows and `encoding`
-maps row fields to visual channels by name. Every row/node/edge is a datum that carries the
-NCT IDs and exact source field values that produced it.
+maps row fields to visual channels by name. Every row/point/node/edge is a datum that carries
+the NCT IDs and exact source field values that produced it.
 """
 
 from typing import Annotated, Any, Literal
@@ -21,24 +21,32 @@ SCHEMA_VERSION: Literal["1.0"] = "1.0"
 class Evidence(BaseModel):
     field_path: str = Field(
         description="JSON path inside the ClinicalTrials.gov v2 study record, "
-        "e.g. protocolSection.designModule.phases"
+        "e.g. protocolSection.designModule.phases or "
+        "protocolSection.armsInterventionsModule.interventions[1].name"
     )
-    value: Any = Field(description="The exact value found at field_path in the API response.")
+    excerpt: Any = Field(
+        description="The exact value found at field_path in the API response, verbatim "
+        "(a string for text fields; a list or number where the API returns one)."
+    )
 
 
 class Citation(BaseModel):
     nct_id: str
     url: str = Field(description="Study page on clinicaltrials.gov.")
     brief_title: str | None = Field(description="Exact briefTitle from the API response.")
-    evidence: list[Evidence] = Field(description="Field values that place this trial in the datum.")
+    evidence: list[Evidence] = Field(
+        description="Every field value that places this trial in the datum: why it belongs to "
+        "the cohort (e.g. the matching intervention name) and why it falls in this bar, bucket, "
+        "bin, point, node or edge."
+    )
 
 
 class Datum(BaseModel):
-    """Fields common to every bar, time bucket, node and edge."""
+    """Fields common to every bar, time bucket, bin, point, node and edge."""
 
     model_config = ConfigDict(extra="allow")
 
-    datum_id: str
+    datum_id: str = Field(description="Stable id; GET /v1/runs/{run_id}/evidence?datum_id=…")
     trial_count: int = Field(description="Distinct trials (NCT IDs) behind this datum.")
     citation_count: int = Field(description="Total supporting trials; equals trial_count.")
     citations_truncated: bool = Field(description="True when citations lists fewer than all.")
@@ -61,12 +69,24 @@ class Channel(BaseModel):
 class CartesianEncoding(BaseModel):
     x: Channel
     y: Channel
-    series: Channel | None = Field(default=None, description="Colour/grouping channel.")
+    series: Channel | None = Field(
+        default=None, description="Colour channel: bar groups/stacks, lines, or point colour."
+    )
+
+
+class PieEncoding(BaseModel):
+    theta: Channel = Field(description="Slice size.")
+    color: Channel = Field(description="Slice category.")
 
 
 class BarChartSpec(BaseModel):
     type: Literal["bar_chart"] = "bar_chart"
     title: str
+    orientation: Literal["vertical", "horizontal"] = Field(
+        default="vertical",
+        description="horizontal: categories on the vertical axis (long entity names). "
+        "Encoding x/y still name the category and value fields.",
+    )
     encoding: CartesianEncoding
     data: list[Datum]
 
@@ -74,15 +94,56 @@ class BarChartSpec(BaseModel):
 class GroupedBarChartSpec(BaseModel):
     type: Literal["grouped_bar_chart"] = "grouped_bar_chart"
     title: str
-    encoding: CartesianEncoding
+    orientation: Literal["vertical", "horizontal"] = "vertical"
+    encoding: CartesianEncoding = Field(description="series is required: one bar per series.")
     data: list[Datum]
+
+
+class StackedBarChartSpec(BaseModel):
+    type: Literal["stacked_bar_chart"] = "stacked_bar_chart"
+    title: str
+    orientation: Literal["vertical", "horizontal"] = "vertical"
+    encoding: CartesianEncoding = Field(
+        description="series is required: one stack segment per series. Only produced when the "
+        "series are mutually exclusive, so a stack's height is a real trial total."
+    )
+    data: list[Datum]
+
+
+class PieChartSpec(BaseModel):
+    type: Literal["pie_chart"] = "pie_chart"
+    title: str
+    encoding: PieEncoding
+    data: list[Datum] = Field(
+        description="Slices of mutually exclusive categories (each trial in exactly one); "
+        "trials with no value are excluded and counted in meta.cohorts[].missing."
+    )
 
 
 class TimeSeriesSpec(BaseModel):
     type: Literal["time_series"] = "time_series"
     title: str
-    encoding: CartesianEncoding
+    time_granularity: Literal["year"] = "year"
+    encoding: CartesianEncoding = Field(description="x is the year; series (optional) = lines.")
     data: list[Datum]
+
+
+class HistogramSpec(BaseModel):
+    type: Literal["histogram"] = "histogram"
+    title: str
+    encoding: CartesianEncoding = Field(
+        description="x is bin_label (ordinal, in bin order). Each row also has numeric "
+        "bin_start (inclusive) and bin_end (exclusive; null for the open last bin)."
+    )
+    bin_edges: list[float] = Field(description="Declared bin edges; bins are [edge_i, edge_i+1).")
+    data: list[Datum]
+
+
+class ScatterPlotSpec(BaseModel):
+    type: Literal["scatter_plot"] = "scatter_plot"
+    title: str
+    encoding: CartesianEncoding = Field(description="One point per trial; series = colour.")
+    data: list[Datum] = Field(description="Each point is one trial (trial_count = 1).")
 
 
 class NodeDatum(Datum):
@@ -94,7 +155,7 @@ class NodeDatum(Datum):
 class EdgeDatum(Datum):
     source: str = Field(description="Node id.")
     target: str = Field(description="Node id.")
-    relation: str = Field(description="e.g. 'lead_sponsor–drug' or 'drug co-listed with drug'.")
+    relation: str = Field(description="e.g. 'lead_sponsor–drug in the same trial'.")
 
 
 class NetworkEncoding(BaseModel):
@@ -117,14 +178,31 @@ class NetworkData(BaseModel):
 class NetworkGraphSpec(BaseModel):
     type: Literal["network_graph"] = "network_graph"
     title: str
+    bipartite: bool = Field(description="True when nodes come from two different dimensions.")
     encoding: NetworkEncoding
     data: NetworkData
 
 
 VisualizationSpec = Annotated[
-    BarChartSpec | GroupedBarChartSpec | TimeSeriesSpec | NetworkGraphSpec,
+    BarChartSpec
+    | GroupedBarChartSpec
+    | StackedBarChartSpec
+    | PieChartSpec
+    | TimeSeriesSpec
+    | HistogramSpec
+    | ScatterPlotSpec
+    | NetworkGraphSpec,
     Field(discriminator="type"),
 ]
+
+CARTESIAN_SPECS = (
+    BarChartSpec,
+    GroupedBarChartSpec,
+    StackedBarChartSpec,
+    TimeSeriesSpec,
+    HistogramSpec,
+    ScatterPlotSpec,
+)
 
 
 # --- Metadata ------------------------------------------------------------------------------
@@ -140,6 +218,11 @@ class CohortMeta(BaseModel):
     excluded: dict[str, int] = Field(default_factory=dict, description="Reason → trial count.")
     missing: dict[str, int] = Field(
         default_factory=dict, description="Analyzed field → trials with no value (not charted)."
+    )
+    synonym_matches: dict[str, int] = Field(
+        default_factory=dict,
+        description="Free-text filter → trials the registry matched through synonym expansion "
+        "(e.g. MK-3475 for pembrolizumab); their citations carry no literal match for it.",
     )
     complete: bool = Field(description="True when pagination finished and nothing was skipped.")
 
@@ -162,10 +245,23 @@ class Interpretation(BaseModel):
     plan: QueryPlan
     planner_model: str
     planner_attempts: int
+    repair_feedback: list[str] = Field(
+        default_factory=list,
+        description="Validation/grounding errors the planner was asked to fix (empty when its "
+        "first plan was accepted).",
+    )
+    parent_run_id: str | None = Field(default=None, description="Set for follow-up questions.")
+    plan_diff: dict[str, Any] | None = Field(
+        default=None,
+        description="Follow-ups only: plan path → {'before': …, 'after': …} vs the parent plan.",
+    )
 
 
 class Meta(BaseModel):
     interpretation: Interpretation | None = None
+    chart_selection: str | None = Field(
+        default=None, description="Why this chart type was chosen (deterministic rule)."
+    )
     cohorts: list[CohortMeta] = Field(default_factory=list)
     time: TimeScope | None = None
     measure: str = "Distinct trials (NCT IDs) per datum"
@@ -180,6 +276,9 @@ class Meta(BaseModel):
     truncation: Truncation | None = None
     source: SourceInfo | None = None
     timings_ms: dict[str, int] = Field(default_factory=dict)
+    llm_usage: dict[str, int] = Field(
+        default_factory=dict, description="Planner tokens: input, output, calls."
+    )
 
 
 class ErrorInfo(BaseModel):

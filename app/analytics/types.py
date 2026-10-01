@@ -14,6 +14,9 @@ class Trial:
     nct_id: str
     brief_title: str | None
     study: dict[str, Any]  # raw (field-projected) API record — the citation source of truth
+    # Why this trial is in its cohort (matching intervention name, phase, status, …). Prepended
+    # to every datum's evidence so a citation explains both cohort membership and placement.
+    membership: tuple[EvidenceItem, ...] = ()
 
 
 @dataclass
@@ -33,11 +36,17 @@ class Bucket:
     contributors: dict[str, list[EvidenceItem]] = field(default_factory=dict)
     extra: Counter[str] = field(default_factory=Counter)
 
-    def add(self, nct_id: str, label: str, evidence: list[EvidenceItem]) -> None:
-        if nct_id in self.contributors:
-            return  # a trial counts once per datum
+    def add(self, trial: Trial, label: str, evidence: list[EvidenceItem]) -> bool:
+        """Add a contributing trial; False if it already counts here (once per datum)."""
+        if trial.nct_id in self.contributors:
+            return False
         self.labels[label] += 1
-        self.contributors[nct_id] = evidence
+        items: list[EvidenceItem] = []
+        for path, raw in (*trial.membership, *evidence):
+            if all(path != p for p, _ in items):
+                items.append((path, raw))
+        self.contributors[trial.nct_id] = items
+        return True
 
     @property
     def label(self) -> str:
@@ -51,12 +60,13 @@ class Bucket:
 
 @dataclass
 class Row:
-    """A bar / time bucket. `series` is a cohort label or a second-dimension label."""
+    """A bar / time bucket / histogram bin. `series` is a cohort or second-dimension label."""
 
     key: str
     label: str
     series: str | None
     bucket: Bucket
+    fields: dict[str, Any] = field(default_factory=dict)  # extra row fields, e.g. bin_start
 
 
 @dataclass
@@ -68,13 +78,34 @@ class TruncationInfo:
 
 @dataclass
 class CountResult:
-    kind: Literal["count_by", "time_trend"]
+    kind: Literal["count_by", "time_trend", "histogram"]
     rows: list[Row]
     category_order: list[str]  # x-axis labels in display order
     series_order: list[str] | None
     series_source: Literal["cohort", "dimension"] | None
     sort_description: str
     missing: dict[str, dict[str, int]]  # cohort label → {field: trials without a value}
+    truncation: TruncationInfo | None = None
+    # Exclusivity decides which charts are honest: a pie needs exclusive categories and
+    # stacked bars need exclusive series (each trial in at most one), or totals double-count.
+    categories_exclusive: bool = False
+    series_exclusive: bool = False
+
+
+@dataclass
+class Point:
+    trial: Trial
+    x: Any
+    y: Any
+    color: str | None
+    bucket: Bucket  # exactly one contributor: the trial itself
+
+
+@dataclass
+class ScatterResult:
+    points: list[Point]
+    color_order: list[str] | None
+    missing: dict[str, dict[str, int]]
     truncation: TruncationInfo | None = None
 
 
@@ -97,8 +128,9 @@ class Edge:
 class NetworkResult:
     nodes: list[Node]
     edges: list[Edge]
+    bipartite: bool
     missing: dict[str, dict[str, int]]
     truncation: TruncationInfo | None = None
 
 
-AnalysisResult = CountResult | NetworkResult
+AnalysisResult = CountResult | ScatterResult | NetworkResult

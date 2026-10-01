@@ -1,8 +1,8 @@
 """Output gate: independent checks on the finished spec before it leaves the service.
 
 The most important check re-resolves every citation's field_path in the stored source record
-and compares it with the cited value, so a citation can never quote something the API did not
-return. Any failure turns the response into status=failed; nothing is patched to pass.
+and compares it with the cited excerpt, so a citation can never quote something the API did
+not return. Any failure turns the response into status=failed; nothing is patched to pass.
 """
 
 import math
@@ -10,11 +10,12 @@ from typing import Any
 
 from app.analytics.types import Trial
 from app.contracts.response import (
-    BarChartSpec,
+    CARTESIAN_SPECS,
     Datum,
     GroupedBarChartSpec,
     NetworkGraphSpec,
-    TimeSeriesSpec,
+    PieChartSpec,
+    StackedBarChartSpec,
     VisualizationSpec,
 )
 from app.registry import get_path
@@ -26,17 +27,18 @@ def verify(spec: VisualizationSpec, trials: dict[str, Trial]) -> list[str]:
     if isinstance(spec, NetworkGraphSpec):
         errors += _check_network(spec)
         data = [*spec.data.nodes, *spec.data.edges]
-    else:
-        assert isinstance(spec, BarChartSpec | GroupedBarChartSpec | TimeSeriesSpec)
-        enc = spec.encoding
-        fields = [enc.x.field, enc.y.field] + ([enc.series.field] if enc.series else [])
-        for d in spec.data:
-            for name in fields:
-                if _value(d, name) is None:
-                    errors.append(f"{d.datum_id}: encoded field '{name}' missing")
+    elif isinstance(spec, PieChartSpec):
         data = spec.data
-        if isinstance(spec, GroupedBarChartSpec) and enc.series is None:
-            errors.append("grouped_bar_chart requires a series channel")
+        errors += _check_fields(data, [spec.encoding.theta.field, spec.encoding.color.field])
+    else:
+        assert isinstance(spec, CARTESIAN_SPECS)
+        enc = spec.encoding
+        data = spec.data
+        errors += _check_fields(
+            data, [enc.x.field, enc.y.field] + ([enc.series.field] if enc.series else [])
+        )
+        if isinstance(spec, GroupedBarChartSpec | StackedBarChartSpec) and enc.series is None:
+            errors.append(f"{spec.type} requires a series channel")
 
     seen_ids: set[str] = set()
     for d in data:
@@ -51,6 +53,15 @@ def _value(d: Datum, name: str) -> Any:
     if name in type(d).model_fields:
         return getattr(d, name)
     return (d.model_extra or {}).get(name)
+
+
+def _check_fields(data: list[Datum], fields: list[str]) -> list[str]:
+    return [
+        f"{d.datum_id}: encoded field '{name}' missing"
+        for d in data
+        for name in fields
+        if _value(d, name) is None
+    ]
 
 
 def _check_datum(d: Datum, trials: dict[str, Trial]) -> list[str]:
@@ -74,9 +85,9 @@ def _check_datum(d: Datum, trials: dict[str, Trial]) -> list[str]:
             errors.append(f"{d.datum_id}: citation {c.nct_id} has no evidence")
         for ev in c.evidence:
             actual = get_path(trial.study, ev.field_path)
-            if actual != ev.value:
+            if actual is None or actual != ev.excerpt:
                 errors.append(
-                    f"{d.datum_id}: {c.nct_id} {ev.field_path} is {actual!r}, cited {ev.value!r}"
+                    f"{d.datum_id}: {c.nct_id} {ev.field_path} is {actual!r}, cited {ev.excerpt!r}"
                 )
     return errors
 
