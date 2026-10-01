@@ -257,6 +257,26 @@ class Interpretation(BaseModel):
     )
 
 
+class NameMerge(BaseModel):
+    canonical: str
+    variants: list[str] = Field(description="Raw registry spellings grouped under canonical.")
+
+
+class Normalization(BaseModel):
+    """What the name normalizer changed for one dimension (citations keep raw values)."""
+
+    dimension: str
+    model: str
+    names_in: int = Field(description="Distinct raw names seen.")
+    names_sent: int = Field(description="Most frequent names sent to the model (rarer keep raw).")
+    names_unmapped: int = Field(
+        description="Sent names left raw because the model's answer failed validation."
+    )
+    names_mapped: int = Field(description="Names the model changed (merged, split or dropped).")
+    dropped: list[str] = Field(description="Raw names judged not to be a drug/condition.")
+    merges: list[NameMerge] = Field(description="Largest merges, most variants first.")
+
+
 class Meta(BaseModel):
     interpretation: Interpretation | None = None
     chart_selection: str | None = Field(
@@ -278,6 +298,10 @@ class Meta(BaseModel):
     timings_ms: dict[str, int] = Field(default_factory=dict)
     llm_usage: dict[str, int] = Field(
         default_factory=dict, description="Planner tokens: input, output, calls."
+    )
+    normalization: list[Normalization] = Field(
+        default_factory=list,
+        description="Drug/condition names normalized by a small model before grouping.",
     )
 
 

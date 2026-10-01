@@ -16,6 +16,10 @@ class Settings(BaseSettings):
     openai_base_url: str | None = None
     planner_model: str = "gpt-5.4"
     planner_reasoning_effort: str | None = None
+    # Drug/condition name normalization by a small model (guarded; see app/normalize.py).
+    name_normalizer: str = "model"  # "model" | "off"
+    normalizer_model: str = "gpt-5.4-mini"
+    names_cache_path: Path | None = Path(".cache/names.json")
 
     ctgov_base_url: str = "https://clinicaltrials.gov/api/v2"
     ctgov_cache_dir: Path | None = Path(".cache/ctgov")

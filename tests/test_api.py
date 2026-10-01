@@ -74,6 +74,8 @@ def test_stored_run_evidence_and_trace_are_served(client: TestClient) -> None:
     assert stages == [
         "stage.plan",
         "stage.retrieve",
+        "stage.prepare",
+        "stage.normalize",
         "stage.analyze",
         "stage.build",
         "stage.verify",

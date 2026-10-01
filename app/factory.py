@@ -1,10 +1,12 @@
 """Builds the pipeline from settings; shared by the API (app.main) and the CLI scripts."""
 
 import httpx
+import openai
 
 from app.config import Settings
 from app.ctgov.cache import FileCache
 from app.ctgov.client import CTGovClient, RateLimiter
+from app.normalize import OpenAINameNormalizer
 from app.pipeline import Pipeline
 from app.planner import Planner
 from app.planner.gateway import OpenAIPlannerGateway
@@ -48,9 +50,20 @@ def create_ctgov_client(settings: Settings, http: httpx.AsyncClient) -> CTGovCli
     )
 
 
+def create_normalizer(settings: Settings) -> OpenAINameNormalizer | None:
+    key = settings.openai_api_key.get_secret_value() if settings.openai_api_key else ""
+    if not key or settings.name_normalizer != "model":
+        return None
+    client = openai.AsyncOpenAI(
+        api_key=key, base_url=settings.openai_base_url, timeout=60.0, max_retries=4
+    )
+    return OpenAINameNormalizer(client, settings.normalizer_model, settings.names_cache_path)
+
+
 def create_pipeline(settings: Settings, http: httpx.AsyncClient) -> Pipeline:
     return Pipeline(
         planner=create_planner(settings),
+        normalizer=create_normalizer(settings),
         ctgov=create_ctgov_client(settings, http),
         store=FileRunStore(settings.data_dir / "runs"),
         max_trials_per_cohort=settings.max_trials_per_cohort,

@@ -6,6 +6,7 @@ the model; every later stage is deterministic and receives only the validated, g
 
 import asyncio
 import logging
+from collections import Counter, defaultdict
 from datetime import UTC, datetime
 from typing import Any
 from uuid import uuid4
@@ -13,6 +14,7 @@ from uuid import uuid4
 from app.analytics import run_analysis
 from app.analytics.prepare import cohort_overlap, prepare_cohort
 from app.analytics.types import CohortTrials, NetworkResult, ScatterResult
+from app.analytics.values import ValueView
 from app.contracts.enums import OperationKind, Status
 from app.contracts.plan import Clarification, QueryPlan
 from app.contracts.request import VisualizationRequest
@@ -21,15 +23,18 @@ from app.contracts.response import (
     ErrorInfo,
     Interpretation,
     Meta,
+    NameMerge,
     NetworkGraphSpec,
+    Normalization,
     SourceInfo,
     VisualizationResponse,
 )
 from app.ctgov.client import CTGovClient, SearchResult, TooBroadError, UpstreamError
 from app.ctgov.compile import compile_cohort
+from app.normalize import MAX_NAMES, NORMALIZED_DIMENSIONS, NameNormalizer, report
 from app.planner import Planner, PlannerError
 from app.planner.grounding import Grounder
-from app.registry import API_FIELDS
+from app.registry import API_FIELDS, REGISTRY
 from app.storage import RunStore
 from app.telemetry import Span, Trace, activate, span
 from app.viz.build import BuiltSpec, assumptions, build_spec, policies, relabel, summarize
@@ -45,8 +50,10 @@ class Pipeline:
         ctgov: CTGovClient,
         store: RunStore | None,
         max_trials_per_cohort: int,
+        normalizer: NameNormalizer | None = None,
     ) -> None:
         self.planner = planner
+        self.normalizer = normalizer
         self.ctgov = ctgov
         self.store = store
         self.max_trials = max_trials_per_cohort
@@ -161,14 +168,17 @@ class Pipeline:
             except UpstreamError as exc:
                 return run.fail("upstream_unavailable", f"ClinicalTrials.gov: {exc}")
 
-        # 3. analyze (deterministic)
-        with run.stage("analyze") as s:
+        # 3. prepare, normalize names (guarded small model), analyze (deterministic)
+        with run.stage("prepare"):
             prepared = [
                 prepare_cohort(c, r.studies, plan.time)
                 for c, r in zip(plan.cohorts, results, strict=True)
             ]
             cohorts: list[CohortTrials] = [ct for ct, _ in prepared]
-            result = run_analysis(plan, cohorts)
+        with run.stage("normalize"):
+            view = await self._value_view(plan, cohorts, meta)
+        with run.stage("analyze") as s:
+            result = run_analysis(plan, cohorts, view)
             s.set(trials=sum(len(ct.trials) for ct in cohorts))
         meta.cohorts = [
             CohortMeta(
@@ -219,6 +229,57 @@ class Pipeline:
             meta.assumptions.append(_empty_reason(result))
         return run.done(Status.EMPTY if empty else Status.OK, visualization=built.spec)
 
+    async def _value_view(
+        self, plan: QueryPlan, cohorts: list[CohortTrials], meta: Meta
+    ) -> ValueView:
+        """Name maps for the drug/condition dimensions this plan groups by (if enabled)."""
+        view = ValueView(plan)
+        op = plan.operation
+        if self.normalizer is None or op.kind not in GROUPING_KINDS:
+            return view
+        for dim in {op.dimension, op.second_dimension} & set(NORMALIZED_DIMENSIONS):
+            assert dim is not None
+            labels: dict[str, Counter[str]] = defaultdict(Counter)
+            for ct in cohorts:
+                for trial in ct.trials:
+                    for v in REGISTRY[dim].extract(trial.study, plan.phase_policy):
+                        labels[v.key][v.label] += 1
+            frequency = Counter({k: sum(c.values()) for k, c in labels.items()})
+            top = [k for k, _ in frequency.most_common(MAX_NAMES)]
+            shown = {k: labels[k].most_common(1)[0][0] for k in top}
+            try:
+                by_name = await self.normalizer(dim, [shown[k] for k in top])
+            except Exception as exc:  # normalization is an enhancement: never fail the run
+                log.warning("name normalization skipped: %s", exc)
+                meta.assumptions.append(f"{dim.value} names were not normalized ({exc}).")
+                continue
+            mapping = {k: by_name[shown[k]] for k in top if shown[k] in by_name}
+            view.names[dim] = mapping
+            info = report(dim, self.normalizer.model, frequency, mapping, shown)
+            meta.normalization.append(
+                Normalization(
+                    dimension=dim.value,
+                    model=info.model,
+                    names_in=info.names_in,
+                    names_sent=info.names_sent,
+                    names_unmapped=info.names_unmapped,
+                    names_mapped=info.names_mapped,
+                    dropped=info.dropped,
+                    merges=[
+                        NameMerge(canonical=m.canonical, variants=m.variants) for m in info.merges
+                    ],
+                )
+            )
+            meta.policies[f"{dim.value}_names"] = (
+                f"{dim.value.capitalize()} names were normalized by {info.model} before grouping "
+                "(brand/code → generic name, spelling variants merged, combinations split, "
+                "non-entities dropped); citations still quote the raw registry values and "
+                "meta.normalization lists the merges."
+            )
+        return view
+
+
+GROUPING_KINDS = (OperationKind.COUNT_BY, OperationKind.NETWORK, OperationKind.TIME_TREND)
 
 SUPPORTED_ALTERNATIVES = [
     "Trial counts by phase, status, study type, sponsor, sponsor category, drug, intervention "
