@@ -8,7 +8,7 @@ from app.contracts.plan import QueryPlan
 from app.contracts.request import VisualizationRequest
 from app.registry import MEASURES, NETWORK_DIMENSIONS, REGISTRY, SINGLE_VALUED
 
-PROMPT_VERSION = "v2"
+PROMPT_VERSION = "v3"
 
 _TEMPLATE = """\
 You translate a user's question about clinical trials into a QueryPlan for an analytics \
