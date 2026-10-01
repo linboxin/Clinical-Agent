@@ -17,6 +17,7 @@ from app.factory import create_http_client, create_pipeline
 OUT = Path("examples")
 
 EXAMPLES: list[tuple[str, dict[str, object]]] = [
+    # The five headline examples (brief §6: 3–5 example queries with actual outputs).
     (
         "01_time_trend_brief_example",
         {
@@ -24,25 +25,46 @@ EXAMPLES: list[tuple[str, dict[str, object]]] = [
             "drug_name": "Pembrolizumab",
         },
     ),
-    ("02_distribution_phases", {"query": "How are lung cancer trials distributed across phases?"}),
     (
-        "03_comparison_two_drugs",
+        "02_comparison_two_drugs",
         {"query": "Compare phases for trials involving pembrolizumab vs nivolumab in melanoma."},
     ),
     (
-        "04_geographic_recruiting",
+        "03_geographic_recruiting",
         {"query": "Which countries have the most recruiting trials for breast cancer?"},
     ),
     (
-        "05_network_sponsor_drug",
+        "04_network_sponsor_drug",
         {"query": "Show a network of sponsors and drugs for phase 3 melanoma trials."},
     ),
+    (
+        "05_histogram_enrollment",
+        {"query": "What is the enrollment size distribution of recruiting Alzheimer's trials?"},
+    ),
+    # Extra coverage: other chart types and the non-ok statuses.
     (
         "06_network_drug_cooccurrence",
         {"query": "Which drugs frequently co-occur in combination studies for multiple myeloma?"},
     ),
-    ("07_needs_clarification", {"query": "How many trials has this drug had per year?"}),
-    ("08_unsupported", {"query": "Which melanoma drug has the best overall survival?"}),
+    (
+        "07_scatter_enrollment_vs_start",
+        {"query": "Plot enrollment vs start date for phase 3 psoriasis trials, by sponsor type"},
+    ),
+    (
+        "08_trend_split_by_phase",
+        {"query": "How has the phase mix of interventional obesity trials changed since 2010?"},
+    ),
+    (
+        "09_pie_preferred",
+        {
+            "query": "What share of COVID-19 vaccine trials are randomized?",
+            "preferred_visualization": "pie_chart",
+        },
+    ),
+    ("10_needs_clarification", {"query": "How many trials has this drug had per year?"}),
+    ("11_unsupported", {"query": "Which melanoma drug has the best overall survival?"}),
+    # Follow-up: refines example 03's plan (parent_run_id is filled in from that run).
+    ("12_follow_up_of_03", {"query": "Same, but only phase 3 trials.", "_parent": "03"}),
 ]
 
 
@@ -54,11 +76,20 @@ async def main(selected: list[str]) -> None:
         sys.exit("OPENAI_API_KEY is not set; examples must come from the real planner.")
     OUT.mkdir(exist_ok=True)
     try:
+        run_ids: dict[str, str] = {}
         for name, body in EXAMPLES:
             if selected and not any(name.startswith(s) for s in selected):
                 continue
-            request = VisualizationRequest.model_validate({**body, "citations_per_datum": 3})
+            fields = {k: v for k, v in body.items() if not k.startswith("_")}
+            if "_parent" in body:
+                parent = run_ids.get(str(body["_parent"]))
+                if parent is None:
+                    print(f"{name}: skipped (run its parent {body['_parent']} in the same call)")
+                    continue
+                fields["parent_run_id"] = parent
+            request = VisualizationRequest.model_validate({**fields, "citations_per_datum": 3})
             response = await pipeline.run(request)
+            run_ids[name[:2]] = response.run_id
             path = OUT / f"{name}.json"
             path.write_text(
                 json.dumps(

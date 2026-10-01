@@ -1,0 +1,1610 @@
+{
+  "$defs": {
+    "BarChartSpec": {
+      "properties": {
+        "type": {
+          "const": "bar_chart",
+          "default": "bar_chart",
+          "title": "Type",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "orientation": {
+          "default": "vertical",
+          "description": "horizontal: categories on the vertical axis (long entity names). Encoding x/y still name the category and value fields.",
+          "enum": [
+            "vertical",
+            "horizontal"
+          ],
+          "title": "Orientation",
+          "type": "string"
+        },
+        "encoding": {
+          "$ref": "#/$defs/CartesianEncoding"
+        },
+        "data": {
+          "items": {
+            "$ref": "#/$defs/Datum"
+          },
+          "title": "Data",
+          "type": "array"
+        }
+      },
+      "required": [
+        "title",
+        "encoding",
+        "data"
+      ],
+      "title": "BarChartSpec",
+      "type": "object"
+    },
+    "CartesianEncoding": {
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/Channel"
+        },
+        "y": {
+          "$ref": "#/$defs/Channel"
+        },
+        "series": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Channel"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Colour channel: bar groups/stacks, lines, or point colour."
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ],
+      "title": "CartesianEncoding",
+      "type": "object"
+    },
+    "Channel": {
+      "properties": {
+        "field": {
+          "description": "Key in each data row.",
+          "title": "Field",
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "nominal",
+            "ordinal",
+            "quantitative",
+            "temporal"
+          ],
+          "title": "Type",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unit"
+        },
+        "sort": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "enum": [
+                "ascending",
+                "descending"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Explicit category order, or a direction.",
+          "title": "Sort"
+        }
+      },
+      "required": [
+        "field",
+        "type",
+        "title"
+      ],
+      "title": "Channel",
+      "type": "object"
+    },
+    "Citation": {
+      "properties": {
+        "nct_id": {
+          "title": "Nct Id",
+          "type": "string"
+        },
+        "url": {
+          "description": "Study page on clinicaltrials.gov.",
+          "title": "Url",
+          "type": "string"
+        },
+        "brief_title": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Exact briefTitle from the API response.",
+          "title": "Brief Title"
+        },
+        "evidence": {
+          "description": "Every field value that places this trial in the datum: why it belongs to the cohort (e.g. the matching intervention name) and why it falls in this bar, bucket, bin, point, node or edge.",
+          "items": {
+            "$ref": "#/$defs/Evidence"
+          },
+          "title": "Evidence",
+          "type": "array"
+        }
+      },
+      "required": [
+        "nct_id",
+        "url",
+        "brief_title",
+        "evidence"
+      ],
+      "title": "Citation",
+      "type": "object"
+    },
+    "Clarification": {
+      "additionalProperties": false,
+      "properties": {
+        "question": {
+          "description": "One question that resolves the ambiguity.",
+          "title": "Question",
+          "type": "string"
+        },
+        "options": {
+          "description": "2-4 concrete answers the user could pick.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Options",
+          "type": "array"
+        }
+      },
+      "required": [
+        "question",
+        "options"
+      ],
+      "title": "Clarification",
+      "type": "object"
+    },
+    "Cohort": {
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "description": "Short display label, e.g. 'pembrolizumab' or 'breast cancer'.",
+          "title": "Label",
+          "type": "string"
+        },
+        "filters": {
+          "$ref": "#/$defs/CohortFilters"
+        }
+      },
+      "required": [
+        "label",
+        "filters"
+      ],
+      "title": "Cohort",
+      "type": "object"
+    },
+    "CohortFilters": {
+      "additionalProperties": false,
+      "properties": {
+        "drug_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Drug or intervention exactly as the user named it (generic, brand or code). Do not add synonyms; the registry search expands them. Null if unconstrained.",
+          "title": "Drug Name"
+        },
+        "condition": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Condition/disease as named by the user, or null.",
+          "title": "Condition"
+        },
+        "sponsor": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Lead sponsor organisation, or null.",
+          "title": "Sponsor"
+        },
+        "country": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Country of a trial location (English name), or null.",
+          "title": "Country"
+        },
+        "trial_phase": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Phase"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Keep trials in any of these phases, or null for all phases.",
+          "title": "Trial Phase"
+        },
+        "overall_status": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/OverallStatus"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Keep trials with any of these statuses, or null for all statuses.",
+          "title": "Overall Status"
+        },
+        "study_type": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/StudyType"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Restrict study type, or null."
+        }
+      },
+      "required": [
+        "drug_name",
+        "condition",
+        "sponsor",
+        "country",
+        "trial_phase",
+        "overall_status",
+        "study_type"
+      ],
+      "title": "CohortFilters",
+      "type": "object"
+    },
+    "CohortMeta": {
+      "properties": {
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "filters": {
+          "additionalProperties": true,
+          "description": "Effective filters for this cohort.",
+          "title": "Filters",
+          "type": "object"
+        },
+        "api_params": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Exact ClinicalTrials.gov query parameters.",
+          "title": "Api Params",
+          "type": "object"
+        },
+        "total_matches": {
+          "description": "Trials the API reported for this query.",
+          "title": "Total Matches",
+          "type": "integer"
+        },
+        "records_fetched": {
+          "title": "Records Fetched",
+          "type": "integer"
+        },
+        "trials_analyzed": {
+          "description": "Distinct trials left after local post-filters.",
+          "title": "Trials Analyzed",
+          "type": "integer"
+        },
+        "excluded": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "description": "Reason \u2192 trial count.",
+          "title": "Excluded",
+          "type": "object"
+        },
+        "missing": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "description": "Analyzed field \u2192 trials with no value (not charted).",
+          "title": "Missing",
+          "type": "object"
+        },
+        "synonym_matches": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "description": "Free-text filter \u2192 trials the registry matched through synonym expansion (e.g. MK-3475 for pembrolizumab); their citations carry no literal match for it.",
+          "title": "Synonym Matches",
+          "type": "object"
+        },
+        "complete": {
+          "description": "True when pagination finished and nothing was skipped.",
+          "title": "Complete",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "label",
+        "filters",
+        "api_params",
+        "total_matches",
+        "records_fetched",
+        "trials_analyzed",
+        "complete"
+      ],
+      "title": "CohortMeta",
+      "type": "object"
+    },
+    "DateBasis": {
+      "enum": [
+        "start_date",
+        "first_posted",
+        "completion_date"
+      ],
+      "title": "DateBasis",
+      "type": "string"
+    },
+    "Datum": {
+      "additionalProperties": true,
+      "description": "Fields common to every bar, time bucket, bin, point, node and edge.",
+      "properties": {
+        "datum_id": {
+          "description": "Stable id; GET /v1/runs/{run_id}/evidence?datum_id=\u2026",
+          "title": "Datum Id",
+          "type": "string"
+        },
+        "trial_count": {
+          "description": "Distinct trials (NCT IDs) behind this datum.",
+          "title": "Trial Count",
+          "type": "integer"
+        },
+        "citation_count": {
+          "description": "Total supporting trials; equals trial_count.",
+          "title": "Citation Count",
+          "type": "integer"
+        },
+        "citations_truncated": {
+          "description": "True when citations lists fewer than all.",
+          "title": "Citations Truncated",
+          "type": "boolean"
+        },
+        "citations": {
+          "items": {
+            "$ref": "#/$defs/Citation"
+          },
+          "title": "Citations",
+          "type": "array"
+        }
+      },
+      "required": [
+        "datum_id",
+        "trial_count",
+        "citation_count",
+        "citations_truncated",
+        "citations"
+      ],
+      "title": "Datum",
+      "type": "object"
+    },
+    "Dimension": {
+      "description": "Fields a chart can group by. Each one has an entry in app.registry.",
+      "enum": [
+        "phase",
+        "overall_status",
+        "study_type",
+        "lead_sponsor",
+        "sponsor_class",
+        "drug",
+        "intervention_type",
+        "condition",
+        "country",
+        "primary_purpose",
+        "allocation",
+        "site",
+        "investigator"
+      ],
+      "title": "Dimension",
+      "type": "string"
+    },
+    "EdgeDatum": {
+      "additionalProperties": true,
+      "properties": {
+        "datum_id": {
+          "description": "Stable id; GET /v1/runs/{run_id}/evidence?datum_id=\u2026",
+          "title": "Datum Id",
+          "type": "string"
+        },
+        "trial_count": {
+          "description": "Distinct trials (NCT IDs) behind this datum.",
+          "title": "Trial Count",
+          "type": "integer"
+        },
+        "citation_count": {
+          "description": "Total supporting trials; equals trial_count.",
+          "title": "Citation Count",
+          "type": "integer"
+        },
+        "citations_truncated": {
+          "description": "True when citations lists fewer than all.",
+          "title": "Citations Truncated",
+          "type": "boolean"
+        },
+        "citations": {
+          "items": {
+            "$ref": "#/$defs/Citation"
+          },
+          "title": "Citations",
+          "type": "array"
+        },
+        "source": {
+          "description": "Node id.",
+          "title": "Source",
+          "type": "string"
+        },
+        "target": {
+          "description": "Node id.",
+          "title": "Target",
+          "type": "string"
+        },
+        "relation": {
+          "description": "e.g. 'lead_sponsor\u2013drug in the same trial'.",
+          "title": "Relation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "datum_id",
+        "trial_count",
+        "citation_count",
+        "citations_truncated",
+        "citations",
+        "source",
+        "target",
+        "relation"
+      ],
+      "title": "EdgeDatum",
+      "type": "object"
+    },
+    "ErrorInfo": {
+      "properties": {
+        "code": {
+          "title": "Code",
+          "type": "string"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        },
+        "details": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Details",
+          "type": "array"
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ],
+      "title": "ErrorInfo",
+      "type": "object"
+    },
+    "Evidence": {
+      "properties": {
+        "field_path": {
+          "description": "JSON path inside the ClinicalTrials.gov v2 study record, e.g. protocolSection.designModule.phases or protocolSection.armsInterventionsModule.interventions[1].name",
+          "title": "Field Path",
+          "type": "string"
+        },
+        "excerpt": {
+          "description": "The exact value found at field_path in the API response, verbatim (a string for text fields; a list or number where the API returns one).",
+          "title": "Excerpt"
+        }
+      },
+      "required": [
+        "field_path",
+        "excerpt"
+      ],
+      "title": "Evidence",
+      "type": "object"
+    },
+    "GroupedBarChartSpec": {
+      "properties": {
+        "type": {
+          "const": "grouped_bar_chart",
+          "default": "grouped_bar_chart",
+          "title": "Type",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "orientation": {
+          "default": "vertical",
+          "enum": [
+            "vertical",
+            "horizontal"
+          ],
+          "title": "Orientation",
+          "type": "string"
+        },
+        "encoding": {
+          "$ref": "#/$defs/CartesianEncoding",
+          "description": "series is required: one bar per series."
+        },
+        "data": {
+          "items": {
+            "$ref": "#/$defs/Datum"
+          },
+          "title": "Data",
+          "type": "array"
+        }
+      },
+      "required": [
+        "title",
+        "encoding",
+        "data"
+      ],
+      "title": "GroupedBarChartSpec",
+      "type": "object"
+    },
+    "HistogramSpec": {
+      "properties": {
+        "type": {
+          "const": "histogram",
+          "default": "histogram",
+          "title": "Type",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "encoding": {
+          "$ref": "#/$defs/CartesianEncoding",
+          "description": "x is bin_label (ordinal, in bin order). Each row also has numeric bin_start (inclusive) and bin_end (exclusive; null for the open last bin)."
+        },
+        "bin_edges": {
+          "description": "Declared bin edges; bins are [edge_i, edge_i+1).",
+          "items": {
+            "type": "number"
+          },
+          "title": "Bin Edges",
+          "type": "array"
+        },
+        "data": {
+          "items": {
+            "$ref": "#/$defs/Datum"
+          },
+          "title": "Data",
+          "type": "array"
+        }
+      },
+      "required": [
+        "title",
+        "encoding",
+        "bin_edges",
+        "data"
+      ],
+      "title": "HistogramSpec",
+      "type": "object"
+    },
+    "Interpretation": {
+      "properties": {
+        "summary": {
+          "description": "Deterministic restatement of the accepted plan.",
+          "title": "Summary",
+          "type": "string"
+        },
+        "plan": {
+          "$ref": "#/$defs/QueryPlan"
+        },
+        "planner_model": {
+          "title": "Planner Model",
+          "type": "string"
+        },
+        "planner_attempts": {
+          "title": "Planner Attempts",
+          "type": "integer"
+        },
+        "repair_feedback": {
+          "description": "Validation/grounding errors the planner was asked to fix (empty when its first plan was accepted).",
+          "items": {
+            "type": "string"
+          },
+          "title": "Repair Feedback",
+          "type": "array"
+        },
+        "parent_run_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Set for follow-up questions.",
+          "title": "Parent Run Id"
+        },
+        "plan_diff": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Follow-ups only: plan path \u2192 {'before': \u2026, 'after': \u2026} vs the parent plan.",
+          "title": "Plan Diff"
+        }
+      },
+      "required": [
+        "summary",
+        "plan",
+        "planner_model",
+        "planner_attempts"
+      ],
+      "title": "Interpretation",
+      "type": "object"
+    },
+    "Measure": {
+      "description": "Per-trial numeric or date values: histogram bins and scatter axes.",
+      "enum": [
+        "enrollment",
+        "duration_months",
+        "start_date"
+      ],
+      "title": "Measure",
+      "type": "string"
+    },
+    "Meta": {
+      "properties": {
+        "interpretation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Interpretation"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "chart_selection": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Why this chart type was chosen (deterministic rule).",
+          "title": "Chart Selection"
+        },
+        "cohorts": {
+          "items": {
+            "$ref": "#/$defs/CohortMeta"
+          },
+          "title": "Cohorts",
+          "type": "array"
+        },
+        "time": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TimeScope"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "measure": {
+          "default": "Distinct trials (NCT IDs) per datum",
+          "title": "Measure",
+          "type": "string"
+        },
+        "units": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Units",
+          "type": "object"
+        },
+        "sort": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sort"
+        },
+        "time_granularity": {
+          "anyOf": [
+            {
+              "const": "year",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Time Granularity"
+        },
+        "policies": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Policies",
+          "type": "object"
+        },
+        "assumptions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Assumptions",
+          "type": "array"
+        },
+        "cohort_overlap": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "integer"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "'A \u2229 B' \u2192 trials counted in both cohorts.",
+          "title": "Cohort Overlap"
+        },
+        "truncation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Truncation"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "source": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceInfo"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "timings_ms": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Timings Ms",
+          "type": "object"
+        },
+        "llm_usage": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "description": "Planner tokens: input, output, calls.",
+          "title": "Llm Usage",
+          "type": "object"
+        }
+      },
+      "title": "Meta",
+      "type": "object"
+    },
+    "NetworkData": {
+      "properties": {
+        "nodes": {
+          "items": {
+            "$ref": "#/$defs/NodeDatum"
+          },
+          "title": "Nodes",
+          "type": "array"
+        },
+        "edges": {
+          "items": {
+            "$ref": "#/$defs/EdgeDatum"
+          },
+          "title": "Edges",
+          "type": "array"
+        }
+      },
+      "required": [
+        "nodes",
+        "edges"
+      ],
+      "title": "NetworkData",
+      "type": "object"
+    },
+    "NetworkEncoding": {
+      "properties": {
+        "nodes": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Node channel \u2192 node field: id, label, group, size.",
+          "examples": [
+            {
+              "group": "entity_type",
+              "id": "id",
+              "label": "label",
+              "size": "trial_count"
+            }
+          ],
+          "title": "Nodes",
+          "type": "object"
+        },
+        "edges": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Edge channel \u2192 edge field: source, target, weight.",
+          "examples": [
+            {
+              "source": "source",
+              "target": "target",
+              "weight": "trial_count"
+            }
+          ],
+          "title": "Edges",
+          "type": "object"
+        },
+        "directed": {
+          "default": false,
+          "title": "Directed",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "nodes",
+        "edges"
+      ],
+      "title": "NetworkEncoding",
+      "type": "object"
+    },
+    "NetworkGraphSpec": {
+      "properties": {
+        "type": {
+          "const": "network_graph",
+          "default": "network_graph",
+          "title": "Type",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "bipartite": {
+          "description": "True when nodes come from two different dimensions.",
+          "title": "Bipartite",
+          "type": "boolean"
+        },
+        "encoding": {
+          "$ref": "#/$defs/NetworkEncoding"
+        },
+        "data": {
+          "$ref": "#/$defs/NetworkData"
+        }
+      },
+      "required": [
+        "title",
+        "bipartite",
+        "encoding",
+        "data"
+      ],
+      "title": "NetworkGraphSpec",
+      "type": "object"
+    },
+    "NodeDatum": {
+      "additionalProperties": true,
+      "properties": {
+        "datum_id": {
+          "description": "Stable id; GET /v1/runs/{run_id}/evidence?datum_id=\u2026",
+          "title": "Datum Id",
+          "type": "string"
+        },
+        "trial_count": {
+          "description": "Distinct trials (NCT IDs) behind this datum.",
+          "title": "Trial Count",
+          "type": "integer"
+        },
+        "citation_count": {
+          "description": "Total supporting trials; equals trial_count.",
+          "title": "Citation Count",
+          "type": "integer"
+        },
+        "citations_truncated": {
+          "description": "True when citations lists fewer than all.",
+          "title": "Citations Truncated",
+          "type": "boolean"
+        },
+        "citations": {
+          "items": {
+            "$ref": "#/$defs/Citation"
+          },
+          "title": "Citations",
+          "type": "array"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "entity_type": {
+          "description": "Registry dimension this node comes from, e.g. drug.",
+          "title": "Entity Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "datum_id",
+        "trial_count",
+        "citation_count",
+        "citations_truncated",
+        "citations",
+        "id",
+        "label",
+        "entity_type"
+      ],
+      "title": "NodeDatum",
+      "type": "object"
+    },
+    "Operation": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/OperationKind"
+        },
+        "dimension": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Dimension"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "count_by: the grouping dimension. network: the first node type. scatter: optional colour category. time_trend, histogram: null."
+        },
+        "second_dimension": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Dimension"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "network: the second node type (same as dimension for a co-occurrence network). count_by, time_trend: optional series split, only with a single cohort. Otherwise null."
+        },
+        "measure": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Measure"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "histogram: the value to bin. scatter: the y axis. Otherwise null."
+        },
+        "x_measure": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Measure"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "scatter: the x axis. Otherwise null."
+        }
+      },
+      "required": [
+        "kind",
+        "dimension",
+        "second_dimension",
+        "measure",
+        "x_measure"
+      ],
+      "title": "Operation",
+      "type": "object"
+    },
+    "OperationKind": {
+      "enum": [
+        "count_by",
+        "time_trend",
+        "histogram",
+        "scatter",
+        "network"
+      ],
+      "title": "OperationKind",
+      "type": "string"
+    },
+    "OverallStatus": {
+      "enum": [
+        "NOT_YET_RECRUITING",
+        "RECRUITING",
+        "ENROLLING_BY_INVITATION",
+        "ACTIVE_NOT_RECRUITING",
+        "SUSPENDED",
+        "TERMINATED",
+        "COMPLETED",
+        "WITHDRAWN",
+        "UNKNOWN",
+        "AVAILABLE",
+        "NO_LONGER_AVAILABLE",
+        "TEMPORARILY_NOT_AVAILABLE",
+        "APPROVED_FOR_MARKETING",
+        "WITHHELD"
+      ],
+      "title": "OverallStatus",
+      "type": "string"
+    },
+    "Phase": {
+      "enum": [
+        "EARLY_PHASE1",
+        "PHASE1",
+        "PHASE2",
+        "PHASE3",
+        "PHASE4",
+        "NA"
+      ],
+      "title": "Phase",
+      "type": "string"
+    },
+    "PhasePolicy": {
+      "enum": [
+        "combined",
+        "split"
+      ],
+      "title": "PhasePolicy",
+      "type": "string"
+    },
+    "PieChartSpec": {
+      "properties": {
+        "type": {
+          "const": "pie_chart",
+          "default": "pie_chart",
+          "title": "Type",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "encoding": {
+          "$ref": "#/$defs/PieEncoding"
+        },
+        "data": {
+          "description": "Slices of mutually exclusive categories (each trial in exactly one); trials with no value are excluded and counted in meta.cohorts[].missing.",
+          "items": {
+            "$ref": "#/$defs/Datum"
+          },
+          "title": "Data",
+          "type": "array"
+        }
+      },
+      "required": [
+        "title",
+        "encoding",
+        "data"
+      ],
+      "title": "PieChartSpec",
+      "type": "object"
+    },
+    "PieEncoding": {
+      "properties": {
+        "theta": {
+          "$ref": "#/$defs/Channel",
+          "description": "Slice size."
+        },
+        "color": {
+          "$ref": "#/$defs/Channel",
+          "description": "Slice category."
+        }
+      },
+      "required": [
+        "theta",
+        "color"
+      ],
+      "title": "PieEncoding",
+      "type": "object"
+    },
+    "QueryPlan": {
+      "additionalProperties": false,
+      "properties": {
+        "cohorts": {
+          "description": "One cohort per compared group (1-4). Shared filters repeat in each cohort.",
+          "items": {
+            "$ref": "#/$defs/Cohort"
+          },
+          "title": "Cohorts",
+          "type": "array"
+        },
+        "operation": {
+          "$ref": "#/$defs/Operation"
+        },
+        "time": {
+          "$ref": "#/$defs/TimeScope"
+        },
+        "phase_policy": {
+          "$ref": "#/$defs/PhasePolicy",
+          "description": "combined unless the user asks to count each phase of multi-phase trials."
+        },
+        "top_n": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Show only the N largest categories/nodes (1-100), or null for the default.",
+          "title": "Top N"
+        },
+        "clarification": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Clarification"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Set ONLY when a missing detail would materially change the answer and no sensible default exists. Otherwise null."
+        },
+        "unsupported_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Set when the question needs data or analysis this system does not support (e.g. efficacy, adverse events, patient eligibility). Otherwise null.",
+          "title": "Unsupported Reason"
+        }
+      },
+      "required": [
+        "cohorts",
+        "operation",
+        "time",
+        "phase_policy",
+        "top_n",
+        "clarification",
+        "unsupported_reason"
+      ],
+      "title": "QueryPlan",
+      "type": "object"
+    },
+    "ScatterPlotSpec": {
+      "properties": {
+        "type": {
+          "const": "scatter_plot",
+          "default": "scatter_plot",
+          "title": "Type",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "encoding": {
+          "$ref": "#/$defs/CartesianEncoding",
+          "description": "One point per trial; series = colour."
+        },
+        "data": {
+          "description": "Each point is one trial (trial_count = 1).",
+          "items": {
+            "$ref": "#/$defs/Datum"
+          },
+          "title": "Data",
+          "type": "array"
+        }
+      },
+      "required": [
+        "title",
+        "encoding",
+        "data"
+      ],
+      "title": "ScatterPlotSpec",
+      "type": "object"
+    },
+    "SourceInfo": {
+      "properties": {
+        "name": {
+          "default": "ClinicalTrials.gov API v2",
+          "title": "Name",
+          "type": "string"
+        },
+        "api_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Api Version"
+        },
+        "data_timestamp": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Registry data refresh time.",
+          "title": "Data Timestamp"
+        },
+        "retrieved_at": {
+          "title": "Retrieved At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "retrieved_at"
+      ],
+      "title": "SourceInfo",
+      "type": "object"
+    },
+    "StackedBarChartSpec": {
+      "properties": {
+        "type": {
+          "const": "stacked_bar_chart",
+          "default": "stacked_bar_chart",
+          "title": "Type",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "orientation": {
+          "default": "vertical",
+          "enum": [
+            "vertical",
+            "horizontal"
+          ],
+          "title": "Orientation",
+          "type": "string"
+        },
+        "encoding": {
+          "$ref": "#/$defs/CartesianEncoding",
+          "description": "series is required: one stack segment per series. Only produced when the series are mutually exclusive, so a stack's height is a real trial total."
+        },
+        "data": {
+          "items": {
+            "$ref": "#/$defs/Datum"
+          },
+          "title": "Data",
+          "type": "array"
+        }
+      },
+      "required": [
+        "title",
+        "encoding",
+        "data"
+      ],
+      "title": "StackedBarChartSpec",
+      "type": "object"
+    },
+    "Status": {
+      "enum": [
+        "ok",
+        "empty",
+        "needs_clarification",
+        "unsupported",
+        "failed"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "StudyType": {
+      "enum": [
+        "INTERVENTIONAL",
+        "OBSERVATIONAL",
+        "EXPANDED_ACCESS"
+      ],
+      "title": "StudyType",
+      "type": "string"
+    },
+    "TimeScope": {
+      "additionalProperties": false,
+      "properties": {
+        "date_basis": {
+          "$ref": "#/$defs/DateBasis",
+          "description": "Which trial date defines 'year'. start_date unless the user asks about registration/posting (first_posted) or completion (completion_date)."
+        },
+        "year_from": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Inclusive first year, or null.",
+          "title": "Year From"
+        },
+        "year_to": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Inclusive last year, or null.",
+          "title": "Year To"
+        }
+      },
+      "required": [
+        "date_basis",
+        "year_from",
+        "year_to"
+      ],
+      "title": "TimeScope",
+      "type": "object"
+    },
+    "TimeSeriesSpec": {
+      "properties": {
+        "type": {
+          "const": "time_series",
+          "default": "time_series",
+          "title": "Type",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "time_granularity": {
+          "const": "year",
+          "default": "year",
+          "title": "Time Granularity",
+          "type": "string"
+        },
+        "encoding": {
+          "$ref": "#/$defs/CartesianEncoding",
+          "description": "x is the year; series (optional) = lines."
+        },
+        "data": {
+          "items": {
+            "$ref": "#/$defs/Datum"
+          },
+          "title": "Data",
+          "type": "array"
+        }
+      },
+      "required": [
+        "title",
+        "encoding",
+        "data"
+      ],
+      "title": "TimeSeriesSpec",
+      "type": "object"
+    },
+    "Truncation": {
+      "properties": {
+        "shown": {
+          "title": "Shown",
+          "type": "integer"
+        },
+        "total": {
+          "title": "Total",
+          "type": "integer"
+        },
+        "rule": {
+          "title": "Rule",
+          "type": "string"
+        }
+      },
+      "required": [
+        "shown",
+        "total",
+        "rule"
+      ],
+      "title": "Truncation",
+      "type": "object"
+    }
+  },
+  "description": "Envelope. `status` decides which of visualization / clarification / error is set:\n\nok \u2192 visualization; empty \u2192 visualization with no data; needs_clarification \u2192\nclarification; unsupported / failed \u2192 error.",
+  "properties": {
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "run_id": {
+      "title": "Run Id",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/Status"
+    },
+    "visualization": {
+      "anyOf": [
+        {
+          "discriminator": {
+            "mapping": {
+              "bar_chart": "#/$defs/BarChartSpec",
+              "grouped_bar_chart": "#/$defs/GroupedBarChartSpec",
+              "histogram": "#/$defs/HistogramSpec",
+              "network_graph": "#/$defs/NetworkGraphSpec",
+              "pie_chart": "#/$defs/PieChartSpec",
+              "scatter_plot": "#/$defs/ScatterPlotSpec",
+              "stacked_bar_chart": "#/$defs/StackedBarChartSpec",
+              "time_series": "#/$defs/TimeSeriesSpec"
+            },
+            "propertyName": "type"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/$defs/BarChartSpec"
+            },
+            {
+              "$ref": "#/$defs/GroupedBarChartSpec"
+            },
+            {
+              "$ref": "#/$defs/StackedBarChartSpec"
+            },
+            {
+              "$ref": "#/$defs/PieChartSpec"
+            },
+            {
+              "$ref": "#/$defs/TimeSeriesSpec"
+            },
+            {
+              "$ref": "#/$defs/HistogramSpec"
+            },
+            {
+              "$ref": "#/$defs/ScatterPlotSpec"
+            },
+            {
+              "$ref": "#/$defs/NetworkGraphSpec"
+            }
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Visualization"
+    },
+    "meta": {
+      "$ref": "#/$defs/Meta"
+    },
+    "clarification": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Clarification"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "error": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ErrorInfo"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "run_id",
+    "status"
+  ],
+  "title": "VisualizationResponse",
+  "type": "object"
+}
