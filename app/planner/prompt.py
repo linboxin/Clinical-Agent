@@ -8,7 +8,7 @@ from app.contracts.plan import QueryPlan
 from app.contracts.request import VisualizationRequest
 from app.registry import MEASURES, NETWORK_DIMENSIONS, REGISTRY, SINGLE_VALUED
 
-PROMPT_VERSION = "v6"
+PROMPT_VERSION = "v7"
 
 _TEMPLATE = """\
 You translate a user's question about clinical trials into a QueryPlan for an analytics \
@@ -56,6 +56,9 @@ inhibitors", "GLP-1 receptor agonists", "statins", "CAR-T therapies"), put its w
 member drugs (generic names, at most 12) in drug_names and record it in expansions as \
 {{term, field: "drug_names", members}}. List only members you are sure of; the backend checks \
 each one against the registry.
+- Treatment categories that appear in intervention names ("vaccine", "CAR-T", "stem cell", \
+"gene therapy") can be filtered with drug_names as a phrase, e.g. ["vaccine"]; that counts as \
+applying the constraint, not as an unhandled one.
 - Exclusions: "excluding X", "other than X", "not X", "outside the US" go into the matching \
 exclude_* list (exclude_drug_names, exclude_conditions, exclude_sponsors, exclude_countries).
 - only_listed_values: set true when the question ranks or compares the listed values \

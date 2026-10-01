@@ -40,9 +40,8 @@ async def run_case(planner: Planner, grounder: Grounder | None, case: dict[str, 
     except PlannerError as exc:
         return {"id": case["id"], "class": case["class"], "status": "error", "error": str(exc)}
     plan = outcome.plan.model_dump(mode="json") if outcome.plan else None
-    score = score_case(
-        case["expect"], outcome.status, plan if outcome.status == "accepted" else None
-    )
+    executable = outcome.status in ("accepted", "too_broad")  # too_broad runs as server counts
+    score = score_case(case["expect"], outcome.status, plan if executable else None)
     return {
         "id": case["id"],
         "class": case["class"],

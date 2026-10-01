@@ -34,6 +34,8 @@ def test_scoring_paths_sets_and_token_matching() -> None:
     assert not wrong.passed and "operation.dimension" in wrong.mismatches[0]
     assert not score_case({"status": "unsupported"}, "accepted", p).passed
     assert score_case({"status": ["too_broad", "clarification"]}, "clarification", None).passed
+    one_of = {"status": "accepted", "plan": {"operation.dimension": {"one_of": ["drug", "phase"]}}}
+    assert score_case(one_of, "accepted", p).passed
 
 
 def test_network_nodes_are_order_free() -> None:

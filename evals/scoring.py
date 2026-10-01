@@ -27,6 +27,8 @@ def _get(node: Any, path: str) -> Any:
     for part in path.replace("[", ".[").split("."):
         if not part:
             continue
+        if part in ("[]", "[*]"):
+            part = "[0]"
         if part.startswith("["):
             index = int(part[1:-1])
             node = node[index] if isinstance(node, list) and index < len(node) else None
@@ -36,12 +38,16 @@ def _get(node: Any, path: str) -> Any:
 
 
 def _equal(expected: Any, actual: Any) -> bool:
+    if isinstance(expected, dict) and "one_of" in expected:  # several acceptable answers
+        return any(_equal(option, actual) for option in expected["one_of"])
     if expected is None or actual is None:
         return expected is None and actual is None
     if isinstance(expected, list):
         if not isinstance(actual, list) or len(expected) != len(actual):
             return False
         return all(any(_equal(e, a) for a in actual) for e in expected)
+    if isinstance(actual, list):  # a scalar expectation is met by any matching list value
+        return any(_equal(expected, a) for a in actual)
     if isinstance(expected, str) and isinstance(actual, str):
         return literal_match(expected, actual)
     return bool(expected == actual)
