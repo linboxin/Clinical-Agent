@@ -40,7 +40,7 @@ Each step involves silent judgment calls, so the numbers are hard to defend.
 
 | Brief requirement | Met by | Proven by |
 |---|---|---|
-| §1 Interpret | `plan` + `validate` + `ground` (§3, §6) | Planner evals, 34 cases (§12) |
+| §1 Interpret | `plan` + `validate` + `ground` (§3, §6) | Planner evals, 41 cases (§12) |
 | §1/§2 Retrieve from the authoritative source | `retrieve` (§7) | Mocked-API pipeline tests; live smoke runs; citation audit |
 | §1 Choose the visualization | Chart rules (§9) | Unit tests per rule |
 | §3.1 Request schema, documented and validated | §5.2; `docs/schemas/request.schema.json` | `tests/test_request.py` |
@@ -50,7 +50,7 @@ Each step involves silent judgment calls, so the numbers are hard to defend.
 | §6 README, 3–5 real example runs | `examples/` from `scripts/run_examples.py` | Reviewed with `scripts/review_run.py` |
 | §7 System design (35%) | §3, §6–§8 | Golden tests on hand-computed corpora |
 | §7 AI design (20%) | D5–D7, §6 | Evals: 102/102 with gpt-5.4; E2 shows the repair loop's value |
-| §7 Code quality (20%) | §14, CI | ruff, mypy, 106 offline tests |
+| §7 Code quality (20%) | §14, CI | ruff, mypy, 124 offline tests |
 | §7 I/O design (10%) | §5 | JSON Schema export, OpenAPI |
 | §8 Tools, validation, deliberate vs generated | README "How this was built" | Commit history |
 
@@ -83,10 +83,12 @@ flowchart LR
 |---|---|---|
 | `plan` | question + fields (+ parent plan) → `QueryPlan` via Structured Outputs (`responses.parse`) | `planner/` |
 | `validate` | cross-field rules; merges structured fields (prose contradicting a field → clarify) | `planner/validate.py` |
-| `ground` | `countTotal` per cohort. If a cohort has 0 hits, each free-text entity is counted alone to find the unknown one. Over the cap → clarify before fetching | `planner/grounding.py` |
+| `ground` | `countTotal` per cohort, plus one per member of an expanded class. If a cohort has 0 hits, each free-text value is counted alone to find the unknown one. Detects cohorts over the cap before any fetch | `planner/grounding.py` |
+| `count` *(over the cap only)* | one `totalCount` + 3 samples per bucket; `source_query` per datum; replaces retrieve → analyze | `analytics/server_count.py` |
 | `retrieve` | paged fetch (1,000/page) with field projection, cache, rate limiter, retries | `ctgov/` |
-| `prepare` | dedupe; re-check exact filters locally; record membership evidence; count synonym-only matches | `analytics/prepare.py` |
-| `analyze` | one of 5 operators → rows + contributor evidence | `analytics/` |
+| `prepare` | dedupe; re-check exact filters and exclusions locally; record membership evidence; count synonym-only matches | `analytics/prepare.py` |
+| `normalize` | drug/condition names → canonical names (guarded small model, cached) | `normalize.py` |
+| `analyze` | one of 5 operators, reading values through one `ValueView` (normalization, listed values) → rows + contributor evidence | `analytics/` |
 | `build_spec` | chart rules → typed spec, citations, deterministic title, policies | `viz/build.py` |
 | `verify` | output gate (§10); a failure returns `failed` and nothing is patched | `viz/verify.py` |
 | `save` | request, response, trace and full evidence → `data/runs/` | `storage.py` |
@@ -294,7 +296,9 @@ A failure → `failed` (500), with the errors listed.
 
 ## 11. Storage
 
-`data/runs/<run_id>.json` holds `{run_id, created_at, request, response, trace}`; `data/runs/<run_id>.evidence.json` holds `{datum_id: [citations…]}`. The `RunStore` Protocol is the seam for a database.
+`data/runs/<run_id>.json` holds `{run_id, created_at, request, response, trace}`; `data/runs/<run_id>.evidence.json` holds `{datum_id: [citations…]}`. The `RunStore` Protocol is the seam for a database. Records saved under response schema 1.0 are upgraded to 1.1 when read (`storage.migrate`).
+
+Name cache: `.cache/names.json`, holding the normalizer's answer per (model, dimension, raw name).
 
 Page cache: `.cache/ctgov/<sha256>.json`, keyed by (adapter version, path, params, `dataTimestamp`), with a 24 h TTL.
 
@@ -313,14 +317,14 @@ Page cache: `.cache/ctgov/<sha256>.json`, keyed by (adapter version, path, param
 
 | Layer | Checks |
 |---|---|
-| Unit | phase/status parsing, compiler, registry extractors, drug/site/investigator normalization, chart rules, strict-schema validity |
+| Unit | phase/status parsing, compiler (lists → OR, exclusions → NOT), registry extractors, drug/site/investigator normalization, chart rules, plan-language validation, normalizer guardrails (partial/invalid answers, cache), strict-schema validity |
 | Golden | hand-computed counts and contributor sets for every operator (`test_analytics.py`, `test_coverage.py`) |
 | Invariants | record-order independence, explicit zeros, no dangling or duplicate edges |
-| Pipeline | mocked registry (pagination, grounding, too-broad, upstream failure, typo → repair, follow-up diff, gate catches tampering) |
+| Pipeline | mocked registry (pagination, grounding, too-broad, upstream failure, typo → repair, invented class member → repair, PD-1 question end to end, server counts with `source_query`, normalization disclosure, follow-up diff, 1.0 record migration, gate catches tampering) |
 | API | status codes, evidence/trace endpoints, path traversal, the demo page |
 
-**Planner evals** (`evals/cases.yaml`, 34 cases; `uv run python -m evals.run --model … --repeats 3`):
-- **Classes:** time trends, distributions, comparisons, geography, networks, histogram/scatter, structured fields, clarification, unsupported, robustness (misspelling, injection, unscoped).
+**Planner evals** (`evals/cases.yaml`, 41 cases; `uv run python -m evals.run --model … --repeats 3`):
+- **Classes:** time trends, distributions, comparisons, geography, networks, histogram/scatter, structured fields, clarification, unsupported, robustness (misspelling, injection, unscoped), plan language (drug classes, exclusions, value lists, unhandled constraints, whole-registry).
 - **Scoring:** deterministic field matching (token-insensitive strings, order-free sets). There is no LLM judge: expected plans are structured, so exact comparison is cheaper, reproducible and can't itself hallucinate.
 - **Reports:** pass rate per class, first-try passes, repair use, stability across repeats, tokens, latency.
 - **Experiments:** E1 compares models (`gpt-5.4-nano` / `-mini` / `gpt-5.4`); E2 compares with and without the repair call (`--no-repair`).
@@ -352,6 +356,8 @@ Prompt v3 → v5 changes each answer a specific eval failure. The full history i
 - 15 s HTTP timeout with 4 attempts;
 - 2 planner calls;
 - networks: 40 nodes / 150 edges;
+- server counts: ≤ 48 bucket queries, 3 sample citations each, 20-year default window for trends;
+- name normalization: the 600 most frequent names per dimension, batches of 60;
 - scatter: 3,000 points;
 - 5 inline citations per datum.
 
@@ -360,7 +366,10 @@ Prompt v3 → v5 changes each answer a specific eval failure. The full history i
 | Malformed request | `422` |
 | Plan still invalid after the repair call | `unsupported` (`plan_invalid`, with the errors) |
 | Unknown entity after the repair call | `needs_clarification` naming the term |
-| Over the cap | `needs_clarification` (narrowing options), before any page fetch |
+| Over the cap, countable plan | Counted on the server (`count_method: server_count`); citations are samples |
+| Over the cap, not countable | `needs_clarification` (narrowing options), before any page fetch |
+| Name normalizer error or invalid answer | Raw names kept for those lines; reported in `meta.normalization` / `assumptions`; the run continues |
+| Question needs a constraint the plan can't express | `needs_clarification` listing it (`unhandled_constraints`) |
 | Every entity exists but the combination has 0 trials | `empty`, with the reason |
 | Upstream failure | `failed` 503; never partial |
 | Model refusal or truncated output | `failed` 503; no free-text parsing |
@@ -374,7 +383,8 @@ Secrets live in `.env` (gitignored); `.env.example` is committed.
 ```
 app/  main.py config.py factory.py pipeline.py storage.py telemetry.py registry.py
       contracts/{request,plan,response,enums}.py   planner/{__init__,gateway,prompt,validate,grounding}.py
-      ctgov/{client,compile,cache}.py   analytics/{prepare,count_by,time_trend,histogram,scatter,network,types}.py
+      normalize.py   ctgov/{client,compile,cache}.py
+      analytics/{prepare,values,count_by,time_trend,histogram,scatter,network,server_count,types}.py
       viz/{build,verify}.py   static/demo.html
 evals/{cases.yaml,run.py,scoring.py}   scripts/{ask,run_examples,review_run,audit_citations,export_schemas,check_openai}.py
 tests/   examples/   docs/{response-schema.md,schemas/}

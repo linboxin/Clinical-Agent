@@ -40,7 +40,7 @@ curl -s localhost:8000/v1/visualizations -H 'content-type: application/json' -d 
 | `uv run python -m evals.run [--model gpt-5.4-nano] [--repeats 3]` | Planner eval set (41 cases, deterministic scoring) |
 | `uv run pytest` | 124 offline tests (no key, no network) |
 
-`OPENAI_API_KEY` is only needed for the planner. Everything else (retrieval, analytics, citations, the gate, the demo, the tests) runs without it.
+`OPENAI_API_KEY` is only needed for the planner (`PLANNER_MODEL`, default `gpt-5.4`) and the name normalizer (`NORMALIZER_MODEL`, default `gpt-5.4-mini`; set `NAME_NORMALIZER=off` to disable it). Everything else (retrieval, analytics, citations, the gate, the demo, the tests) runs without it. All settings are listed in `.env.example`.
 
 ## Example runs
 
@@ -136,7 +136,7 @@ The values above are illustrative. **[docs/response-schema.md](docs/response-sch
 
 ## How it works
 
-1. **Plan.** The LLM fills a strict `QueryPlan` (OpenAI Structured Outputs). Its enums are generated from the field registry, so the model cannot name a field or operation the backend doesn't implement. The plan holds cohorts and filters, one of 5 operators (`count_by`, `time_trend`, `histogram`, `scatter`, `network`), dimensions, measures, a time scope and a phase policy. The model may instead return a clarification or "unsupported".
+1. **Plan.** The LLM fills a strict `QueryPlan` (OpenAI Structured Outputs). Its enums are generated from the field registry, so the model cannot name a field or operation the backend doesn't implement. The plan holds cohorts and filters (any-of value lists, exclusions, and drug classes expanded into explicit members), one of 5 operators (`count_by`, `time_trend`, `histogram`, `scatter`, `network`), dimensions, measures, a time scope and a phase policy. The model may instead return a clarification or "unsupported", and must list any part of the question it can't express (that becomes a clarification, never a silent drop).
 2. **Validate.** Semantic rules run (e.g. networks need entity dimensions, scatter colour must be single-valued, unused fields must be null). Explicit request fields are merged, and contradictions trigger a clarification.
 3. **Ground.** One live `countTotal` call per cohort, plus one per member of an expanded class (an invented member goes back to the planner). A cohort with zero hits gets a per-entity probe, which separates an unknown term (`pembrolizumabb`) from a genuine zero. Unknown terms go back to the planner as feedback for its **one** repair call. A cohort over 30k trials is detected here, *before* anything is fetched, and takes the server-count path below.
 4. **Retrieve.** Allowlisted, quoted API parameters (drug matching is scoped to the intervention fields; value lists become `OR`, exclusions become `NOT`). Pagination with field projection, a page cache keyed by the registry's `dataTimestamp`, a client-side rate limiter (the API returns 429 on bursts) and bounded retries.
