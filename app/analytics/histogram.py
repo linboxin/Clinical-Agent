@@ -6,6 +6,7 @@ from collections import Counter
 
 from app.analytics.count_by import cohorts_disjoint
 from app.analytics.types import Bucket, CohortTrials, CountResult, Row
+from app.analytics.values import ValueView
 from app.contracts.plan import QueryPlan
 from app.registry import MEASURES
 
@@ -35,7 +36,7 @@ def bin_index(edges: tuple[float, ...], value: float) -> int | None:
     return index
 
 
-def histogram(plan: QueryPlan, cohorts: list[CohortTrials]) -> CountResult:
+def histogram(plan: QueryPlan, cohorts: list[CohortTrials], _view: ValueView) -> CountResult:
     assert plan.operation.measure is not None
     spec = MEASURES[plan.operation.measure]
     assert spec.bin_edges is not None, "validated upstream: histogram needs a binned measure"

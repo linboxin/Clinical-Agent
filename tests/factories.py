@@ -11,6 +11,7 @@ from app.contracts.plan import (
     Clarification,
     Cohort,
     CohortFilters,
+    Expansion,
     Operation,
     QueryPlan,
     TimeScope,
@@ -81,8 +82,22 @@ def study(
     }
 
 
+SINGULAR = {
+    "drug_name": "drug_names",
+    "condition": "conditions",
+    "sponsor": "sponsors",
+    "country": "countries",
+}
+
+
 def filters(**given: Any) -> CohortFilters:
+    """Cohort filters; the brief's singular names (drug_name="X") are accepted as shorthand for
+    one-value lists (drug_names=["X"])."""
     base = {name: None for name in CohortFilters.model_fields}
+    for singular, plural in SINGULAR.items():
+        if singular in given:
+            value = given.pop(singular)
+            given[plural] = None if value is None else [value]
     return CohortFilters(**(base | given))
 
 
@@ -93,6 +108,9 @@ def plan(
     cohorts: list[tuple[str, dict[str, Any]]] | None = None,
     measure: str | None = None,
     x_measure: str | None = None,
+    only_listed_values: bool = False,
+    expansions: list[Expansion] | None = None,
+    unhandled_constraints: list[str] | None = None,
     date_basis: str = "start_date",
     year_from: int | None = None,
     year_to: int | None = None,
@@ -110,7 +128,10 @@ def plan(
             second_dimension=Dimension(second) if second else None,
             measure=Measure(measure) if measure else None,
             x_measure=Measure(x_measure) if x_measure else None,
+            only_listed_values=only_listed_values,
         ),
+        expansions=expansions or [],
+        unhandled_constraints=unhandled_constraints or [],
         time=TimeScope(date_basis=DateBasis(date_basis), year_from=year_from, year_to=year_to),
         phase_policy=PhasePolicy(phase_policy),
         top_n=top_n,

@@ -14,7 +14,7 @@ from app.contracts.request import VisualizationRequest
 from app.planner.gateway import Message, PlannerError, PlannerGateway
 from app.planner.grounding import GroundReport
 from app.planner.prompt import repair_message, system_prompt, user_message
-from app.planner.validate import apply_request_fields, validate_plan
+from app.planner.validate import apply_request_fields, normalize_plan, validate_plan
 from app.telemetry import span
 
 __all__ = ["GroundFn", "PlanOutcome", "Planner", "PlannerError"]
@@ -70,7 +70,18 @@ class Planner:
             if plan.clarification:
                 outcome.status, outcome.clarification = "clarification", plan.clarification
                 return outcome
-            plan, conflict = apply_request_fields(plan, request)
+            if plan.unhandled_constraints:
+                # The plan language cannot apply part of the question: say so instead of
+                # answering a different question (DESIGN §2, "never drop a constraint").
+                parts = "; ".join(plan.unhandled_constraints)
+                outcome.status = "clarification"
+                outcome.clarification = Clarification(
+                    question=f"This service cannot apply part of the question: {parts}. "
+                    "Answer without it, or rephrase?",
+                    options=[f"Answer without: {parts}", "I will rephrase the question"],
+                )
+                return outcome
+            plan, conflict = apply_request_fields(normalize_plan(plan), request)
             if conflict:
                 outcome.status, outcome.clarification = "clarification", conflict
                 return outcome

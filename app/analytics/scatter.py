@@ -4,13 +4,14 @@ coloured by a single-valued dimension or by cohort. Each point cites its own tri
 from collections import Counter
 
 from app.analytics.types import Bucket, CohortTrials, Point, ScatterResult, TruncationInfo
+from app.analytics.values import ValueView
 from app.contracts.plan import QueryPlan
 from app.registry import MEASURES, REGISTRY
 
 MAX_POINTS = 3000
 
 
-def scatter(plan: QueryPlan, cohorts: list[CohortTrials]) -> ScatterResult:
+def scatter(plan: QueryPlan, cohorts: list[CohortTrials], view: ValueView) -> ScatterResult:
     op = plan.operation
     assert op.measure is not None and op.x_measure is not None
     x_spec, y_spec = MEASURES[op.x_measure], MEASURES[op.measure]
@@ -32,7 +33,7 @@ def scatter(plan: QueryPlan, cohorts: list[CohortTrials]) -> ScatterResult:
             if by_cohort:
                 label = ct.cohort.label
             elif color is not None:
-                values = color.extract(trial.study, plan.phase_policy)
+                values = view.values(color.name, trial, ct.cohort.filters)
                 if values:
                     label = values[0].label
                     evidence.append((values[0].path, values[0].raw))

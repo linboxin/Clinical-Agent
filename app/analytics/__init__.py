@@ -9,10 +9,11 @@ from app.analytics.network import network
 from app.analytics.scatter import scatter
 from app.analytics.time_trend import time_trend
 from app.analytics.types import AnalysisResult, CohortTrials
+from app.analytics.values import ValueView
 from app.contracts.enums import OperationKind
 from app.contracts.plan import QueryPlan
 
-Operator = Callable[[QueryPlan, list[CohortTrials]], AnalysisResult]
+Operator = Callable[[QueryPlan, list[CohortTrials], ValueView], AnalysisResult]
 
 OPERATORS: dict[OperationKind, Operator] = {
     OperationKind.COUNT_BY: count_by,
@@ -23,5 +24,7 @@ OPERATORS: dict[OperationKind, Operator] = {
 }
 
 
-def run_analysis(plan: QueryPlan, cohorts: list[CohortTrials]) -> AnalysisResult:
-    return OPERATORS[plan.operation.kind](plan, cohorts)
+def run_analysis(
+    plan: QueryPlan, cohorts: list[CohortTrials], view: ValueView | None = None
+) -> AnalysisResult:
+    return OPERATORS[plan.operation.kind](plan, cohorts, view or ValueView(plan))

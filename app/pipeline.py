@@ -32,7 +32,7 @@ from app.planner.grounding import Grounder
 from app.registry import API_FIELDS
 from app.storage import RunStore
 from app.telemetry import Span, Trace, activate, span
-from app.viz.build import BuiltSpec, assumptions, build_spec, policies, summarize
+from app.viz.build import BuiltSpec, assumptions, build_spec, policies, relabel, summarize
 from app.viz.verify import verify
 
 log = logging.getLogger(__name__)
@@ -98,6 +98,7 @@ class Pipeline:
             "output_tokens": outcome.output_tokens,
         }
         if outcome.plan is not None:
+            outcome.plan = relabel(outcome.plan)  # labels come from filters, not model prose
             meta.interpretation = Interpretation(
                 summary=summarize(outcome.plan),
                 plan=outcome.plan,
@@ -267,7 +268,7 @@ def plan_diff(before: QueryPlan, after: QueryPlan) -> dict[str, Any]:
     return {
         k: {"before": a.get(k), "after": b.get(k)}
         for k in sorted(set(a) | set(b))
-        if a.get(k) != b.get(k)
+        if a.get(k) != b.get(k) and not k.endswith(".label")  # labels derive from filters
     }
 
 

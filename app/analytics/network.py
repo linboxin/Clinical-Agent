@@ -7,6 +7,7 @@ from collections import Counter
 from itertools import combinations, product
 
 from app.analytics.types import Bucket, CohortTrials, Edge, NetworkResult, Node, TruncationInfo
+from app.analytics.values import ValueView
 from app.contracts.plan import QueryPlan
 from app.registry import REGISTRY
 
@@ -14,7 +15,7 @@ MAX_NODES = 40
 MAX_EDGES = 150
 
 
-def network(plan: QueryPlan, cohorts: list[CohortTrials]) -> NetworkResult:
+def network(plan: QueryPlan, cohorts: list[CohortTrials], view: ValueView) -> NetworkResult:
     op = plan.operation
     assert op.dimension is not None and op.second_dimension is not None
     assert len(cohorts) == 1, "validated upstream: networks use a single cohort"
@@ -31,8 +32,9 @@ def network(plan: QueryPlan, cohorts: list[CohortTrials]) -> NetworkResult:
     miss: Counter[str] = Counter()
 
     for trial in cohorts[0].trials:
-        va = a.extract(trial.study, plan.phase_policy)
-        vb = va if same else b.extract(trial.study, plan.phase_policy)
+        filters = cohorts[0].cohort.filters
+        va = view.values(a.name, trial, filters)
+        vb = va if same else view.values(b.name, trial, filters)
         if same and len(va) < 2:
             miss[f"fewer_than_two_{a.name.value}_values"] += 1
             continue

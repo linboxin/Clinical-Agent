@@ -2,6 +2,7 @@
 by deterministic rules (never by the model); titles, summaries and policy notes are generated
 from the accepted plan, so no model prose reaches the output."""
 
+import json
 from collections.abc import Iterable
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
@@ -17,7 +18,7 @@ from app.analytics.types import (
     Trial,
 )
 from app.contracts.enums import ChartType, Dimension, OperationKind, PhasePolicy
-from app.contracts.plan import QueryPlan
+from app.contracts.plan import TEXT_FIELDS, CohortFilters, QueryPlan
 from app.contracts.response import (
     BarChartSpec,
     CartesianEncoding,
@@ -43,6 +44,14 @@ from app.contracts.response import (
 from app.registry import DATE_LABELS, MEASURES, REGISTRY, study_url
 
 Y = Channel(field="trial_count", type="quantitative", title="Trials", unit="trials")
+PHASE_SHORT = {
+    "EARLY_PHASE1": "Early Phase 1",
+    "PHASE1": "Phase 1",
+    "PHASE2": "Phase 2",
+    "PHASE3": "Phase 3",
+    "PHASE4": "Phase 4",
+    "NA": "Phase N/A",
+}
 MAX_PIE_SLICES = 12
 
 
@@ -344,8 +353,93 @@ def _network(title: str, result: NetworkResult, cite: CitationFactory) -> BuiltS
 # --- Deterministic text ---------------------------------------------------------------------
 
 
+_STATUS_WORDS = {"RECRUITING": "recruiting", "NOT_YET_RECRUITING": "not yet recruiting"}
+
+
+def _names(values: list[str], limit: int = 3) -> str:
+    shown = ", ".join(values[:limit])
+    return shown + (f" +{len(values) - limit} more" if len(values) > limit else "")
+
+
+def describe_filters(f: CohortFilters, expansions: dict[str, str] | None = None) -> str:
+    """A deterministic name for a cohort, built only from its filters (never model prose).
+    `expansions` maps a member list (joined, case-folded) back to the class it expands."""
+    parts: list[str] = []
+    for values in (f.drug_names, f.conditions, f.sponsors):
+        if values:
+            key = "|".join(v.casefold() for v in values)
+            parts.append((expansions or {}).get(key) or _names(values))
+    if f.countries:
+        parts.append("in " + _names(f.countries))
+    if f.trial_phase:
+        parts.append("/".join(PHASE_SHORT.get(p.value, p.value) for p in f.trial_phase))
+    if f.overall_status:
+        parts.append(
+            ", ".join(
+                _STATUS_WORDS.get(s.value, s.value.replace("_", " ").lower())
+                for s in f.overall_status
+            )
+        )
+    if f.study_type:
+        parts.append(f.study_type.value.replace("_", " ").lower())
+    excluded = [
+        *(f.exclude_drug_names or []),
+        *(f.exclude_conditions or []),
+        *(f.exclude_sponsors or []),
+    ]
+    if excluded:
+        parts.append("excluding " + _names(excluded))
+    if f.exclude_countries:
+        parts.append("outside " + _names(f.exclude_countries))
+    return " · ".join(parts) or "all trials"
+
+
+def cohort_names(plan: QueryPlan) -> list[str]:
+    """Deterministic cohort labels. For comparisons, name each cohort by the filters that
+    differ between cohorts ("pembrolizumab" vs "nivolumab"), not by model-written labels."""
+    classes = {"|".join(m.casefold() for m in e.members): e.term for e in plan.expansions}
+    full = [describe_filters(c.filters, classes) for c in plan.cohorts]
+    if len(plan.cohorts) < 2:
+        return full
+    dumps = [c.filters.model_dump(mode="json") for c in plan.cohorts]
+    differing = {k for k in dumps[0] if len({json.dumps(d[k]) for d in dumps}) > 1}
+    short = [
+        describe_filters(
+            CohortFilters.model_validate(
+                {k: (v if k in differing else None) for k, v in d.items()}
+            ),
+            classes,
+        )
+        for d in dumps
+    ]
+    names = short if len(set(short)) == len(short) else full
+    if len(set(names)) != len(names):  # identical filters: fall back to positions
+        names = [f"{n} ({i})" for i, n in enumerate(names, start=1)]
+    return names
+
+
+def relabel(plan: QueryPlan) -> QueryPlan:
+    """Replace model-written cohort labels with names generated from the filters."""
+    cohorts = [
+        c.model_copy(update={"label": name})
+        for c, name in zip(plan.cohorts, cohort_names(plan), strict=True)
+    ]
+    return plan.model_copy(update={"cohorts": cohorts})
+
+
 def _scope(plan: QueryPlan) -> str:
-    scope = " vs ".join(c.label for c in plan.cohorts)
+    if len(plan.cohorts) > 1:
+        shared = {
+            k: v
+            for k, v in plan.cohorts[0].filters.model_dump(mode="json").items()
+            if all(c.filters.model_dump(mode="json")[k] == v for c in plan.cohorts)
+        }
+        common = describe_filters(CohortFilters.model_validate(shared))
+        scope = " vs ".join(c.label for c in plan.cohorts)
+        if common != "all trials":
+            scope += f" ({common})"
+    else:
+        scope = plan.cohorts[0].label
     t = plan.time
     if t.year_from is not None and t.year_to is not None:
         scope += f", {t.year_from}–{t.year_to}"
@@ -416,6 +510,8 @@ def summarize(plan: QueryPlan) -> str:
         + ")"
         for c in plan.cohorts
     )
+    if plan.operation.only_listed_values:
+        what += ", counting only the values listed in each cohort's filter"
     text = f"Computed {what} for {len(plan.cohorts)} cohort(s): {groups}."
     t = plan.time
     if t.year_from is not None or t.year_to is not None:
@@ -437,13 +533,13 @@ def policies(plan: QueryPlan) -> dict[str, str]:
         "missing_values": "Trials with no value for the analysed field are not charted; "
         "see meta.cohorts[].missing.",
     }
-    if any(c.filters.drug_name for c in plan.cohorts):
+    if any(c.filters.drug_names for c in plan.cohorts):
         out["drug_matching"] = (
-            "drug_name matches InterventionName or InterventionOtherName (field-scoped search, "
+            "drug_names match InterventionName or InterventionOtherName (field-scoped search, "
             "with ClinicalTrials.gov synonym expansion). Trials that only mention the drug "
             "elsewhere, e.g. as prior therapy, are not included."
         )
-    if any(c.filters.condition for c in plan.cohorts):
+    if any(c.filters.conditions for c in plan.cohorts):
         out["condition_matching"] = (
             "condition uses ClinicalTrials.gov condition search (query.cond, phrase), which "
             "includes synonyms and narrower terms."
@@ -497,6 +593,18 @@ def policies(plan: QueryPlan) -> dict[str, str]:
             "Edge weight = distinct trials listing both entities. Co-listing in one trial "
             "record does not prove the drugs were given together."
         )
+    if any(any(getattr(c.filters, f"exclude_{n}") for n in TEXT_FIELDS) for c in plan.cohorts):
+        out["exclusions"] = (
+            "Excluded values are removed with NOT clauses in the registry search (which honour "
+            "synonyms) and re-checked on every record; see meta.cohorts[].excluded."
+        )
+    if any(len(getattr(c.filters, n) or []) > 1 for c in plan.cohorts for n in TEXT_FIELDS):
+        out["value_lists"] = "A list of values in one filter matches trials with ANY of them."
+    if plan.operation.only_listed_values:
+        out["only_listed_values"] = (
+            "Only values matching the cohort's own list are counted (e.g. the listed drugs, not "
+            "co-listed chemotherapy); each bar is named after the listed value it matched."
+        )
     if len(plan.cohorts) > 1:
         out["cohort_overlap"] = (
             "A trial matching several cohorts counts in each; see meta.cohort_overlap."
@@ -505,7 +613,11 @@ def policies(plan: QueryPlan) -> dict[str, str]:
 
 
 def assumptions(plan: QueryPlan) -> list[str]:
-    notes = []
+    notes = [
+        f"'{e.term}' was interpreted as: {', '.join(e.members)} (class membership comes from "
+        "the planner model's knowledge; each member was checked against the live registry)."
+        for e in plan.expansions
+    ]
     if (
         plan.operation.kind is OperationKind.TIME_TREND
         and plan.time.date_basis.value == "start_date"

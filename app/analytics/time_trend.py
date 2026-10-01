@@ -6,11 +6,12 @@ from collections import Counter, defaultdict
 
 from app.analytics.count_by import cohorts_disjoint, order_categories, top_label
 from app.analytics.types import Bucket, CohortTrials, CountResult, EvidenceItem, Row
+from app.analytics.values import ValueView
 from app.contracts.plan import QueryPlan
 from app.registry import REGISTRY, extract_date
 
 
-def time_trend(plan: QueryPlan, cohorts: list[CohortTrials]) -> CountResult:
+def time_trend(plan: QueryPlan, cohorts: list[CohortTrials], view: ValueView) -> CountResult:
     basis = plan.time.date_basis
     by_cohort = len(cohorts) > 1
     split = REGISTRY[plan.operation.second_dimension] if plan.operation.second_dimension else None
@@ -29,7 +30,7 @@ def time_trend(plan: QueryPlan, cohorts: list[CohortTrials]) -> CountResult:
             if by_cohort:
                 series = [(ct.cohort.label, [])]
             elif split is not None:
-                values = split.extract(trial.study, plan.phase_policy)
+                values = view.values(split.name, trial, ct.cohort.filters)
                 if not values:
                     miss[split.name.value] += 1
                     continue

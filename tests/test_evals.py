@@ -21,8 +21,8 @@ def test_scoring_paths_sets_and_token_matching() -> None:
         "plan": {
             "operation.kind": "count_by",
             "cohorts.length": 2,
-            "cohorts[].filters.drug_name": ["nivolumab", "pembrolizumab"],  # order-free
-            "cohorts[*].filters.condition": None,
+            "cohorts[].filters.drug_names": ["nivolumab", "pembrolizumab"],  # order-free
+            "cohorts[*].filters.conditions": None,
         },
     }
     score = score_case(expect, "accepted", p)

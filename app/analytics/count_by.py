@@ -4,11 +4,12 @@ second dimension). Feeds bar_chart and grouped_bar_chart."""
 from collections import Counter, defaultdict
 
 from app.analytics.types import Bucket, CohortTrials, CountResult, EvidenceItem, Row, TruncationInfo
+from app.analytics.values import ValueView
 from app.contracts.plan import QueryPlan
 from app.registry import REGISTRY, DimensionSpec
 
 
-def count_by(plan: QueryPlan, cohorts: list[CohortTrials]) -> CountResult:
+def count_by(plan: QueryPlan, cohorts: list[CohortTrials], view: ValueView) -> CountResult:
     op = plan.operation
     assert op.dimension is not None
     spec = REGISTRY[op.dimension]
@@ -22,7 +23,7 @@ def count_by(plan: QueryPlan, cohorts: list[CohortTrials]) -> CountResult:
     for ct in cohorts:
         miss: Counter[str] = Counter()
         for trial in ct.trials:
-            values = spec.extract(trial.study, plan.phase_policy)
+            values = view.values(spec.name, trial, ct.cohort.filters)
             if not values:
                 miss[spec.name.value] += 1
                 continue
@@ -31,7 +32,7 @@ def count_by(plan: QueryPlan, cohorts: list[CohortTrials]) -> CountResult:
             if by_cohort:
                 series = [(ct.cohort.label, ct.cohort.label, [])]
             elif split is not None:
-                split_values = split.extract(trial.study, plan.phase_policy)
+                split_values = view.values(split.name, trial, ct.cohort.filters)
                 if not split_values:
                     miss[split.name.value] += 1
                     continue

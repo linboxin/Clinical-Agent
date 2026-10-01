@@ -213,7 +213,7 @@ def test_citations_explain_cohort_membership_and_count_synonym_matches() -> None
     ct, synonyms = prepare_cohort(p.cohorts[0], corpus, p.time)
     assert [t.nct_id for t in ct.trials] == ["NCT1", "NCT2"]
     assert ct.excluded == {"phase_not_in_filter": 1}  # API result re-checked locally
-    assert synonyms == {"drug_name": 1}  # NCT2 matched only via the registry's synonym search
+    assert synonyms == {"drug_names": 1}  # NCT2 matched only via the registry's synonym search
     assert ct.trials[0].membership == (
         ("protocolSection.designModule.phases", ["PHASE3"]),
         ("protocolSection.armsInterventionsModule.interventions[0].name", "Pembrolizumab"),

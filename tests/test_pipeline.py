@@ -100,7 +100,7 @@ async def test_time_series_for_brief_example_request() -> None:
     assert isinstance(spec, TimeSeriesSpec)
     assert spec.encoding.x.field == "year" and spec.encoding.x.type == "temporal"
     assert response.meta.cohorts[0].filters == {
-        "drug_name": "Pembrolizumab"
+        "drug_names": ["Pembrolizumab"]
     }  # explicit field applied
     assert response.meta.time_granularity == "year"
 

@@ -7,20 +7,93 @@ Error strings are written for the model to read during the single repair attempt
 from typing import Any
 
 from app.contracts.enums import OperationKind
-from app.contracts.plan import Clarification, QueryPlan
+from app.contracts.plan import (
+    EXCLUDE_FIELDS,
+    LISTED_DIMENSION,
+    REQUEST_TO_PLAN,
+    TEXT_FIELDS,
+    Clarification,
+    CohortFilters,
+    QueryPlan,
+)
 from app.contracts.request import VisualizationRequest
 from app.registry import MEASURES, NETWORK_DIMENSIONS, REGISTRY, SINGLE_VALUED
 
 MAX_COHORTS = 4
-FILTER_FIELDS = (
-    "drug_name",
-    "condition",
-    "sponsor",
-    "country",
-    "trial_phase",
-    "overall_status",
-    "study_type",
-)
+MAX_LIST_VALUES = 12
+ENUM_FIELDS = ("trial_phase", "overall_status", "study_type")
+LIST_FIELDS = (*TEXT_FIELDS, *EXCLUDE_FIELDS.values())
+
+
+def normalize_plan(plan: QueryPlan) -> QueryPlan:
+    """Tidy free-text lists: strip, drop blanks, de-duplicate case-insensitively, [] -> null."""
+    cohorts = []
+    for cohort in plan.cohorts:
+        updates: dict[str, Any] = {}
+        for name in LIST_FIELDS:
+            values = getattr(cohort.filters, name)
+            if values is None:
+                continue
+            seen: dict[str, str] = {}
+            for value in values:
+                text = value.strip()
+                if text:
+                    seen.setdefault(text.casefold(), text)
+            updates[name] = list(seen.values()) or None
+        for name in ("trial_phase", "overall_status"):
+            if getattr(cohort.filters, name) == []:
+                updates[name] = None
+        cohorts.append(
+            cohort.model_copy(update={"filters": cohort.filters.model_copy(update=updates)})
+        )
+    return plan.model_copy(update={"cohorts": cohorts})
+
+
+def _filter_errors(plan: QueryPlan) -> list[str]:
+    errors: list[str] = []
+    for cohort in plan.cohorts:
+        f = cohort.filters
+        for name in LIST_FIELDS:
+            values = getattr(f, name) or []
+            if len(values) > MAX_LIST_VALUES:
+                errors.append(f"{name} may list at most {MAX_LIST_VALUES} values")
+        for name, excluded in EXCLUDE_FIELDS.items():
+            both = {v.casefold() for v in getattr(f, name) or []} & {
+                v.casefold() for v in getattr(f, excluded) or []
+            }
+            if both:
+                errors.append(f"{sorted(both)} is both included and excluded in {name}")
+    for expansion in plan.expansions:
+        if not expansion.members:
+            errors.append(f"expansion '{expansion.term}' has no members")
+        listed = {
+            v.casefold() for c in plan.cohorts for v in getattr(c.filters, expansion.field) or []
+        }
+        missing = [m for m in expansion.members if m.casefold() not in listed]
+        if missing:
+            errors.append(
+                f"expansion '{expansion.term}' members {missing} must also appear in the "
+                f"cohort filters.{expansion.field} list"
+            )
+    return errors
+
+
+def _listed_errors(plan: QueryPlan) -> list[str]:
+    op = plan.operation
+    if not op.only_listed_values:
+        return []
+    dims = [d for d in (op.dimension, op.second_dimension) if d in LISTED_DIMENSION]
+    if not dims:
+        allowed = ", ".join(d.value for d in LISTED_DIMENSION)
+        return [f"only_listed_values needs dimension or second_dimension in: {allowed}"]
+    errors = []
+    for dim in dims:
+        field = LISTED_DIMENSION[dim]
+        if any(not getattr(c.filters, field) for c in plan.cohorts):
+            errors.append(
+                f"only_listed_values over {dim.value} needs every cohort to set filters.{field}"
+            )
+    return errors
 
 
 def validate_plan(plan: QueryPlan) -> list[str]:
@@ -93,7 +166,7 @@ def validate_plan(plan: QueryPlan) -> list[str]:
         errors.append("time.year_from must be <= time.year_to")
     if plan.top_n is not None and not 1 <= plan.top_n <= 100:
         errors.append("top_n must be between 1 and 100, or null")
-    return errors
+    return errors + _filter_errors(plan) + _listed_errors(plan)
 
 
 def _same(a: Any, b: Any) -> bool:
@@ -114,13 +187,22 @@ def apply_request_fields(
     cohorts = []
     for cohort in plan.cohorts:
         updates: dict[str, Any] = {}
-        for name in FILTER_FIELDS:
+        for req_name, plan_name in REQUEST_TO_PLAN.items():
+            wanted = getattr(request, req_name)
+            if wanted is None:
+                continue
+            current = getattr(cohort.filters, plan_name)
+            if not current or (len(current) == 1 and _same(current[0], wanted)):
+                updates[plan_name] = [wanted]  # the explicit value wins over the model's wording
+            else:
+                conflicts.append((req_name, wanted, current, cohort.label))
+        for name in ENUM_FIELDS:
             wanted = getattr(request, name)
             if wanted is None:
                 continue
             current = getattr(cohort.filters, name)
             if current is None or _same(current, wanted):
-                updates[name] = wanted  # the explicit value wins over the model's wording
+                updates[name] = wanted
             else:
                 conflicts.append((name, wanted, current, cohort.label))
         cohorts.append(
@@ -128,13 +210,13 @@ def apply_request_fields(
         )
 
     time_updates: dict[str, Any] = {}
-    for req_name, plan_name in (("start_year", "year_from"), ("end_year", "year_to")):
+    for req_name, time_field in (("start_year", "year_from"), ("end_year", "year_to")):
         wanted = getattr(request, req_name)
-        current = getattr(plan.time, plan_name)
+        current = getattr(plan.time, time_field)
         if wanted is None:
             continue
         if current is None or current == wanted:
-            time_updates[plan_name] = wanted
+            time_updates[time_field] = wanted
         else:
             conflicts.append((req_name, wanted, current, "time range"))
 
@@ -152,6 +234,10 @@ def apply_request_fields(
         update={"cohorts": cohorts, "time": plan.time.model_copy(update=time_updates)}
     )
     return updated, None
+
+
+def empty_filters() -> CohortFilters:
+    return CohortFilters.model_validate({name: None for name in CohortFilters.model_fields})
 
 
 def _show(value: Any) -> str:

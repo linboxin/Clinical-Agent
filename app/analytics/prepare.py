@@ -67,7 +67,9 @@ def prepare_cohort(
         seen.add(nct_id)
 
         membership: list[EvidenceItem] = []
-        reason = _check_exact_filters(study, cohort.filters, time, membership)
+        reason = _check_exact_filters(study, cohort.filters, time, membership) or _excluded(
+            study, cohort.filters
+        )
         if reason is not None:
             excluded[reason] += 1
             continue
@@ -115,18 +117,53 @@ def _check_exact_filters(
 
 
 def _free_text_evidence(study: dict[str, Any], f: CohortFilters) -> dict[str, EvidenceItem | None]:
+    """Per free-text filter, the first literal match among its listed values (any-of)."""
     found: dict[str, EvidenceItem | None] = {}
-    if f.drug_name:
-        found["drug_name"] = _drug_match(study, f.drug_name)
-    if f.condition:
-        found["condition"] = _first_match(study, CONDITIONS_PATH, None, f.condition)
-    if f.sponsor:
-        name = get_path(study, SPONSOR_PATH)
-        hit = isinstance(name, str) and literal_match(f.sponsor, name)
-        found["sponsor"] = (SPONSOR_PATH, name) if hit else None
-    if f.country:
-        found["country"] = _first_match(study, LOCATIONS_PATH, "country", f.country)
+    if f.drug_names:
+        found["drug_names"] = _first(_drug_match(study, t) for t in f.drug_names)
+    if f.conditions:
+        found["conditions"] = _first(
+            _first_match(study, CONDITIONS_PATH, None, t) for t in f.conditions
+        )
+    if f.sponsors:
+        found["sponsors"] = _first(_sponsor_match(study, t) for t in f.sponsors)
+    if f.countries:
+        found["countries"] = _first(
+            _first_match(study, LOCATIONS_PATH, "country", t) for t in f.countries
+        )
     return found
+
+
+def _excluded(study: dict[str, Any], f: CohortFilters) -> str | None:
+    """Local double check of exclusions: a record that literally lists an excluded value is
+    dropped even if the API's NOT clause let it through."""
+    checks = (
+        ("excluded_drug_listed", f.exclude_drug_names, lambda t: _drug_match(study, t)),
+        (
+            "excluded_condition_listed",
+            f.exclude_conditions,
+            lambda t: _first_match(study, CONDITIONS_PATH, None, t),
+        ),
+        ("excluded_sponsor", f.exclude_sponsors, lambda t: _sponsor_match(study, t)),
+        (
+            "excluded_country_listed",
+            f.exclude_countries,
+            lambda t: _first_match(study, LOCATIONS_PATH, "country", t),
+        ),
+    )
+    for reason, terms, match in checks:
+        if any(match(t) for t in terms or []):
+            return reason
+    return None
+
+
+def _first(candidates: Any) -> EvidenceItem | None:
+    return next((c for c in candidates if c is not None), None)
+
+
+def _sponsor_match(study: dict[str, Any], term: str) -> EvidenceItem | None:
+    name = get_path(study, SPONSOR_PATH)
+    return (SPONSOR_PATH, name) if isinstance(name, str) and literal_match(term, name) else None
 
 
 def _first_match(

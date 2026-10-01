@@ -62,7 +62,7 @@ def test_request_fields_fill_every_cohort_and_time() -> None:
     )
     merged, conflict = apply_request_fields(p, req)
     assert conflict is None
-    assert [c.filters.condition for c in merged.cohorts] == ["melanoma", "melanoma"]
+    assert [c.filters.conditions for c in merged.cohorts] == [["melanoma"], ["melanoma"]]
     assert merged.time.year_from == 2015
 
 
@@ -71,7 +71,7 @@ def test_explicit_field_wins_over_compatible_wording() -> None:
     merged, conflict = apply_request_fields(
         plan(cohorts=[("x", {"drug_name": "pembrolizumab (Keytruda)"})]), req
     )
-    assert conflict is None and merged.cohorts[0].filters.drug_name == "Pembrolizumab"
+    assert conflict is None and merged.cohorts[0].filters.drug_names == ["Pembrolizumab"]
 
 
 def test_contradiction_between_field_and_question_asks_the_user() -> None:
