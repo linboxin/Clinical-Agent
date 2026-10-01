@@ -212,7 +212,7 @@ The values above are illustrative. **[docs/response-schema.md](docs/response-sch
   - a parallel review session then audited the normalizer's actual answers, found wrong code mappings (one in a shipped example), and also found the PD-1 class list was incomplete. The normalizer was switched off by default, drug matching was moved to the registry's own `otherNames`, and the prompt was fixed (v8);
   - a parallel Claude Code agent redesigned the `/demo` page while the backend changed; its screenshots also caught a schema-migration bug.
 - **Iteration driven by measurement:**
-  - planner prompt v3 → v7 (each change answers a specific eval failure);
+  - planner prompt v3 → v8 (each change answers a specific eval failure);
   - model choice by experiment E1;
   - repair-loop value measured by E2;
   - the time-axis fix found by looking at rendered output.
