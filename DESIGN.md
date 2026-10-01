@@ -1,138 +1,106 @@
 # Design: ClinicalTrials.gov Query-to-Visualization Agent
 
-**Status:** proposed plan, pre-implementation · 2026-10-01
-**Brief:** [ASSIGNMENT.md](ASSIGNMENT.md) · **Supersedes:** `ClinicalTrials-System-Design.md` (v1). What changed and why is in [Appendix A](#appendix-a-changes-from-v1).
+**Status:** v3, as built · 2026-10-01
+**Brief:** [ASSIGNMENT.md](ASSIGNMENT.md) · **Supersedes:** v2 (the previous draft of this file) and v1 ([ClinicalTrials-System-Design.md](ClinicalTrials-System-Design.md)). Changes and reasons are in [Appendix A](#appendix-a-changes-from-v2-and-v1).
+**Renderer contract:** [docs/response-schema.md](docs/response-schema.md)
 
 ## 0. Decisions
 
-| # | Decision | Choice |
-|---|---|---|
-| D1 | Language | Python 3.12 |
-| D2 | Scope | v1's first-build scope, built MVP-first in versions v0–v4 (§16). v1's *production expansion* (AWS, auth, job queue) is documented only (§17) |
-| D3 | Orchestration | Plain Python stage runner, no LangGraph (§3) |
-| D4 | LLM | OpenAI only, from the allowed list (≤ `gpt-5.4`). Default planner `gpt-5.4-mini`, configurable |
-| D5 | LLM role | Planner only, plus at most one repair call. The LLM never produces numbers or chart data and never sees trial text |
-| D6 | Tracing / eval / review | OpenTelemetry → Arize Phoenix; in-repo eval harness; CI quality gates (§11–13) |
-| D7 | Frontend | None. Backend + documented spec only (the brief makes a UI optional and doesn't grade it) |
+| # | Decision | Choice | Why |
+|---|---|---|---|
+| D1 | Language | Python 3.12, `uv`, FastAPI, Pydantic v2 | Typed contracts produce the OpenAPI/JSON Schema docs for free |
+| D2 | Footprint | One process. File run store and file page cache. No DB, Docker or queue | Graders run it with `uv sync && uv run`; the brief grades none of that infrastructure (Docker isn't even installed on the dev machine) |
+| D3 | Orchestration | Plain async pipeline; every stage is a traced span | Fixed pipeline; a run takes 1–30 s, so re-running beats resuming (pages are cached) |
+| D4 | LLM | OpenAI only (≤ `gpt-5.4`, Cheiron constraint); default `gpt-5.4-mini`, configurable | A small model suits a constrained schema-filling task. Eval experiment E1 (§12) compares models; it needs a working API key and has not run yet |
+| D5 | LLM role | Writes a `QueryPlan` and nothing else (≤ 2 calls). Never sees trial records; never produces numbers, titles or chart data | Avoids hallucination-prone steps (§7: 20%) |
+| D6 | Chart type | **Derived by code** from the operation, the dimension kinds and data exclusivity; a preference is honored only if compatible | Removes a model output that could be wrong; the rules double as validation |
+| D7 | Agent loop | plan → validate → **ground** (live hit counts) → ≤ 1 repair with that feedback | A bounded tool loop with deterministic tools |
+| D8 | Evidence | Each count is the size of a contributor set; citations come from the same set; a gate re-checks every excerpt | Deep citations (bonus) that cannot drift from the numbers |
 
 ## 1. Problem, users, goal
 
-**Problem.** ClinicalTrials.gov holds the data to answer landscape questions such as "how has activity for drug X changed?" or "who sponsors what in condition Y?". Getting a chart out of it today is manual:
+**Problem.** ClinicalTrials.gov holds the data for landscape questions, but turning it into a chart is manual:
 - learning the search syntax;
-- paging through nested records;
-- cleaning messy fields (multi-phase trials, about 500 spellings of one drug, partial dates, trials in many countries);
-- counting and grouping in a spreadsheet;
-- charting the result.
+- paging through nested JSON;
+- cleaning messy fields (multi-phase trials, drug-name variants, partial dates, multi-country trials);
+- counting, then charting.
 
-Each step involves silent judgment calls, and the resulting numbers are hard to defend.
+Each step involves silent judgment calls, so the numbers are hard to defend.
 
-**Users.** Analysts making decisions from the registry: competitive intelligence, business development, clinical operations and feasibility, investors, and researchers. Their charts end up in decks, and someone will ask "where did this number come from?"
+**Users.** Analysts (CI/BD, clinical operations, research) whose charts go into decks and get asked "where did this number come from?".
 
-**Goal.** `POST` a clinical-trial question, optionally with structured fields. The service turns it into a validated **query plan**, retrieves the matching records from the ClinicalTrials.gov API, computes the analysis deterministically, and returns a **typed visualization spec** that a frontend can render without guessing. Every datum carries the NCT IDs and exact source field values behind it, and every judgment call is stated in `meta`.
+**Goal.** Question (+ optional fields) → validated plan → registry data → deterministic analysis → typed spec. Every datum cites the exact source values behind it, and every judgment call is stated in `meta`.
 
-**Non-goals:** patient-trial matching, treatment advice, reconstructing historical recruitment status, summarizing trial results text.
+**Non-goals:** patient matching, treatment advice, efficacy or results analysis, historical recruitment status.
 
 ### 1.1 Brief → design traceability
 
-Every hard requirement and grading criterion in [ASSIGNMENT.md](ASSIGNMENT.md) maps to the part of the design that meets it and the thing that proves it.
-
 | Brief requirement | Met by | Proven by |
 |---|---|---|
-| §1 Interpret the question | `plan` + `validate_plan` (§3, §6) | Planner evals (§13.2) |
-| §1 Retrieve from ClinicalTrials.gov; §2 it is the authoritative source | `ground` + `retrieve` (§7) | Live contract tests, golden tests |
-| §1 Decide whether / which visualization | Plan → chart mapping (§9); status union (§5.3) | Evals check chart type and status |
-| §1 / §4 Answer is a structured visualization spec, renderable reliably | Typed spec union (§5.3) | OpenAPI snapshot, schema tests |
-| §3.1 Accept `query` (required) + optional fields, documented with validation | Request schema (§5.2) | `/docs`, request tests |
-| §3.2 `type`, `title`, `encoding`, `data` + metadata (units, sort, granularity, notes) | Response (§5.3) | `verify` gate (§10) |
-| §3.2 Response schema documented for a frontend engineer | OpenAPI + `docs/` (one JSON Schema + example per chart type) + `/v1/capabilities` | Schema tests validate every example and eval output against the published schemas |
-| §4 Multiple chart types, broad coverage from a single coherent approach | Registry + 5 operators (§6, §9) | Evals cover every appendix class |
-| §5 Bonus: deep citations (`nct_id` + exact value per datum) | Contributor sets → citations (§10) | Gate + `audit_citations.py` |
-| §6 Code, README, 3–5 actual example runs, zip | M6 (§16) | Examples are saved real responses, reviewed with `review_run.py` |
-| §7 System design (35%): rational, extensible, handles real-world data | §3, §6–§8, §11 | Golden + property tests |
-| §7 AI design (20%): avoid hallucination, validation, sensible planning | D5, §6, §10, §14 | Evals E1–E4, repair rate |
-| §7 Code quality (20%) | §4, §15 | CI: ruff, mypy, pytest |
-| §7 I/O design (10%) | §5 | OpenAPI snapshot |
-| §8 README: tools used, how correctness was validated, deliberate vs generated | §12–§13 produce the evidence | README integrity section |
+| §1 Interpret | `plan` + `validate` + `ground` (§3, §6) | Planner evals, 34 cases (§12) |
+| §1/§2 Retrieve from the authoritative source | `retrieve` (§7) | Mocked-API pipeline tests; live smoke runs; citation audit |
+| §1 Choose the visualization | Chart rules (§9) | Unit tests per rule |
+| §3.1 Request schema, documented and validated | §5.2; `docs/schemas/request.schema.json` | `tests/test_request.py` |
+| §3.2 `type/title/encoding/data` + metadata, documented | §5.3; [docs/response-schema.md](docs/response-schema.md); JSON Schema; `/v1/capabilities` | Schema tests; the `/demo` renderer uses only documented fields |
+| §4 Multiple chart types from one approach | Registry + 5 operators → 8 chart types | `tests/test_coverage.py`; evals cover every appendix class |
+| §5 Deep citations | Contributor sets + membership evidence (§10) | `verify` gate on every run; `scripts/audit_citations.py` (live) |
+| §6 README, 3–5 real example runs | `examples/` from `scripts/run_examples.py` | Reviewed with `scripts/review_run.py` |
+| §7 System design (35%) | §3, §6–§8 | Golden tests on hand-computed corpora |
+| §7 AI design (20%) | D5–D7, §6 | Evals: pass rate, first-try validity, repair use, stability |
+| §7 Code quality (20%) | §14, CI | ruff, mypy, 106 offline tests |
+| §7 I/O design (10%) | §5 | JSON Schema export, OpenAPI |
+| §8 Tools, validation, deliberate vs generated | README "How this was built" | Commit history |
 
-### 1.2 Guardrails against scope creep
-
-1. **The graded path comes first.** M1 delivers a complete question-to-cited-chart path before any infrastructure beyond what it needs.
-2. **Every feature traces to a row in §1.1.** Anything that doesn't is moved to §17 (production path).
-3. **Each milestone review re-checks §1.1** and the time left. If the remaining time can't cover the graded rows, cut infrastructure before cutting coverage or evidence.
+**Guardrail:** any feature that doesn't trace to a row above goes into §16 (production path) instead of being built.
 
 ## 2. Principles
 
-1. **The model proposes, code decides.** LLM output is a `QueryPlan` and nothing else. It cannot contain numbers, URLs, SQL or code.
-2. **Every number has contributors.** A count is the size of a set of NCT IDs. Citations come from the same set, so the two can't drift apart.
-3. **Declare, don't guess.** Ambiguity becomes either a stated assumption or a clarification. Incomplete retrieval is never returned silently as a full answer.
-4. **One operator set, many questions.** A new question class is a registry entry plus a composition of existing operators.
-5. **Everything is measured.** Every run is traced, and every planner change is scored against a fixed eval set.
+1. **The model proposes, code decides.** LLM output is a strict-schema `QueryPlan`: no numbers, URLs, query syntax or code.
+2. **Every number is the size of a set.** `Bucket.count == len(contributors)`, and the citations come from that same set.
+3. **Declare, don't guess.** Defaults and data gaps go into `meta`. Ambiguity → clarification. Incomplete retrieval is never returned as `ok`.
+4. **One operator set.** A new question class = a registry entry plus existing operators.
+5. **Measured.** Every run is traced; every planner change is scored on the eval set.
 
-## 3. Architecture
+## 3. Pipeline
 
 ```mermaid
 flowchart LR
-  REQ[Request] --> CTX[load_context]
-  CTX --> PLAN[plan · LLM]
-  PLAN --> VAL[validate_plan]
-  VAL -->|repair ≤1| PLAN
-  VAL -->|clarify / unsupported| OUT
-  VAL --> GND[ground]
-  GND -->|0 hits / too broad| OUT
-  GND --> RET[retrieve] --> NORM[normalize] --> AN[analyze] --> SPEC[build_spec] --> VER[verify] --> PER[persist] --> OUT[Response]
+  REQ[Request] --> PLAN[plan · LLM]
+  PLAN --> VAL[validate + merge fields]
+  VAL -->|errors| REP{repair left?}
+  VAL --> GND[ground · count per cohort]
+  GND -->|unknown entity| REP
+  REP -->|yes, with feedback| PLAN
+  REP -->|no| OUT
+  GND -->|too broad| OUT
+  GND --> RET[retrieve] --> PREP[prepare] --> AN[analyze] --> SPEC[build_spec] --> VER[verify] --> SAVE[save] --> OUT[Response]
 ```
 
-| Stage | Input → output | LLM |
+| Stage | Does | Code |
 |---|---|---|
-| `load_context` | request (+ parent run's plan) → planner context | – |
-| `plan` | context → `QueryPlan` via Structured Outputs | ✔ |
-| `validate_plan` | plan → accepted / one repair / `needs_clarification` / `unsupported` | repair only |
-| `ground` | plan → hit count per cohort; 0 hits → clarify; over cap → ask to narrow | – |
-| `retrieve` | plan → raw page snapshot + coverage manifest | – |
-| `normalize` | raw pages → `Trial` table, each value with its source JSON path | – |
-| `analyze` | trials → result rows + contributor sets | – |
-| `build_spec` | result → `VisualizationSpec` + citations + `meta` | – |
-| `verify` | spec → pass, or a typed failure | – |
-| `persist` | result → `runs`, evidence, artifacts | – |
+| `plan` | question + fields (+ parent plan) → `QueryPlan` via Structured Outputs (`responses.parse`) | `planner/` |
+| `validate` | cross-field rules; merges structured fields (prose contradicting a field → clarify) | `planner/validate.py` |
+| `ground` | `countTotal` per cohort. If a cohort has 0 hits, each free-text entity is counted alone to find the unknown one. Over the cap → clarify before fetching | `planner/grounding.py` |
+| `retrieve` | paged fetch (1,000/page) with field projection, cache, rate limiter, retries | `ctgov/` |
+| `prepare` | dedupe; re-check exact filters locally; record membership evidence; count synonym-only matches | `analytics/prepare.py` |
+| `analyze` | one of 5 operators → rows + contributor evidence | `analytics/` |
+| `build_spec` | chart rules → typed spec, citations, deterministic title, policies | `viz/build.py` |
+| `verify` | output gate (§10); a failure returns `failed` and nothing is patched | `viz/verify.py` |
+| `save` | request, response, trace and full evidence → `data/runs/` | `storage.py` |
 
-**Stage runner, which replaces LangGraph.** Each stage is a plain function `(RunContext) -> StageOutput`. The runner:
-- writes a `run_stages` row (status, attempt, timing, output reference);
-- opens a tracing span;
-- enforces the run deadline;
-- on resume, skips stages that already have a committed output.
-
-That gives us the same resumability as LangGraph checkpointing in about 100 lines we fully control. Stage names match v1's node names, so LangGraph could be swapped in later.
+**The model's view:** only the question, its own plan, validator errors and hit counts. Trial text never reaches it, so registry content can't inject instructions.
 
 ## 4. Tech stack
 
 | Concern | Choice |
 |---|---|
-| Runtime, packaging | Python 3.12, `uv`, committed lockfile |
-| HTTP API | FastAPI + Uvicorn; Pydantic v2; `pydantic-settings` |
-| LLM | `openai` SDK: Responses API + Structured Outputs (`responses.parse` with Pydantic). Falls back to Chat Completions `parse` if the provided base URL lacks the Responses API |
-| Upstream HTTP | `httpx.AsyncClient` + `tenacity`; client-side rate limiter |
-| Analytics | Plain Python sets in v1 (contributor sets built in); Polars only if profiling needs it |
-| Database | PostgreSQL 16; SQLAlchemy 2 (async) + psycopg 3; Alembic |
-| Artifacts | Local directory `./data/artifacts` behind a storage interface (S3-ready) |
-| Tracing | OpenTelemetry SDK + instrumentation (FastAPI, httpx, SQLAlchemy) + OpenInference OpenAI instrumentation → **Arize Phoenix** |
-| Logging | `structlog` JSON, correlated by `run_id` / `trace_id` |
-| Evals & experiments | In-repo harness (`evals/`), results also logged to Phoenix experiments |
-| Tests | pytest, pytest-asyncio, httpx `MockTransport`, Hypothesis |
-| Code quality | ruff (lint + format), mypy, pre-commit, gitleaks, GitHub Actions |
-| Local runtime | Docker Compose: `api`, `postgres`, `phoenix` |
-
-**Why Phoenix:**
-- It's open source and runs as one container.
-- It's OpenTelemetry-native, so it sees the whole run (API calls, analytics, DB), not just LLM calls.
-- It covers tracing, datasets, experiments and human annotation in one tool.
-
-**Alternatives considered:**
-- *Langfuse:* self-hosting v3 needs ClickHouse, Redis and blob storage.
-- *LangSmith:* SaaS with an account, and oriented to LangChain.
-- *The OpenAI dashboard:* sees only the model calls.
-- *Jaeger:* traces only, with no evals or annotation.
-
-Versions are pinned at M0 after a compatibility check.
+| API | FastAPI + Uvicorn; Pydantic v2; `pydantic-settings` (`.env`) |
+| LLM | `openai` SDK, Responses API, strict Structured Outputs. The schema's enums come from the registry (a test checks strict-mode validity offline) |
+| Upstream | `httpx` async. Token-bucket limiter at 40/min, burst 5: the API returns 429 on bursts with no rate headers. Retries on 429/5xx (1–8 s with jitter, honors `Retry-After`); 4xx is never retried |
+| Analytics | Plain Python sets and dicts. ≤ 30k trials per cohort, so Polars buys nothing, and sets make contributor tracking structural |
+| Storage | JSON run records + an evidence sidecar per run; a page cache keyed by params + registry `dataTimestamp` (24 h TTL) |
+| Tracing | `app/telemetry.py`: a ContextVar span tree (OTel-shaped: id, parent, start, duration, attributes, status) saved per run |
+| Quality | pytest (mocked registry via `httpx.MockTransport`, scripted planner), ruff, mypy, GitHub Actions |
 
 ## 5. API contract
 
@@ -140,354 +108,267 @@ Versions are pinned at M0 after a compatibility check.
 
 | Endpoint | Purpose |
 |---|---|
-| `POST /v1/visualizations` | Run a question synchronously; returns the response envelope |
-| `GET /v1/runs/{run_id}` | Stored request, accepted plan, status, coverage, response |
-| `GET /v1/runs/{run_id}/evidence?datum_id=&cursor=` | Full, paginated citation set for one datum |
-| `GET /v1/capabilities` | Supported fields, dimensions, operations, chart types, counting policies (generated from the registry) |
-| `GET /health/live`, `GET /health/ready` | Liveness; readiness checks the DB and config, without calling the model |
+| `POST /v1/visualizations` | Question → response envelope |
+| `GET /v1/runs/{run_id}` | The stored response |
+| `GET /v1/runs/{run_id}/evidence?datum_id=&offset=&limit=` | Every citation for one datum |
+| `GET /v1/runs/{run_id}/trace` | Span tree: stages, LLM calls (tokens), registry requests (cache hit, attempts) |
+| `GET /v1/capabilities` | Dimensions, measures, operators, chart rules, limits (from the registry) |
+| `GET /health` · `GET /demo` · `GET /docs` | Liveness · reference renderer · OpenAPI UI |
+
+CLI: `uv run python -m scripts.ask "…" [--field k=v] [--plan plan.json]`. With `--plan`, a hand-written plan replaces the model call but still goes through validation and grounding.
 
 ### 5.2 Request
 
-Structured fields are **top-level and use the brief's names**, so the brief's example request works unchanged.
+Structured fields are top-level and use the brief's names, so the brief's example request works unchanged. Unknown fields → `422`.
 
-| Field | Type | Req. | Validation |
-|---|---|---|---|
-| `query` | string | ✔ | trimmed; 1–2,000 chars |
-| `drug_name` | string | | 1–200 chars; matched against intervention name and other names |
-| `condition` | string | | 1–200 chars |
-| `trial_phase` | `Phase` or list of them | | enum; accepts `PHASE3`, `Phase 3`, `3` |
-| `sponsor` | string | | 1–200 chars; lead sponsor |
-| `country` | string | | matched against location country |
-| `start_year`, `end_year` | int | | 1900–2100; `start_year ≤ end_year` |
-| `overall_status` | `Status` or list of them | | enum, e.g. `RECRUITING` |
-| `study_type` | enum | | `INTERVENTIONAL`, `OBSERVATIONAL`, `EXPANDED_ACCESS` |
-| `preferred_visualization` | `ChartType` | | honored only if compatible with the plan |
-| `parent_run_id` | UUID | | must exist; marks the request as a follow-up |
-| `citations_per_datum` | int | | 0–1,000; default 10 |
-
-Unknown fields are rejected with `422`. An explicit structured field always overrides the prose. If the prose clearly contradicts it, we return `needs_clarification` showing both values.
+| Field | Type | Validation / meaning |
+|---|---|---|
+| `query` | string, **required** | trimmed, 1–2,000 chars |
+| `drug_name` | string ≤ 200 | `AREA[InterventionName]` or `AREA[InterventionOtherName]` phrase (the registry expands synonyms) |
+| `condition` | string ≤ 200 | `query.cond` phrase (the registry expands synonyms) |
+| `sponsor` | string ≤ 200 | `AREA[LeadSponsorName]` phrase |
+| `country` | string ≤ 200 | `AREA[LocationCountry]` phrase |
+| `trial_phase` | phase or list | accepts `PHASE3`, `Phase 3`, `3`, `III`, `1/2`, `N/A` |
+| `overall_status` | status or list | accepts `RECRUITING`, `"active, not recruiting"` |
+| `study_type` | enum | `INTERVENTIONAL` / `OBSERVATIONAL` / `EXPANDED_ACCESS` |
+| `start_year`, `end_year` | int 1900–2100 | `start ≤ end`; applies to the plan's date basis |
+| `preferred_visualization` | chart type | honored only if compatible (§9) |
+| `citations_per_datum` | int 0–100, default 5 | inline citations; full sets via `/evidence` |
+| `parent_run_id` | UUID | follow-up: refine that run's plan |
 
 ### 5.3 Response
 
-The top-level keys keep the brief's names (`visualization`, `meta`).
+The envelope is `{schema_version, run_id, status, visualization, meta, clarification, error}`. `status` is one of `ok`, `empty`, `needs_clarification`, `unsupported` or `failed`.
+
+- **8 spec types:** `bar_chart`, `grouped_bar_chart`, `stacked_bar_chart`, `pie_chart`, `time_series`, `histogram`, `scatter_plot`, `network_graph`. Each is a Pydantic model, discriminated on `type`.
+- **Channels:** `{field, type, title, unit?, sort?}`.
+- **Datum:** `{datum_id, trial_count, citation_count, citations_truncated, citations[]}`.
+- **Citation:** `{nct_id, url, brief_title, evidence[{field_path, excerpt}]}`.
+
+Full field-by-field documentation is in [docs/response-schema.md](docs/response-schema.md).
+
+## 6. Query plan and registry
 
 ```json
 {
-  "schema_version": "1.0",
-  "run_id": "…",
-  "status": "ok",
-  "visualization": {
-    "type": "bar_chart",
-    "title": "Pembrolizumab trials by phase",
-    "encoding": {
-      "x": {"field": "phase", "type": "ordinal", "title": "Phase", "sort": ["Early Phase 1", "Phase 1", "Phase 1/2", "Phase 2", "…"]},
-      "y": {"field": "trial_count", "type": "quantitative", "title": "Trials", "unit": "trials"}
-    },
-    "data": [
-      {"datum_id": "d1", "phase": "Phase 3", "trial_count": 41, "citation_count": 41, "citations_truncated": true,
-       "citations": [{"nct_id": "NCT…", "field_path": "protocolSection.designModule.phases",
-                      "value": ["PHASE3"], "url": "https://clinicaltrials.gov/study/NCT…"}]}
-    ]
-  },
-  "meta": {
-    "interpretation": {"summary": "…", "plan": {}, "plan_diff": null},
-    "filters_applied": {}, "policies": {"date_basis": "start_date", "phase": "combined"},
-    "assumptions": [], "coverage": {}, "truncation": null,
-    "source": {"name": "clinicaltrials.gov", "api_version": "2.0.5", "data_timestamp": "…", "retrieved_at": "…"}
-  },
-  "clarification": null,
-  "error": null
+  "cohorts": [{"label": "pembrolizumab", "filters": {"drug_name": "pembrolizumab", "condition": "melanoma",
+               "sponsor": null, "country": null, "trial_phase": null, "overall_status": null, "study_type": null}}],
+  "operation": {"kind": "count_by", "dimension": "phase", "second_dimension": null, "measure": null, "x_measure": null},
+  "time": {"date_basis": "start_date", "year_from": null, "year_to": null},
+  "phase_policy": "combined", "top_n": null, "clarification": null, "unsupported_reason": null
 }
 ```
 
-The values above are illustrative.
+The model can decline by setting `clarification` or `unsupported_reason` instead of forcing a plan.
 
-| `status` | `visualization` | Extra fields | HTTP |
-|---|---|---|---|
-| `ok` | required | – | 200 |
-| `empty` | valid spec with no data | reason in `meta` | 200 |
-| `needs_clarification` | `null` | `clarification: {question, options[]}` | 200 |
-| `unsupported` | `null` | `error.supported_alternatives[]` | 200 |
-| `failed` | `null` | `error: {code, message}` | 503 upstream · 504 deadline · 500 internal |
+**Operators**
 
-- **Visualization spec:** a Pydantic discriminated union with one model per type: `bar_chart`, `grouped_bar_chart`, `time_series`, `histogram`, `scatter_plot`, `network_graph`.
-- **Channels:** each has `field`, `type` (nominal / ordinal / quantitative / temporal), `title`, and optionally `unit` and `sort`.
-- **Networks:** use `encoding.nodes` / `encoding.edges`, and `data` is `{nodes: [], edges: []}`. Every node and edge has its own `datum_id` and citations.
-- **Coverage fields:** `search_matches_broad`, `cohort_matches`, `records_fetched`, `unique_trials`, `excluded{reason: n}`, `missing{field: n}`, `complete`.
-
-## 6. Query plan and field registry
-
-The model fills this schema. Every enum (dimensions, operations, policies) is **generated from the field registry**, so Structured Outputs can't emit an unknown field even at decode time.
-
-```json
-{
-  "cohorts": [{"label": "pembrolizumab", "filters": {"drug_name": "pembrolizumab", "condition": "lung cancer"}}],
-  "operation": {"kind": "count_by", "dimension": "phase", "second_dimension": null},
-  "time": {"date_basis": "start_date", "granularity": "year", "start_year": null, "end_year": null},
-  "policies": {"phase": "combined"},
-  "chart": "bar_chart",
-  "top_n": null,
-  "ambiguities": []
-}
-```
-
-**Operations:**
-- `count_by`: one dimension, optionally split by a second dimension or by cohort.
-- `time_trend`
-- `histogram`: on a numeric field.
-- `scatter`
-- `network`: two entity dimensions linked per trial. If both are the same dimension, it's a co-occurrence network.
-
-**Semantic validator (cross-field rules).** It rejects, for example:
-- a histogram on a categorical field;
-- a network on non-entity dimensions;
-- more than 4 cohorts;
-- `end_year` before `start_year`;
-- questions about historical recruitment status.
-
-Any non-empty `ambiguities` that change the answer → `needs_clarification`.
-
-**Field registry.** Each entry has: source path(s), kind, API filter template, normalizer, display order, allowed operations and evidence path.
-
-| Dimension | Source path (`protocolSection.…`) | Kind |
+| `kind` | Parameters | Chart |
 |---|---|---|
-| `phase` | `designModule.phases[]` | multi-category |
-| `overall_status` | `statusModule.overallStatus` | category |
-| `start_year` / `first_posted_year` / `completion_year` | `statusModule.{startDateStruct, studyFirstPostDateStruct, completionDateStruct}.date` | date |
-| `country` | `contactsLocationsModule.locations[].country` | multi-category |
-| `lead_sponsor` / `sponsor_class` | `sponsorCollaboratorsModule.leadSponsor.{name, class}` | entity / category |
-| `intervention` / `intervention_type` | `armsInterventionsModule.interventions[].{name, type}` | multi-entity / multi-category |
+| `count_by` | `dimension`, `second_dimension?` (series; cohorts are series when comparing) | `bar_chart` / `grouped_bar_chart` (+ `pie_chart`, `stacked_bar_chart` when exclusive) |
+| `time_trend` | `time.date_basis`, `second_dimension?` | `time_series` |
+| `histogram` | `measure` ∈ {enrollment, duration_months} | `histogram` |
+| `scatter` | `x_measure`, `measure` (numeric y), `dimension?` (single-valued colour) | `scatter_plot` |
+| `network` | `dimension`, `second_dimension`: entities (the same entity twice = co-occurrence) | `network_graph` |
+
+**Validation rules** (errors are worded for the repair call):
+- unused operation fields must be null;
+- parameters must match `kind`;
+- networks take entity dimensions only, with exactly one cohort;
+- histograms need a binned measure;
+- scatter colour must be single-valued;
+- 1–4 cohorts with unique labels;
+- `year_from ≤ year_to`;
+- `top_n` between 1 and 100.
+
+**Registry** (`app/registry.py`): one entry per field, giving its source path, kind, extractor (value + exact path + raw value), display order, default top N and exclusivity.
+
+| Dimension | Source (`protocolSection.…`) | Kind |
+|---|---|---|
+| `phase` | `designModule.phases` | category (combined/split policy) |
+| `overall_status`, `study_type`, `primary_purpose`, `allocation` | `statusModule.overallStatus`, `designModule.{studyType, designInfo.*}` | category, single-valued |
+| `sponsor_class` / `lead_sponsor` | `sponsorCollaboratorsModule.leadSponsor.{class, name}` | category / entity |
+| `intervention_type` | `armsInterventionsModule.interventions[].type` | multi-category |
+| `drug` | `interventions[].name`, type ∈ DRUG, BIOLOGICAL, COMBINATION_PRODUCT, placebo excluded | multi-entity |
 | `condition` | `conditionsModule.conditions[]` | multi-entity |
-| `study_type` | `designModule.studyType` | category |
-| `enrollment` | `designModule.enrollmentInfo.count` | numeric |
-| `site` | `contactsLocationsModule.locations[].facility` | multi-entity |
-| `investigator` | `contactsLocationsModule.overallOfficials[].name` | multi-entity |
+| `country` / `site` | `contactsLocationsModule.locations[].{country, facility}` | multi-entity |
+| `investigator` | `contactsLocationsModule.overallOfficials[].name` (placeholders such as "Medical Director" dropped) | multi-entity |
+
+| Measure | Source | Notes |
+|---|---|---|
+| `enrollment` | `designModule.enrollmentInfo.{count,type}` | bins 0, 10, 25, 50, 100, 250, 500, 1k, 2.5k, 5k, 10k+ |
+| `duration_months` | start → primary completion date | needs month precision on both dates; bins 0, 6, 12, 18, 24, 36, 48, 60, 84, 120+ |
+| `start_date` | `statusModule.startDateStruct.date` | temporal (scatter x) |
 
 ## 7. Retrieval
 
 **API facts, verified live on 2026-10-01:**
-- `GET /api/v2/studies`. `pageSize` is **capped at 1,000** (larger values are silently capped). Pagination uses `nextPageToken`, and `countTotal=true` returns `totalCount`.
-- `GET /api/v2/version` returns `apiVersion` (2.0.5) and `dataTimestamp`, which is refreshed daily. We record both in `meta` and include them in cache keys.
-- No rate-limit headers are returned. We use a configurable client-side limiter and retry `429` / `5xx` with jittered backoff, honoring `Retry-After`.
-- **Drug matching:** `query.intr=pembrolizumab` returns 2,964 trials, and 11% of them don't list the drug as an intervention. The field-scoped search `AREA[InterventionName]X OR AREA[InterventionOtherName]X` returns 2,631, **and still recognises synonyms** (MK-3475 and Keytruda return the same set). We use the field-scoped form for cohort membership and report the broad count as `search_matches_broad`.
-- **Scale:** pembrolizumab is 3 pages; "lung cancer" is 14,593 trials (15 pages); a question with no scope can match hundreds of thousands. One trial lists about 1,660 sites, so we always request only the fields we need (`fields=` projection).
+- `pageSize` is capped at 1,000. A projected page is about 2.2 MB and takes about 0.7 s.
+- `/version` returns `apiVersion` 2.0.5 and `dataTimestamp`, which is refreshed daily.
+- Bursts get HTTP 429 with no limit headers.
 
-**Algorithm:**
-1. Read `/version`.
-2. Ground: run `countTotal` per cohort. Zero hits → clarify. Over the cap (default 20,000 per cohort) → `needs_clarification` with narrowing suggestions.
-3. Fetch pages with projected fields and store each page in the artifact store with a SHA-256 hash.
-4. De-duplicate NCT IDs and apply local post-filters, recording each exclusion and its reason.
-5. Mark `complete` only when pagination ends normally.
-
-**Cache:** a `query_cache` table keyed by (canonical params, fields, `dataTimestamp`, adapter version), with a 24 h TTL.
-
-The condition-search semantics (`query.cond` vs `AREA[Condition]`) get a contract test at M0.
-
-## 8. Normalization and counting policies
-
-| Topic | Policy (stated in `meta.policies`) |
-|---|---|
-| Multi-phase trials | Default: a combined category (`Phase 1/2`). With `phase=split`, the trial is counted in each phase and groups are marked non-exclusive |
-| Missing phase | `NA` ("Not applicable") is kept separate from missing ("Not reported", usually observational) |
-| Dates | Precision is preserved (`YYYY`, `YYYY-MM` or `YYYY-MM-DD`) and never padded to January 1. Estimated (future) start dates are included but rows are flagged `anticipated` |
-| "Over time" | Defaults to the start date, stated in `meta` |
-| Countries | A trial counts once per listed country. Trials with no location are counted in `missing` and left out of the chart |
-| Cohort overlap | A trial in two cohorts counts in both; the overlap is reported in `meta` |
-| Drug co-occurrence | Means *co-listed in one trial record*, not proof the drugs were given together. Placebo interventions are excluded by default |
-| Entity names | Only case and whitespace are normalized, plus a versioned curated alias table. The model never merges entities |
-| Enrollment | `ACTUAL` and `ESTIMATED` are both kept and the policy is declared; enrollment is never summed as a trial count |
-
-## 9. Analytics → charts
-
-| Question class | Operation | Chart |
+| Filter | Compiled to | Verified |
 |---|---|---|
-| Trials over time | `time_trend` (year bucket, unique NCT count) | `time_series` |
-| Phase / status / sponsor-class distribution | `count_by` | `bar_chart` |
-| Drug A vs B, condition X vs Y | `count_by` + cohorts | `grouped_bar_chart` |
-| Recruiting trials by country | `count_by(country)` + status filter | `bar_chart` (ranked) |
-| Enrollment distribution | `histogram` (declared bin edges) | `histogram` |
-| Enrollment vs start year | `scatter` (one point per trial) | `scatter_plot` |
-| Sponsor ↔ drug, condition ↔ drug, investigator ↔ site | `network` (bipartite) | `network_graph` |
-| Drug ↔ drug | `network` (co-occurrence) | `network_graph` |
+| drug | `query.term=(AREA[InterventionName]"X" OR AREA[InterventionOtherName]"X")` | pembrolizumab = MK-3475 = keytruda = 2,631 (the broad `query.intr` gives 2,964, because it includes trials that only mention the drug) |
+| condition | `query.cond="X"` | the phrase is narrower than any-word ("lung cancer": 13,362 vs 14,593); synonyms are kept |
+| sponsor / country / phase / study type / years | `AREA[LeadSponsorName]"X"`, `AREA[LocationCountry]"X"`, `AREA[Phase](…)`, `AREA[StudyType]X`, `AREA[StartDate]RANGE[…]`, AND-ed | ✔ |
+| status | `filter.overallStatus=A,B` | ✔ |
+
+- **Injection-safe:** user text is stripped of `" [ ] ( )` and quoted, so `"x OR y"` is a literal phrase (0 hits). An unknown `AREA` returns 400, which is treated as a compiler bug and not retried.
+- **Cap:** 30,000 trials per cohort (about 25 s), checked at grounding. Above it → `needs_clarification` with narrowing options; an unscoped question (605k trials) asks the user to narrow.
+- **Completeness:** `complete` is true only when pagination ends normally. A mid-run upstream failure → `failed`, never a silent partial result.
+- **Local re-check:** phase, status, study type and year range are re-checked on every record; failures are excluded and counted by reason.
+
+## 8. Normalization and counting policies (echoed in `meta.policies`)
+
+| Topic | Policy |
+|---|---|
+| Multi-phase | Combined category (`Phase 1/2`) by default; with `split`, the trial counts in each phase and the groups are marked non-exclusive |
+| Missing values | `Not applicable` (NA) is a real phase. Absent values are counted in `meta.cohorts[].missing` and not charted |
+| Dates | Precision is kept; dates are never padded to January 1. A duration needs month precision on both ends. ESTIMATED dates are included and counted per bucket (`estimated_date_count`) |
+| "Over time" | Start date by default (stated in assumptions). Buckets are zero-filled inside the range, and the current partial year is flagged |
+| Countries / sites | A trial counts once per distinct country or site. Sponsor site numbers (`( Site 5303)`) are stripped |
+| Cohort overlap | A trial in two cohorts counts in both; `meta.cohort_overlap` reports it. Stacked or pie charts are refused when groups overlap |
+| Drug names | The grouping key drops case, ®/™, dose suffixes (`80 mg`) and salt words (`hydrochloride`, `HCl`, …). The label is the most frequent spelling. Brand and generic names are not merged, and the model never merges entities |
+| Free-text membership | A literal match is cited with token matching ("Alzheimer's disease" ≈ "Alzheimer Disease"). Registry synonym matches (MK-3475 for pembrolizumab) are counted in `synonym_matches` |
+| Co-occurrence | Means *co-listed in one trial record*, not "given together" |
+| Enrollment | ACTUAL and ESTIMATED are mixed, and each citation shows which; never summed as a trial count |
+
+## 9. Charts (deterministic rules, `viz/build.py::choose_chart`)
+
+| Analysis | Default | Preferred type honored when |
+|---|---|---|
+| `count_by`, no series | `bar_chart` (horizontal for entities) | `pie_chart`: categories are mutually exclusive and there are ≤ 12 |
+| `count_by` with series | `grouped_bar_chart` | `stacked_bar_chart`: series are mutually exclusive (single-valued dimension, or disjoint cohorts) |
+| `time_trend` | `time_series` | `bar_chart` / `grouped_bar_chart` / `stacked_bar_chart` (the last only if exclusive) |
+| `histogram`, `scatter`, `network` | `histogram`, `scatter_plot`, `network_graph` | none |
+
+A declined preference is explained in `meta.chart_selection` and `meta.assumptions`.
 
 **Networks:**
-- Edge weight is the number of distinct trials linking the two nodes.
-- The display keeps the top 50 nodes and 200 edges, chosen by weight with deterministic tie-breaks, and reports `truncation` in `meta`. The full result stays in the artifact store.
-- No dangling endpoints and no duplicate edges in either direction.
+- Edge weight = the number of distinct trials linking the two nodes.
+- The display keeps the strongest edges first, capped at 40 nodes and 150 edges with deterministic tie-breaks, and reports `meta.truncation`.
+- There are no dangling endpoints, self-loops or duplicate pairs.
 
-## 10. Evidence and the output gate
+## 10. Evidence and the `verify` gate
 
-- **Citation:** `{nct_id, field_path, value, url}`, where `value` is the exact raw value read from the stored source page, not the normalized one.
-- **Evidence API:** `datum_evidence` stores every contributor set; `/evidence` pages through it.
+- **Contributors.** `Bucket.add(trial, label, evidence)` stores the trial's membership evidence (why it's in the cohort) plus the placement evidence (why it's in this bar, bin, point or edge). Placement includes both endpoints for edges, and both values for scatter points.
+- **Citations.** Inline citations show the first N contributors (highest NCT ID first). The full set is saved per datum and paginated by `/evidence`.
 
-**`verify` checks:**
-- schema validity;
-- every encoding field exists in every row;
-- counts equal the size of their contributor sets;
-- every cited `field_path` resolves to the cited `value` in the snapshot;
-- network endpoints exist and there are no duplicate edges;
-- coverage is consistent with `status`.
+**The gate** runs on every response before it leaves:
+- every encoded field is present in every row;
+- `citation_count == trial_count`, and the truncation flag is correct;
+- there are no duplicate datum IDs or citations;
+- **every `field_path` re-resolves to its `excerpt`** in the retrieved record;
+- network integrity holds.
 
-A failure returns `failed`. The system never patches a result to make it pass.
+A failure → `failed` (500), with the errors listed.
 
-**Audit script:** `scripts/audit_citations.py <run_id>` re-fetches a sample of cited trials from the live API and checks that the field values still match.
+**Audit:** `scripts/audit_citations.py <run_id>` re-fetches a sample of cited trials live and re-compares every excerpt. On two smoke runs, 86/86 excerpts matched.
 
-## 11. Persistence
+## 11. Storage
 
-| Table | Purpose |
+`data/runs/<run_id>.json` holds `{run_id, created_at, request, response, trace}`; `data/runs/<run_id>.evidence.json` holds `{datum_id: [citations…]}`. The `RunStore` Protocol is the seam for a database.
+
+Page cache: `.cache/ctgov/<sha256>.json`, keyed by (adapter version, path, params, `dataTimestamp`), with a 24 h TTL.
+
+**Follow-ups:** with `parent_run_id`, the planner receives the parent's accepted plan as `previous_plan` and returns a complete new plan. `meta.interpretation.plan_diff` lists the changed leaves.
+
+## 12. Observability, evaluation, review
+
+- **Trace (per run):**
+  - spans `run` → `stage.{plan, retrieve, analyze, build, verify}`;
+  - children `llm.propose` (model, attempt, tokens) and `ground` (totals, unknown terms);
+  - `ctgov.request` (path, params, cache hit/miss, attempts, records, total).
+  - Stage durations are also copied into `meta.timings_ms`, and tokens into `meta.llm_usage`.
+  - No raw records or chain-of-thought are stored.
+
+**Tests (offline, in CI)**
+
+| Layer | Checks |
 |---|---|
-| `runs` | id, `parent_run_id`, request, status, plan id, coverage, response object key, model, tokens, timings, error |
-| `run_stages` | run id, stage, status, attempt, started/ended, output reference, error (enables resume) |
-| `plans` | id, run id, plan JSONB, parent plan id, plan hash |
-| `source_snapshots` | id, query hash, params, `data_timestamp`, `retrieved_at`, page/record counts, `complete`, object prefix |
-| `datum_evidence` | run id, datum id, operation, contributor NCT IDs, field paths |
-| `query_cache` | key, snapshot id, expiry |
+| Unit | phase/status parsing, compiler, registry extractors, drug/site/investigator normalization, chart rules, strict-schema validity |
+| Golden | hand-computed counts and contributor sets for every operator (`test_analytics.py`, `test_coverage.py`) |
+| Invariants | record-order independence, explicit zeros, no dangling or duplicate edges |
+| Pipeline | mocked registry (pagination, grounding, too-broad, upstream failure, typo → repair, follow-up diff, gate catches tampering) |
+| API | status codes, evidence/trace endpoints, path traversal, the demo page |
 
-**Artifact keys:**
-- `snapshots/{id}/page-{n}.json.gz`
-- `runs/{id}/trials.parquet`
-- `runs/{id}/response.json`
+**Planner evals** (`evals/cases.yaml`, 34 cases; `uv run python -m evals.run --model … --repeats 3`):
+- **Classes:** time trends, distributions, comparisons, geography, networks, histogram/scatter, structured fields, clarification, unsupported, robustness (misspelling, injection, unscoped).
+- **Scoring:** deterministic field matching (token-insensitive strings, order-free sets). There is no LLM judge: expected plans are structured, so exact comparison is cheaper, reproducible and can't itself hallucinate.
+- **Reports:** pass rate per class, first-try passes, repair use, stability across repeats, tokens, latency.
+- **Experiments:** E1 compares models (`gpt-5.4-nano` / `-mini` / `gpt-5.4`); E2 compares with and without the repair call (`--no-repair`).
 
-**Follow-ups:** with `parent_run_id`, the planner receives the parent's accepted plan and the new question, and returns a complete new plan. The response includes `plan_diff`.
+**Review:**
+- `scripts/review_run.py <run_id>` renders a Markdown sheet (plan, coverage, data, 3 citations per datum).
+- Every example is reviewed with it.
+- Planner misses become eval cases.
 
-## 12. Observability
+## 13. Limits and failures
 
-- **Traces:** one per run.
-  - A span for each stage.
-  - Child spans for the OpenAI call (model, prompt version, tokens, latency), for each API page (params, status, ms) and for DB calls.
-  - Span attributes include `run_id`, plan hash, cohort counts, records fetched, `coverage.complete` and the gate result.
-- **Exporter:** OTLP to Phoenix under Docker Compose, otherwise console or none (`OTEL_EXPORTER`).
-- **What we watch:** per-stage latency, tokens and cost per run, repair rate, clarification rate, cache hit rate, zero-hit grounding rate. All of it comes from span data in Phoenix; we don't run a separate metrics stack.
-- **Logs:** JSON via structlog, carrying `trace_id`. No raw trial records or secrets in logs, and no chain-of-thought stored. We store the plan and the validation errors instead.
-
-## 13. Evaluation and review
-
-### 13.1 Test layers
-
-| Layer | Checks | When | Needs key |
-|---|---|---|---|
-| Unit / contract | registry, compiler, normalizers, operators, gate, schemas, OpenAPI snapshot | every commit | no |
-| Golden end-to-end | fixed plan + recorded API pages → exact counts and contributor sets | every commit | no |
-| Property | order and duplicate invariance, counts ≥ 0, count = number of contributors, no dangling edges | every commit | no |
-| Live contract | API parameter grammar, field paths, `/version` | daily / manual | no |
-| Planner evals | question → plan accuracy | prompt or model change | yes |
-
-### 13.2 Planner evals and experiments
-
-- **Dataset:** `evals/cases.yaml` with 30–40 cases. It covers every appendix class plus follow-ups, ambiguous questions (expect `needs_clarification`), unsupported ones, prose that contradicts the fields, misspellings and injection attempts.
-- **Expected output:** each case specifies only the plan fields that matter.
-- **Scorers, all deterministic:** status match, field-level plan match, first-try validity, repair rate, latency, tokens and cost, and stability (each case run 3 times). We use **no LLM-as-judge**: expected plans are structured, so exact comparison is cheaper, reproducible and can't hallucinate.
-- **Runner:** `uv run python -m evals.run --model gpt-5.4-mini --prompt v2 --repeats 3` writes `evals/results/<date>_<model>_<prompt>.jsonl` plus a summary, and logs a Phoenix experiment for side-by-side diffs.
-
-| Experiment | Compares | Result goes to |
-|---|---|---|
-| E1 | `gpt-5.4-nano` vs `gpt-5.4-mini` vs `gpt-5.4` | README model choice |
-| E2 | Prompt with vs without few-shot examples / registry descriptions | Prompt version |
-| E3 | Reasoning effort low vs medium (where supported) | Default setting |
-| E4 | With vs without the repair call | Repair value |
-
-### 13.3 Review
-
-- **Code:** one PR per milestone. CI runs ruff, mypy, offline pytest, the OpenAPI snapshot diff and gitleaks. pre-commit runs the same locally.
-- **Outputs:**
-  1. A reviewer marks traced runs correct or incorrect in Phoenix.
-  2. Failures are exported into `evals/cases.yaml` as regression cases.
-  3. `scripts/review_run.py <run_id>` renders a Markdown review sheet: question, plan, assumptions, data table, and 3 linked citations per datum. Every example output is reviewed with it before submission.
-
-## 14. Limits and failure handling
-
-**Defaults** (configurable):
-- 20,000 trials per cohort and at most 4 cohorts;
-- a 90 s run deadline;
-- a 15 s HTTP timeout with 3 attempts;
-- at most 2 planner calls;
-- network display of 50 nodes / 200 edges;
-- 10 citations per datum.
+**Defaults** (env-configurable):
+- 30k trials per cohort and 4 cohorts;
+- 90 s run deadline;
+- 15 s HTTP timeout with 4 attempts;
+- 2 planner calls;
+- networks: 40 nodes / 150 edges;
+- scatter: 3,000 points;
+- 5 inline citations per datum.
 
 | Failure | Behavior |
 |---|---|
 | Malformed request | `422` |
-| Invalid plan after one repair | `needs_clarification` or `unsupported` |
-| Zero grounding hits / over the cap | `needs_clarification` with suggestions |
-| Upstream fails mid-pagination | `failed` (503), with the manifest kept; never a silent partial |
-| Model refusal or truncated output | `failed`, with no free-text parsing fallback |
-| Citation mismatch at `verify` | `failed` |
-| Crash mid-run | resume from `run_stages` |
+| Plan still invalid after the repair call | `unsupported` (`plan_invalid`, with the errors) |
+| Unknown entity after the repair call | `needs_clarification` naming the term |
+| Over the cap | `needs_clarification` (narrowing options), before any page fetch |
+| Every entity exists but the combination has 0 trials | `empty`, with the reason |
+| Upstream failure | `failed` 503; never partial |
+| Model refusal or truncated output | `failed` 503; no free-text parsing |
+| Gate failure | `failed` 500 |
+| Missing `parent_run_id` | `failed` 404 |
 
-**Security:**
-- Secrets live in `.env` (gitignored; `.env.example` is committed) and gitleaks runs in pre-commit and CI.
-- The model never sees registry text, so a trial record can't inject instructions into the planner.
-- The plan schema rejects unknown keys.
+Secrets live in `.env` (gitignored); `.env.example` is committed.
 
-## 15. Repository layout
+## 14. Repository layout
 
 ```
-app/
-  main.py            api/           FastAPI app, routes, error handling
-  contracts/         request, plan, response, chart specs, citations
-  pipeline/          runner.py (stage runner), stages/*.py
-  planner/           gateway.py (OpenAI), prompts/, validate.py
-  ctgov/             client.py, compile.py, cache.py
-  registry/          fields.py, aliases.yaml
-  analytics/         count_by.py, time_trend.py, histogram.py, scatter.py, network.py
-  viz/  evidence/    spec builder, titles, citation resolver, gate
-  storage/           db models, repositories, artifact store
-  telemetry.py
-migrations/  tests/{unit,golden,property,contract,fixtures}/  evals/  examples/  scripts/  docs/
-compose.yaml  Dockerfile  pyproject.toml  uv.lock  .env.example  README.md
+app/  main.py config.py factory.py pipeline.py storage.py telemetry.py registry.py
+      contracts/{request,plan,response,enums}.py   planner/{__init__,gateway,prompt,validate,grounding}.py
+      ctgov/{client,compile,cache}.py   analytics/{prepare,count_by,time_trend,histogram,scatter,network,types}.py
+      viz/{build,verify}.py   static/demo.html
+evals/{cases.yaml,run.py,scoring.py}   scripts/{ask,run_examples,review_run,audit_citations,export_schemas,check_openai}.py
+tests/   examples/   docs/{response-schema.md,schemas/}
 ```
 
-## 16. Build plan (MVP first, then iterate)
+## 15. Build log
 
-**Approach:** design the boundaries between components fully, but build the simplest implementation behind each one.
-- Every version runs end to end and could be submitted.
-- Eval failures and output reviews decide what comes next.
-- If time runs short, submit the last finished version. Infrastructure is cut before coverage or citations.
+| Step | Delivered |
+|---|---|
+| v1 MVP | contracts, registry, compiler, client + cache + limiter, `count_by` / `time_trend` / `network`, spec builder, gate, 71 tests |
+| v3 | histogram, scatter, trend split, 4 dimensions, 3 measures; chart rules + pie/stacked; grounding repair loop; membership evidence + `excerpt`; traces; evidence/trace endpoints; follow-ups; evals; demo; review/audit scripts; CI |
 
-| Version | Contents | Exit criterion | ≈h |
-|---|---|---|---|
-| **v0 Spike** | Verify API assumptions on live data (done during design: §7) | Assumptions hold | ✔ |
-| **v1 MVP** | FastAPI `POST`; planner (Structured Outputs + validator + one repair); registry; `count_by`, `time_trend`, cohort comparison, both network types; inline citations; status union; `verify` gate; file cache + file run store; unit + golden tests; 3 example runs; minimal README | Every hard rule in the brief and the citation bonus are met | 7 |
-| **v2 Coverage + evals** | `histogram`, `scatter`; too-broad / zero-hit polish; eval harness + experiments E1–E4; 5 reviewed examples | Every appendix class passes evals; model choice backed by data | 5 |
-| **v3 Infrastructure** | Postgres run store + evidence endpoint, follow-ups (`parent_run_id`), OpenTelemetry → Phoenix, structlog, Docker Compose, CI | Every example has an inspectable trace and full evidence | 4 |
-| **v4 Submission** | README (schemas, design, limitations, integrity), schema docs, zip | Ready to submit | 3 |
+## 16. Production path (documented, not built)
 
-**Each component is built in the version that needs it:**
-- **v1:** file cache (§7), file run store (§11), plain Python sets for analytics instead of Polars (data is ≤ 20k rows per cohort, and sets make contributor tracking structural).
-- **v3:** Postgres (§11), Phoenix (§12), CI (§13.3).
-
-## 17. Production path (documented, not built)
-
-These come from v1 and go in the README as the production path:
-- AWS: ECS Fargate (API + worker), RDS, S3, Secrets Manager, CloudWatch;
-- Cognito authentication with tenant isolation and row-level security;
-- a Postgres job queue (`FOR UPDATE SKIP LOCKED`) for long runs;
-- user preference memory;
-- semantic episodic search (pgvector);
-- retention jobs;
-- text-heavy eligibility analysis.
-
-## 18. Open questions
-
-1. Does the provided OpenAI endpoint use a custom base URL, and does it support the Responses API? We check at M0.
-2. Does `gpt-5.4-mini` support reasoning-effort settings? This affects E3.
-3. Condition-search semantics: we check at M0 (§7).
+- **Storage and execution:** Postgres for runs, evidence and cache, plus S3 for pages; an async job queue for large cohorts; auth and tenancy.
+- **Unscoped questions:** answer them with per-bucket `countTotal` queries plus sampled citations, instead of fetching every record.
+- **Entity resolution:** MeSH-backed (`derivedSection.*BrowseModule`), with a reviewed alias table.
+- **Tracing:** export spans to an OTLP collector such as Arize Phoenix, and collect human labels there into eval cases.
+- **AWS deployment** (as in v1's production section): ECS Fargate, RDS, S3, Secrets Manager.
 
 ---
 
-## Appendix A: Changes from v1
+## Appendix A: Changes from v2 (and v1)
 
-| v1 | v2 | Why |
+| v2 plan | v3 as built | Why |
 |---|---|---|
-| LangGraph + `AsyncPostgresSaver` | Plain stage runner + `run_stages` table | Fixed pipeline; same resumability, less indirection (D3) |
-| Filters nested under `filters` | Top-level fields named as in the brief | The brief's example request works as-is |
-| `partial` status + `allow_partial` | Removed; over-cap → `needs_clarification` | Simpler, and never returns a quietly incomplete chart |
-| `trial_versions` + `evidence_values` tables | Raw pages in the artifact store + `datum_evidence` | Same traceability, two fewer tables |
-| `memory_items`, `episodes`, `threads`, preferences | `parent_run_id` + stored plans | Covers follow-ups; preferences moved to the production path |
-| 12k-token context budget manager | Fixed small planner context; per-run token cap | Planner input is only the question, registry and prior plan |
-| Source-timestamp restart logic | `/version` `dataTimestamp` recorded and in cache keys | Verified endpoint; simpler |
-| Drug search unspecified | Field-scoped `AREA[...]` search, broad count reported | Verified: cuts false matches by 11% and keeps synonyms |
-| 500 records per page | 1,000 (API cap) | Verified |
-| GPT-5 Mini | `gpt-5.4-mini`, chosen by experiment E1 | Allowed list; decided by evaluation |
-| Tracing / evals / review loosely described | Phoenix + OpenTelemetry, eval harness, experiments, CI gates, review loop | Missing from v1 |
-| ~45 KB of mostly prose | ~30 KB, mostly tables, including the new §1.1 traceability and §12–13 | Easier to review and check against the brief |
+| Postgres + Alembic, Docker Compose, Phoenix (in a later version) | JSON run store + evidence sidecar + file page cache; no Docker | Docker isn't available on the dev machine; graders should only need `uv`; persistence isn't graded. Evidence, traces and follow-ups still work |
+| Resumable stage runner | Plain pipeline with spans | Runs take 1–30 s; with cached pages, re-running is cheaper than resuming |
+| LLM picks `chart` | Code derives the chart; preferences are checked for compatibility | Removes a redundant model output; adds pie/stacked charts with exclusivity checks |
+| Zero hits → clarify | Grounding feeds the one repair call; an entity probe separates unknown terms from genuine zeros | Fixes misspellings without asking; a genuine zero becomes `empty`, not a question |
+| Citation `{nct_id, field_path, value}` | `{…, brief_title, evidence[{field_path, excerpt}]}` with membership evidence | One citation shows why the trial is in the cohort *and* in the bucket; `excerpt` is the brief's term |
+| Curated alias table | Deterministic drug canonicalizer (dose, salt, ®) | Measured: raw names split erlotinib / erlotinib hydrochloride; MeSH terms mix in non-drugs ("Radiotherapy") |
+| OTel → Phoenix | In-process span tree saved per run (OTel-shaped) | Same inspection with no extra service; export is a thin adapter (§16) |
+| count_by, time_trend, network; 4 chart types | + histogram, scatter, trend split; 8 chart types; + primary_purpose, allocation, site, investigator | Coverage (§7: 15%) using the same operator approach |
+| 20k cap, 10 citations | 30k cap (measured ~25 s), 5 inline + paginated full set | Measured page cost; smaller responses |
+
+**v1 → v2** (kept): plain runner instead of LangGraph; the brief's top-level field names; no `partial` status; API facts verified live; evals and tracing added; v1's production expansion moved to §16.
