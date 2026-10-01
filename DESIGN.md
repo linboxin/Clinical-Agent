@@ -1,7 +1,7 @@
 # Design: ClinicalTrials.gov Query-to-Visualization Agent
 
 **Status:** v3.1, as built · 2026-10-01 (v3.1 = plan-language building blocks, server counts, name normalization; see Appendix B)
-**Brief:** [ASSIGNMENT.md](ASSIGNMENT.md) · **Supersedes:** v2 (the previous draft of this file) and v1 ([ClinicalTrials-System-Design.md](ClinicalTrials-System-Design.md)). Changes and reasons are in [Appendix A](#appendix-a-changes-from-v2-and-v1).
+**Brief:** [ASSIGNMENT.md](ASSIGNMENT.md) · **Supersedes:** v2 and v1 (earlier drafts, retired once the build diverged from them). Changes and reasons are in [Appendix A](#appendix-a-changes-from-v2-and-v1).
 **Renderer contract:** [docs/response-schema.md](docs/response-schema.md)
 
 ## 0. Decisions
@@ -404,7 +404,7 @@ tests/   examples/   docs/{response-schema.md,schemas/}
 - **Entity resolution:** reviewed alias tables on top of the model normalizer, and MeSH where it fits.
 - **Server counts for more shapes:** two-dimension crosstabs, and drug rankings via per-drug count queries.
 - **Tracing:** export spans to an OTLP collector such as Arize Phoenix, and collect human labels there into eval cases.
-- **AWS deployment** (as in v1's production section): ECS Fargate, RDS, S3, Secrets Manager.
+- **AWS deployment:** ECS Fargate, RDS, S3, Secrets Manager.
 
 ---
 
