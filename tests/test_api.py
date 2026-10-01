@@ -90,3 +90,8 @@ def test_unknown_run_and_parent_are_404(client: TestClient) -> None:
     r = client.post("/v1/visualizations", json={"query": "q", "parent_run_id": missing})
     assert r.status_code == 404 and r.json()["error"]["code"] == "parent_run_not_found"
     assert client.get("/v1/runs/../../etc/passwd").status_code == 404
+
+
+def test_demo_page_is_served(client: TestClient) -> None:
+    r = client.get("/demo")
+    assert r.status_code == 200 and "vega-lite" in r.text and "/v1/visualizations" in r.text
