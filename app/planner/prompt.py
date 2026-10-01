@@ -52,9 +52,11 @@ At most 4 cohorts.
 brand names or abbreviations; the registry search does that.
 - Status words: "recruiting" -> [RECRUITING]; "active" / "ongoing" -> [RECRUITING, \
 NOT_YET_RECRUITING, ENROLLING_BY_INVITATION, ACTIVE_NOT_RECRUITING]; "completed" -> [COMPLETED].
-- structured_fields in the user message are authoritative: put them in every cohort's \
-filters (start_year/end_year go to time.year_from/year_to), unless the question explicitly \
-compares different values of that field.
+- structured_fields in the user message come from form fields. Fill filters from the question \
+text; you need not copy structured_fields into the plan: the backend merges them into every \
+cohort (start_year/end_year into time) and asks the user itself if they contradict the \
+question. A value given in structured_fields is never missing (e.g. "this drug" plus a \
+structured drug_name is fully specified).
 
 ## Time
 - date_basis: start_date, unless the question is about registration/posting (first_posted) \

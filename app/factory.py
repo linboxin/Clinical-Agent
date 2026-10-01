@@ -33,21 +33,25 @@ def create_planner(settings: Settings) -> Planner | None:
     )
 
 
-def create_pipeline(settings: Settings, http: httpx.AsyncClient) -> Pipeline:
+def create_ctgov_client(settings: Settings, http: httpx.AsyncClient) -> CTGovClient:
     cache = (
         FileCache(settings.ctgov_cache_dir, settings.ctgov_cache_ttl_seconds)
         if settings.ctgov_cache_dir
         else None
     )
+    return CTGovClient(
+        http,
+        settings.ctgov_base_url,
+        cache,
+        settings.ctgov_max_attempts,
+        RateLimiter(settings.ctgov_requests_per_minute, settings.ctgov_burst),
+    )
+
+
+def create_pipeline(settings: Settings, http: httpx.AsyncClient) -> Pipeline:
     return Pipeline(
         planner=create_planner(settings),
-        ctgov=CTGovClient(
-            http,
-            settings.ctgov_base_url,
-            cache,
-            settings.ctgov_max_attempts,
-            RateLimiter(settings.ctgov_requests_per_minute, settings.ctgov_burst),
-        ),
+        ctgov=create_ctgov_client(settings, http),
         store=FileRunStore(settings.data_dir / "runs"),
         max_trials_per_cohort=settings.max_trials_per_cohort,
     )

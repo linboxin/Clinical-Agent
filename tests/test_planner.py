@@ -124,3 +124,26 @@ async def test_model_clarification_and_unsupported_pass_through() -> None:
 def test_prompt_lists_every_registry_dimension() -> None:
     prompt = system_prompt()
     assert all(f"- {d.value}:" in prompt for d in Dimension)
+
+
+def test_plan_schema_is_valid_for_openai_strict_mode() -> None:
+    """Structured Outputs strict mode: every object lists all properties as required and
+    forbids extras. Checked offline with the SDK's own converter."""
+    from openai.lib._pydantic import to_strict_json_schema
+
+    def objects(node: object) -> list[dict]:
+        found: list[dict] = []
+        if isinstance(node, dict):
+            if node.get("type") == "object":
+                found.append(node)
+            for value in node.values():
+                found += objects(value)
+        elif isinstance(node, list):
+            for value in node:
+                found += objects(value)
+        return found
+
+    schema = to_strict_json_schema(QueryPlan)
+    for obj in objects(schema):
+        assert set(obj["properties"]) == set(obj["required"])
+        assert obj["additionalProperties"] is False
