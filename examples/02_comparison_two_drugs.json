@@ -1,0 +1,1314 @@
+{
+  "request": {
+    "query": "Compare phases for trials involving pembrolizumab vs nivolumab in melanoma.",
+    "citations_per_datum": 3
+  },
+  "response": {
+    "schema_version": "1.0",
+    "run_id": "68c0a6a1-5eb7-4c39-881c-c33bef39c619",
+    "status": "ok",
+    "visualization": {
+      "type": "grouped_bar_chart",
+      "title": "Trials by phase — pembrolizumab vs nivolumab",
+      "orientation": "vertical",
+      "encoding": {
+        "x": {
+          "field": "phase",
+          "type": "ordinal",
+          "title": "Phase",
+          "unit": null,
+          "sort": [
+            "Early Phase 1",
+            "Phase 1",
+            "Phase 1/2",
+            "Phase 2",
+            "Phase 2/3",
+            "Phase 3",
+            "Phase 4",
+            "Not applicable"
+          ]
+        },
+        "y": {
+          "field": "trial_count",
+          "type": "quantitative",
+          "title": "Trials",
+          "unit": "trials",
+          "sort": null
+        },
+        "series": {
+          "field": "cohort",
+          "type": "nominal",
+          "title": "Cohort",
+          "unit": null,
+          "sort": [
+            "pembrolizumab",
+            "nivolumab"
+          ]
+        }
+      },
+      "data": [
+        {
+          "datum_id": "d1",
+          "trial_count": 6,
+          "citation_count": 6,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT06212388",
+              "url": "https://clinicaltrials.gov/study/NCT06212388",
+              "brief_title": "Allogeneic Gammadelta T Cells Combined With Interferon-α1b or PD-1 Monoclonal Antibody in Stage III-IV Amenable to Surgical Resection Melanoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[2].name",
+                  "excerpt": "Pembrolizumab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Melanoma"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "EARLY_PHASE1"
+                  ]
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT05358938",
+              "url": "https://clinicaltrials.gov/study/NCT05358938",
+              "brief_title": "Exercise to Boost Response to Checkpoint Blockade Immunotherapy",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[1].otherNames[4]",
+                  "excerpt": "Pembrolizumab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Cutaneous Melanoma"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "EARLY_PHASE1"
+                  ]
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT04581382",
+              "url": "https://clinicaltrials.gov/study/NCT04581382",
+              "brief_title": "Radiation Therapy, Plasma Exchange, and Immunotherapy (Pembrolizumab or Nivolumab) for the Treatment of Melanoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[1].name",
+                  "excerpt": "Pembrolizumab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Melanoma"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "EARLY_PHASE1"
+                  ]
+                }
+              ]
+            }
+          ],
+          "phase": "Early Phase 1",
+          "cohort": "pembrolizumab"
+        },
+        {
+          "datum_id": "d2",
+          "trial_count": 10,
+          "citation_count": 10,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT05704933",
+              "url": "https://clinicaltrials.gov/study/NCT05704933",
+              "brief_title": "Pilot Study of Nivolumab w/Ipilimumab or Relatlimab in Surgically Resectable Melanoma Brain Metastases",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "Nivolumab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Metastatic Melanoma"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "EARLY_PHASE1"
+                  ]
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT05498792",
+              "url": "https://clinicaltrials.gov/study/NCT05498792",
+              "brief_title": "Study of CBL0137 in Combination With Ipilimumab and Nivolumab Therapy in Melanoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[2].name",
+                  "excerpt": "Nivolumab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Locally Advanced or Metastatic Melanoma"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "EARLY_PHASE1"
+                  ]
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT05358938",
+              "url": "https://clinicaltrials.gov/study/NCT05358938",
+              "brief_title": "Exercise to Boost Response to Checkpoint Blockade Immunotherapy",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[1].otherNames[3]",
+                  "excerpt": "Nivolumab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Cutaneous Melanoma"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "EARLY_PHASE1"
+                  ]
+                }
+              ]
+            }
+          ],
+          "phase": "Early Phase 1",
+          "cohort": "nivolumab"
+        },
+        {
+          "datum_id": "d3",
+          "trial_count": 101,
+          "citation_count": 101,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07634380",
+              "url": "https://clinicaltrials.gov/study/NCT07634380",
+              "brief_title": "Sitagliptin With Pembro in RCC and Melanoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[1].name",
+                  "excerpt": "Pembrolizumab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[1]",
+                  "excerpt": "Advanced Melanoma"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE1"
+                  ]
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07581509",
+              "url": "https://clinicaltrials.gov/study/NCT07581509",
+              "brief_title": "Pharmacokinetics, Safety, and Immunogenicity of Bmab1800 and Keytruda® as Adjuvant Monotherapy in Patients With Melanoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Adult Patients With Stage IIB, IIC, and Stage III Melanoma Following Complete Resection (Adjuvant Settings)"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE1"
+                  ]
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07475572",
+              "url": "https://clinicaltrials.gov/study/NCT07475572",
+              "brief_title": "Pharmacokinetic Similarity Study to Compare AVT32-DRL_PB With Keytruda® in Participants With Fully Resected Melanoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Melanoma"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE1"
+                  ]
+                }
+              ]
+            }
+          ],
+          "phase": "Phase 1",
+          "cohort": "pembrolizumab"
+        },
+        {
+          "datum_id": "d4",
+          "trial_count": 72,
+          "citation_count": 72,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07838974",
+              "url": "https://clinicaltrials.gov/study/NCT07838974",
+              "brief_title": "Adding Anakinra and Tocilizumab to Nivolumab and Ipilimumab for the Treatment of Melanoma Patients 50 Years of Age or Older",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[6].name",
+                  "excerpt": "Nivolumab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Melanoma"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE1"
+                  ]
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07518043",
+              "url": "https://clinicaltrials.gov/study/NCT07518043",
+              "brief_title": "A Study of HLX18 vs. OPDIVO® in Multiple Resected Solid Tumors",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[1]",
+                  "excerpt": "Melanoma"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE1"
+                  ]
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07501117",
+              "url": "https://clinicaltrials.gov/study/NCT07501117",
+              "brief_title": "Neoadjuvant Immunotherapy for Patients With High-risk Eye Melanoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "Nivolumab & Ipilimumab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Uveal Melanoma"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE1"
+                  ]
+                }
+              ]
+            }
+          ],
+          "phase": "Phase 1",
+          "cohort": "nivolumab"
+        },
+        {
+          "datum_id": "d5",
+          "trial_count": 84,
+          "citation_count": 84,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07817901",
+              "url": "https://clinicaltrials.gov/study/NCT07817901",
+              "brief_title": "Phase 1b/2 Clinical Trial to Evaluate the Safety and Efficacy of Combination Therapy With Pembrolizumab and Irinotecan in Patients With Metastatic or Recurrent Malignant Melanoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "Pembrolizumab and Irinotecan"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Unresectable or Metastatic Melanoma"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE1",
+                    "PHASE2"
+                  ]
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07751042",
+              "url": "https://clinicaltrials.gov/study/NCT07751042",
+              "brief_title": "Phase 1/2 Study of Intravenous Injection of STX-003 in Advanced Solid Tumors as Monotherapy or in Combination With Pembrolizumab",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE1",
+                    "PHASE2"
+                  ]
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07749586",
+              "url": "https://clinicaltrials.gov/study/NCT07749586",
+              "brief_title": "A Study to Evaluate ARV-6723 Alone and With Pembrolizumab in Participants With Advanced Solid Tumors",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[1].name",
+                  "excerpt": "Pembrolizumab"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE1",
+                    "PHASE2"
+                  ]
+                }
+              ]
+            }
+          ],
+          "phase": "Phase 1/2",
+          "cohort": "pembrolizumab"
+        },
+        {
+          "datum_id": "d6",
+          "trial_count": 61,
+          "citation_count": 61,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07718243",
+              "url": "https://clinicaltrials.gov/study/NCT07718243",
+              "brief_title": "Investigating the Combination of Bexmarilimab and Nivolumab in Solid Tumours, Melanoma and NSCLC",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "Bexmarilimab 1mg/kg and nivolumab 1mg/kg"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Melanoma (Skin Cancer)"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE1",
+                    "PHASE2"
+                  ]
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07631325",
+              "url": "https://clinicaltrials.gov/study/NCT07631325",
+              "brief_title": "Axelopran and Nivolumab in PD-1-Refractory Metastatic Melanoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[1].name",
+                  "excerpt": "Nivolumab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Unresectable Cutaneous Melanoma"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE1",
+                    "PHASE2"
+                  ]
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07281924",
+              "url": "https://clinicaltrials.gov/study/NCT07281924",
+              "brief_title": "Hepzato Kit and Opdualag for Metastatic Melanoma and Liver Metastasis",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "Nivolumab and Relatlimab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Metastatic Melanoma"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE1",
+                    "PHASE2"
+                  ]
+                }
+              ]
+            }
+          ],
+          "phase": "Phase 1/2",
+          "cohort": "nivolumab"
+        },
+        {
+          "datum_id": "d7",
+          "trial_count": 115,
+          "citation_count": 115,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07740941",
+              "url": "https://clinicaltrials.gov/study/NCT07740941",
+              "brief_title": "NeoAdjuvant, Spare-Adjuvant (NASA) in Stage IIIB-IV (M1a) Melanoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "Pembrolizumab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Melanoma (Skin Cancer)"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2"
+                  ]
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07565285",
+              "url": "https://clinicaltrials.gov/study/NCT07565285",
+              "brief_title": "The Efficacy and Safety of PRTX007-003 Combined With Pembrolizumab in Resectable Stage III Melanoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[1].name",
+                  "excerpt": "Pembrolizumab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Melanoma Stage III"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2"
+                  ]
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07448831",
+              "url": "https://clinicaltrials.gov/study/NCT07448831",
+              "brief_title": "A Phase II Clinical Trial on Neo-adjuvant Pembrolizumab in Patients With pT3b-T4a/b cN0M0 Melanoma.",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "Pembrolizumab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Melanoma (Skin Cancer)"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2"
+                  ]
+                }
+              ]
+            }
+          ],
+          "phase": "Phase 2",
+          "cohort": "pembrolizumab"
+        },
+        {
+          "datum_id": "d8",
+          "trial_count": 121,
+          "citation_count": 121,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07740941",
+              "url": "https://clinicaltrials.gov/study/NCT07740941",
+              "brief_title": "NeoAdjuvant, Spare-Adjuvant (NASA) in Stage IIIB-IV (M1a) Melanoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[1].name",
+                  "excerpt": "Ipilimumab plus nivolumab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Melanoma (Skin Cancer)"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2"
+                  ]
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07576725",
+              "url": "https://clinicaltrials.gov/study/NCT07576725",
+              "brief_title": "Low Dose, Reduced Frequency Nivolumab for the Treatment of Unresectable or Metastatic Cancer, AFFORD IO Trial",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[3].name",
+                  "excerpt": "Nivolumab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Clinical Stage III Cutaneous Melanoma AJCC v8"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2"
+                  ]
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07504796",
+              "url": "https://clinicaltrials.gov/study/NCT07504796",
+              "brief_title": "ctDNA-guided Addition of Ipilimumab to Patients Receiving Nivolumab and Relatlimab",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "Nivolumab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Metastatic Melanoma"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2"
+                  ]
+                }
+              ]
+            }
+          ],
+          "phase": "Phase 2",
+          "cohort": "nivolumab"
+        },
+        {
+          "datum_id": "d9",
+          "trial_count": 4,
+          "citation_count": 4,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT06697301",
+              "url": "https://clinicaltrials.gov/study/NCT06697301",
+              "brief_title": "Safety and Efficacy of EIK1001 in Combo With Pembro Versus Placebo and Pembro as First-Line Therapy in Patients With Advanced Melanoma.",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[1].name",
+                  "excerpt": "Pembrolizumab (KEYTRUDA® )"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Advanced Melanoma"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2",
+                    "PHASE3"
+                  ]
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT06624644",
+              "url": "https://clinicaltrials.gov/study/NCT06624644",
+              "brief_title": "A Trial of LNS8801 With or Without Pembrolizumab in Patients With Refractory Melanoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[1].name",
+                  "excerpt": "Pembrolizumab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Melanoma (Skin Cancer)"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2",
+                    "PHASE3"
+                  ]
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT05987332",
+              "url": "https://clinicaltrials.gov/study/NCT05987332",
+              "brief_title": "IDE196 (Darovasertib) in Combination With Crizotinib as First-line Therapy in Metastatic Uveal Melanoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[2].name",
+                  "excerpt": "Pembrolizumab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Metastatic Uveal Melanoma"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2",
+                    "PHASE3"
+                  ]
+                }
+              ]
+            }
+          ],
+          "phase": "Phase 2/3",
+          "cohort": "pembrolizumab"
+        },
+        {
+          "datum_id": "d10",
+          "trial_count": 7,
+          "citation_count": 7,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT06624644",
+              "url": "https://clinicaltrials.gov/study/NCT06624644",
+              "brief_title": "A Trial of LNS8801 With or Without Pembrolizumab in Patients With Refractory Melanoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[4].name",
+                  "excerpt": "Immunotherapy (nivolumab and relatlimab)"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Melanoma (Skin Cancer)"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2",
+                    "PHASE3"
+                  ]
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT06581406",
+              "url": "https://clinicaltrials.gov/study/NCT06581406",
+              "brief_title": "A Randomized, Phase 2/3 Study to Investigate the Efficacy and Safety of RP2 in Combination With Nivolumab in Immune Checkpoint Inhibitor-Naïve Adult Patients With Metastatic Uveal Melanoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[2].name",
+                  "excerpt": "Nivolumab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Metastatic Uveal Melanoma"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2",
+                    "PHASE3"
+                  ]
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT05987332",
+              "url": "https://clinicaltrials.gov/study/NCT05987332",
+              "brief_title": "IDE196 (Darovasertib) in Combination With Crizotinib as First-line Therapy in Metastatic Uveal Melanoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[4].name",
+                  "excerpt": "Nivolumab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Metastatic Uveal Melanoma"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2",
+                    "PHASE3"
+                  ]
+                }
+              ]
+            }
+          ],
+          "phase": "Phase 2/3",
+          "cohort": "nivolumab"
+        },
+        {
+          "datum_id": "d11",
+          "trial_count": 24,
+          "citation_count": 24,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT06743126",
+              "url": "https://clinicaltrials.gov/study/NCT06743126",
+              "brief_title": "SUPRAME-ACTengine® IMA203 vs. Investigator's Choice of Treatment in Previously Treated, Unresectable or Metastatic Cutaneous Melanoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[4].name",
+                  "excerpt": "pembrolizumab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Melanoma, Cutaneous Malignant"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT06488482",
+              "url": "https://clinicaltrials.gov/study/NCT06488482",
+              "brief_title": "Assessment of Short Immunotherapy After Radical Surgery of High-risk Malignant Melanoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "nivolumab or pembrolizumab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "High-risk Melanoma"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT06320353",
+              "url": "https://clinicaltrials.gov/study/NCT06320353",
+              "brief_title": "Study сomparing the Efficacy and Safety of RPH-075 and Keytruda® in Patients With Unresectable or Metastatic Skin Melanoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].otherNames[0]",
+                  "excerpt": "pembrolizumab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Skin Melanoma"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                }
+              ]
+            }
+          ],
+          "phase": "Phase 3",
+          "cohort": "pembrolizumab"
+        },
+        {
+          "datum_id": "d12",
+          "trial_count": 33,
+          "citation_count": 33,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07815574",
+              "url": "https://clinicaltrials.gov/study/NCT07815574",
+              "brief_title": "iSCIB1+ in Combination With Ipilimumab and Nivolumab as First-Line Treatment for Advanced Unresectable Melanoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[1].name",
+                  "excerpt": "Nivolumab & Ipilimumab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Melanoma (Skin Cancer)"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07221734",
+              "url": "https://clinicaltrials.gov/study/NCT07221734",
+              "brief_title": "Study to Compare Pharmacokinetics, Efficacy, Safety, and Immunogenicity of MB11 Versus EU-/US-Opdivo® in Subjects With Previously Untreated Advanced [Unresectable or Metastatic] Melanoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "MB11 (Proposed Nivolumab Biosimilar)"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Advanced (Unresectable or Metastatic) Melanoma"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT06794775",
+              "url": "https://clinicaltrials.gov/study/NCT06794775",
+              "brief_title": "SWE-NEO: Swedish NeoAdjuvant Trial Comparing Monotherapy to Combined Immunotherapy in Resectable Stage III Melanoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "Nivolumab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Malignant Melanoma Stage III"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                }
+              ]
+            }
+          ],
+          "phase": "Phase 3",
+          "cohort": "nivolumab"
+        },
+        {
+          "datum_id": "d13",
+          "trial_count": 1,
+          "citation_count": 1,
+          "citations_truncated": false,
+          "citations": [
+            {
+              "nct_id": "NCT03715205",
+              "url": "https://clinicaltrials.gov/study/NCT03715205",
+              "brief_title": "Study to Evaluate the Safety of Pembrolizumab in Participants With Unresectable or Metastatic Melanoma or Non-small Cell Lung Cancer in India (MK-3475-593/KEYNOTE-593)",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "Pembrolizumab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[1]",
+                  "excerpt": "Melanoma"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE4"
+                  ]
+                }
+              ]
+            }
+          ],
+          "phase": "Phase 4",
+          "cohort": "pembrolizumab"
+        },
+        {
+          "datum_id": "d14",
+          "trial_count": 4,
+          "citation_count": 4,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07459543",
+              "url": "https://clinicaltrials.gov/study/NCT07459543",
+              "brief_title": "A Study to Assess the Safety, and Tolerability of Nivolumab + Relatlimab Fixed-Dose Combination (FDC) In Unresectable or Metastatic Melanoma Participants In India",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "Nivolumab + Relatlimab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Unresectable Melanoma"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE4"
+                  ]
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT06116461",
+              "url": "https://clinicaltrials.gov/study/NCT06116461",
+              "brief_title": "Nivolumab Dose Optimization in Patients With a Complete, Partial or Stable Response",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "Nivolumab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Melanoma"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE4"
+                  ]
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT03313544",
+              "url": "https://clinicaltrials.gov/study/NCT03313544",
+              "brief_title": "Evolution of the Heart Function When Monitoring Immunotherapies Anti-cancerous Inhibiting PD-1",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "Nivolumab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Melanoma"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE4"
+                  ]
+                }
+              ]
+            }
+          ],
+          "phase": "Phase 4",
+          "cohort": "nivolumab"
+        },
+        {
+          "datum_id": "d15",
+          "trial_count": 3,
+          "citation_count": 3,
+          "citations_truncated": false,
+          "citations": [
+            {
+              "nct_id": "NCT07436390",
+              "url": "https://clinicaltrials.gov/study/NCT07436390",
+              "brief_title": "IFN-Gamma Expression as a Predictor of Response to Immune Checkpoint Inhibitors in First-Line Metastatic Melanoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "Pembrolizumab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Metastatic Melanoma"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "NA"
+                  ]
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07422779",
+              "url": "https://clinicaltrials.gov/study/NCT07422779",
+              "brief_title": "Immunotherapy Efficacy and PD-L1 as a Predictive Biomarker in Metastatic Melanoma in Slovenia",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "Pembrolizumab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Metastatic Melanoma"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "NA"
+                  ]
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT02760225",
+              "url": "https://clinicaltrials.gov/study/NCT02760225",
+              "brief_title": "Pembrolizumab-PET Imaging",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "89Zr-Pembrolizumab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Melanoma"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "NA"
+                  ]
+                }
+              ]
+            }
+          ],
+          "phase": "Not applicable",
+          "cohort": "pembrolizumab"
+        },
+        {
+          "datum_id": "d16",
+          "trial_count": 3,
+          "citation_count": 3,
+          "citations_truncated": false,
+          "citations": [
+            {
+              "nct_id": "NCT07436390",
+              "url": "https://clinicaltrials.gov/study/NCT07436390",
+              "brief_title": "IFN-Gamma Expression as a Predictor of Response to Immune Checkpoint Inhibitors in First-Line Metastatic Melanoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[1].name",
+                  "excerpt": "Nivolumab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Metastatic Melanoma"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "NA"
+                  ]
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07422779",
+              "url": "https://clinicaltrials.gov/study/NCT07422779",
+              "brief_title": "Immunotherapy Efficacy and PD-L1 as a Predictive Biomarker in Metastatic Melanoma in Slovenia",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[1].name",
+                  "excerpt": "Nivolumab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Metastatic Melanoma"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "NA"
+                  ]
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT05652673",
+              "url": "https://clinicaltrials.gov/study/NCT05652673",
+              "brief_title": "Safe Stop Ipilimumab-nivolumab (IPI-NIVO) Trial",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "nivolumab"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Melanoma Stage IV"
+                },
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "NA"
+                  ]
+                }
+              ]
+            }
+          ],
+          "phase": "Not applicable",
+          "cohort": "nivolumab"
+        }
+      ]
+    },
+    "meta": {
+      "interpretation": {
+        "summary": "Computed distinct trials by phase for 2 cohort(s): 'pembrolizumab' (drug_name=pembrolizumab, condition=melanoma); 'nivolumab' (drug_name=nivolumab, condition=melanoma).",
+        "plan": {
+          "cohorts": [
+            {
+              "label": "pembrolizumab",
+              "filters": {
+                "drug_name": "pembrolizumab",
+                "condition": "melanoma",
+                "sponsor": null,
+                "country": null,
+                "trial_phase": null,
+                "overall_status": null,
+                "study_type": null
+              }
+            },
+            {
+              "label": "nivolumab",
+              "filters": {
+                "drug_name": "nivolumab",
+                "condition": "melanoma",
+                "sponsor": null,
+                "country": null,
+                "trial_phase": null,
+                "overall_status": null,
+                "study_type": null
+              }
+            }
+          ],
+          "operation": {
+            "kind": "count_by",
+            "dimension": "phase",
+            "second_dimension": null,
+            "measure": null,
+            "x_measure": null
+          },
+          "time": {
+            "date_basis": "start_date",
+            "year_from": null,
+            "year_to": null
+          },
+          "phase_policy": "combined",
+          "top_n": null,
+          "clarification": null,
+          "unsupported_reason": null
+        },
+        "planner_model": "gpt-5.4",
+        "planner_attempts": 1,
+        "repair_feedback": [],
+        "parent_run_id": null,
+        "plan_diff": null
+      },
+      "chart_selection": "counts per category and series → grouped_bar_chart",
+      "cohorts": [
+        {
+          "label": "pembrolizumab",
+          "filters": {
+            "drug_name": "pembrolizumab",
+            "condition": "melanoma"
+          },
+          "api_params": {
+            "query.cond": "\"melanoma\"",
+            "query.term": "(AREA[InterventionName]\"pembrolizumab\" OR AREA[InterventionOtherName]\"pembrolizumab\")"
+          },
+          "total_matches": 351,
+          "records_fetched": 351,
+          "trials_analyzed": 351,
+          "excluded": {},
+          "missing": {
+            "phase": 13
+          },
+          "synonym_matches": {
+            "condition": 29,
+            "drug_name": 10
+          },
+          "complete": true
+        },
+        {
+          "label": "nivolumab",
+          "filters": {
+            "drug_name": "nivolumab",
+            "condition": "melanoma"
+          },
+          "api_params": {
+            "query.cond": "\"melanoma\"",
+            "query.term": "(AREA[InterventionName]\"nivolumab\" OR AREA[InterventionOtherName]\"nivolumab\")"
+          },
+          "total_matches": 329,
+          "records_fetched": 329,
+          "trials_analyzed": 329,
+          "excluded": {},
+          "missing": {
+            "phase": 18
+          },
+          "synonym_matches": {
+            "condition": 18,
+            "drug_name": 5
+          },
+          "complete": true
+        }
+      ],
+      "time": {
+        "date_basis": "start_date",
+        "year_from": null,
+        "year_to": null
+      },
+      "measure": "Distinct trials (NCT IDs) per datum",
+      "units": {
+        "trial_count": "trials"
+      },
+      "sort": "Phase in canonical order",
+      "time_granularity": null,
+      "policies": {
+        "counting": "Every value is a count of distinct trials (NCT IDs); a trial counts at most once per datum.",
+        "missing_values": "Trials with no value for the analysed field are not charted; see meta.cohorts[].missing.",
+        "drug_matching": "drug_name matches InterventionName or InterventionOtherName (field-scoped search, with ClinicalTrials.gov synonym expansion). Trials that only mention the drug elsewhere, e.g. as prior therapy, are not included.",
+        "condition_matching": "condition uses ClinicalTrials.gov condition search (query.cond, phrase), which includes synonyms and narrower terms.",
+        "phase": "Multi-phase trials form their own combined category, e.g. Phase 1/2.",
+        "cohort_overlap": "A trial matching several cohorts counts in each; see meta.cohort_overlap."
+      },
+      "assumptions": [],
+      "cohort_overlap": {
+        "pembrolizumab ∩ nivolumab": 55
+      },
+      "truncation": null,
+      "source": {
+        "name": "ClinicalTrials.gov API v2",
+        "api_version": "2.0.5",
+        "data_timestamp": "2026-10-01T09:00:05",
+        "retrieved_at": "2026-10-01T20:57:07+00:00"
+      },
+      "timings_ms": {
+        "plan": 4147,
+        "retrieve": 15,
+        "analyze": 15,
+        "build": 4,
+        "verify": 0
+      },
+      "llm_usage": {
+        "calls": 1,
+        "input_tokens": 3584,
+        "output_tokens": 173
+      }
+    },
+    "clarification": null,
+    "error": null
+  }
+}

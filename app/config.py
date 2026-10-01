@@ -14,7 +14,7 @@ class Settings(BaseSettings):
 
     openai_api_key: SecretStr | None = None
     openai_base_url: str | None = None
-    planner_model: str = "gpt-5.4-mini"
+    planner_model: str = "gpt-5.4"
     planner_reasoning_effort: str | None = None
 
     ctgov_base_url: str = "https://clinicaltrials.gov/api/v2"

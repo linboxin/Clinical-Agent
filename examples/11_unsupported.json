@@ -1,0 +1,89 @@
+{
+  "request": {
+    "query": "Which melanoma drug has the best overall survival?",
+    "citations_per_datum": 3
+  },
+  "response": {
+    "schema_version": "1.0",
+    "run_id": "69dbc0c6-a0b0-488e-b163-e2955aafc434",
+    "status": "unsupported",
+    "visualization": null,
+    "meta": {
+      "interpretation": {
+        "summary": "Computed distinct trials by drug for 1 cohort(s): 'melanoma' (condition=melanoma).",
+        "plan": {
+          "cohorts": [
+            {
+              "label": "melanoma",
+              "filters": {
+                "drug_name": null,
+                "condition": "melanoma",
+                "sponsor": null,
+                "country": null,
+                "trial_phase": null,
+                "overall_status": null,
+                "study_type": null
+              }
+            }
+          ],
+          "operation": {
+            "kind": "count_by",
+            "dimension": "drug",
+            "second_dimension": null,
+            "measure": null,
+            "x_measure": null
+          },
+          "time": {
+            "date_basis": "start_date",
+            "year_from": null,
+            "year_to": null
+          },
+          "phase_policy": "combined",
+          "top_n": null,
+          "clarification": null,
+          "unsupported_reason": "Best overall survival requires trial outcome/efficacy results, which this registry analytics system does not support."
+        },
+        "planner_model": "gpt-5.4",
+        "planner_attempts": 1,
+        "repair_feedback": [],
+        "parent_run_id": null,
+        "plan_diff": null
+      },
+      "chart_selection": null,
+      "cohorts": [],
+      "time": null,
+      "measure": "Distinct trials (NCT IDs) per datum",
+      "units": {
+        "trial_count": "trials"
+      },
+      "sort": null,
+      "time_granularity": null,
+      "policies": {},
+      "assumptions": [],
+      "cohort_overlap": null,
+      "truncation": null,
+      "source": null,
+      "timings_ms": {
+        "plan": 2926
+      },
+      "llm_usage": {
+        "calls": 1,
+        "input_tokens": 3577,
+        "output_tokens": 141
+      }
+    },
+    "clarification": null,
+    "error": {
+      "code": "unsupported_question",
+      "message": "Best overall survival requires trial outcome/efficacy results, which this registry analytics system does not support.",
+      "details": [
+        "Trial counts by phase, status, study type, sponsor, sponsor category, drug, intervention type, condition, country, primary purpose, allocation, site or investigator",
+        "Trials per year (start, first-posted or completion date), optionally split by a dimension",
+        "Distributions of enrollment or trial duration (histogram)",
+        "Enrollment or duration against start date (scatter plot)",
+        "Comparisons of up to 4 drugs, conditions or sponsors",
+        "Networks: sponsor ↔ drug, drug ↔ drug co-occurrence, condition ↔ drug, investigator ↔ site"
+      ]
+    }
+  }
+}

@@ -42,8 +42,9 @@ class OpenAIPlannerGateway:
     ) -> None:
         self.model = model
         self.reasoning_effort = reasoning_effort
+        # The SDK retries 429/5xx itself, honoring Retry-After (token-per-minute limits).
         self.client = openai.AsyncOpenAI(
-            api_key=api_key, base_url=base_url, timeout=timeout_seconds, max_retries=2
+            api_key=api_key, base_url=base_url, timeout=timeout_seconds, max_retries=4
         )
 
     async def propose(self, instructions: str, messages: list[Message]) -> Proposal:

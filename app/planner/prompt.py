@@ -8,7 +8,7 @@ from app.contracts.plan import QueryPlan
 from app.contracts.request import VisualizationRequest
 from app.registry import MEASURES, NETWORK_DIMENSIONS, REGISTRY, SINGLE_VALUED
 
-PROMPT_VERSION = "v3"
+PROMPT_VERSION = "v5"
 
 _TEMPLATE = """\
 You translate a user's question about clinical trials into a QueryPlan for an analytics \
@@ -56,11 +56,13 @@ NOT_YET_RECRUITING, ENROLLING_BY_INVITATION, ACTIVE_NOT_RECRUITING]; "completed"
 text; you need not copy structured_fields into the plan: the backend merges them into every \
 cohort (start_year/end_year into time) and asks the user itself if they contradict the \
 question. A value given in structured_fields is never missing (e.g. "this drug" plus a \
-structured drug_name is fully specified).
+structured drug_name is fully specified). If the question itself names a different value for \
+the same field, put the question's value in the plan: never resolve that conflict yourself.
 
 ## Time
-- date_basis: start_date, unless the question is about registration/posting (first_posted) \
-or completion (completion_date).
+- date_basis: start_date ("started", "launched", "over time", "per year") unless the question \
+counts completions ("completed", "finished", "ended", "concluded" each year → completion_date) \
+or registrations ("registered", "posted", "submitted" → first_posted).
 - "since 2015" -> year_from 2015. "before 2020" -> year_to 2019. "2015 to 2020" -> both.
 
 ## Other fields
@@ -70,12 +72,15 @@ each phase of multi-phase trials separately.
 - clarification: ONLY when the question cannot be answered sensibly without more input, e.g. \
 it refers to "this drug" and no drug is named anywhere, or asks to compare "two conditions" \
 without naming them. Choices with a sensible default (date basis, phase policy, top N) are \
-not clarifications. Even when clarifying, fill the rest of the plan with your best guess.
+not clarifications. options are 2-4 concrete answers the user can pick (e.g. specific drug \
+names); never refer to earlier turns unless previous_plan is present. Even when clarifying, \
+fill the rest of the plan with your best guess.
 - unsupported_reason: set when answering needs something trial-count analytics cannot \
 provide: efficacy or outcome results, adverse events, patient-level data or eligibility \
 matching, treatment recommendations, recruitment status as of a past date, or a single \
 summary statistic such as "average enrollment" (say that a histogram of the distribution is \
-available). Still fill the plan with a best guess.
+available). The reason is one sentence saying what is not supported; do not describe \
+approximations or workarounds, because none will be run. Still fill the plan with a best guess.
 
 ## Follow-ups
 If the user message contains previous_plan, the question refines that earlier analysis \

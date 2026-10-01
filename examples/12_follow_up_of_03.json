@@ -1,0 +1,2244 @@
+{
+  "request": {
+    "query": "Same, but only phase 3 trials.",
+    "citations_per_datum": 3,
+    "parent_run_id": "7db9e6be-b9e2-4591-9f31-b8b7011c32e5"
+  },
+  "response": {
+    "schema_version": "1.0",
+    "run_id": "85222504-9321-4846-a7ea-00a7678f3e46",
+    "status": "ok",
+    "visualization": {
+      "type": "bar_chart",
+      "title": "Trials by country — breast cancer",
+      "orientation": "horizontal",
+      "encoding": {
+        "x": {
+          "field": "country",
+          "type": "nominal",
+          "title": "Country",
+          "unit": null,
+          "sort": [
+            "China",
+            "United States",
+            "France",
+            "Germany",
+            "Italy",
+            "Spain",
+            "South Korea",
+            "Australia",
+            "Brazil",
+            "Canada",
+            "Poland",
+            "United Kingdom",
+            "Belgium",
+            "Japan",
+            "Taiwan",
+            "Turkey (Türkiye)",
+            "Argentina",
+            "Greece",
+            "Portugal",
+            "Hong Kong",
+            "Israel",
+            "Mexico",
+            "Czechia",
+            "India",
+            "Netherlands"
+          ]
+        },
+        "y": {
+          "field": "trial_count",
+          "type": "quantitative",
+          "title": "Trials",
+          "unit": "trials",
+          "sort": null
+        },
+        "series": null
+      },
+      "data": [
+        {
+          "datum_id": "d1",
+          "trial_count": 127,
+          "citation_count": 127,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07797218",
+              "url": "https://clinicaltrials.gov/study/NCT07797218",
+              "brief_title": "Neoadjuvant Pyrotinib-to-pertuzumab in HER2+ eBC",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer Early Stage Breast Cancer (Stage 1-3)"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "China"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07762885",
+              "url": "https://clinicaltrials.gov/study/NCT07762885",
+              "brief_title": "Omission of Adjuvant Radiotherapy in Low- and Intermediate-Risk Ductal Carcinoma In Situ After Breast-Conserving Surgery",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "China"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07729956",
+              "url": "https://clinicaltrials.gov/study/NCT07729956",
+              "brief_title": "A Study of BL-B01D1 Plus an Anti-PD-1 Antibody Versus Nab-paclitaxel Plus an Anti-PD-1 Antibody in Patients With Previously Untreated, Locally Advanced, Inoperable or Metastatic Triple-Negative Breast Cancer Whose Tumors Express PD-L1 (PANKU-Breast04)",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Triple-Negative Breast Cancer (TNBC)"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "China"
+                }
+              ]
+            }
+          ],
+          "country": "China"
+        },
+        {
+          "datum_id": "d2",
+          "trial_count": 59,
+          "citation_count": 59,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07647328",
+              "url": "https://clinicaltrials.gov/study/NCT07647328",
+              "brief_title": "A Phase IIIb Study to Evaluate Camizestrant Plus Ribociclib in ER-positive, HER2-negative Advanced Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "ER-Positive HER2-Negative Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "United States"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07541079",
+              "url": "https://clinicaltrials.gov/study/NCT07541079",
+              "brief_title": "A Study Evaluating Adherence, Tolerability, and Patient Reported Outcomes of Giredestrant in Participants With ER+/HER2- Early Breast Cancer Who Are Intolerant to Adjuvant Aromatase Inhibitor Therapy (novERA Breast Cancer)",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Early Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "United States"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07492641",
+              "url": "https://clinicaltrials.gov/study/NCT07492641",
+              "brief_title": "BGB-43395 Plus Letrozole Versus CDK4/6i Plus Letrozole for Patients With Advanced or Metastatic HR+/HER2- Breast Cancer Who Have Not Received Prior Treatment for Advanced or Metastatic Disease",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HR+/HER2- Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "United States"
+                }
+              ]
+            }
+          ],
+          "country": "United States"
+        },
+        {
+          "datum_id": "d3",
+          "trial_count": 36,
+          "citation_count": 36,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07647328",
+              "url": "https://clinicaltrials.gov/study/NCT07647328",
+              "brief_title": "A Phase IIIb Study to Evaluate Camizestrant Plus Ribociclib in ER-positive, HER2-negative Advanced Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "ER-Positive HER2-Negative Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[12].country",
+                  "excerpt": "France"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07492641",
+              "url": "https://clinicaltrials.gov/study/NCT07492641",
+              "brief_title": "BGB-43395 Plus Letrozole Versus CDK4/6i Plus Letrozole for Patients With Advanced or Metastatic HR+/HER2- Breast Cancer Who Have Not Received Prior Treatment for Advanced or Metastatic Disease",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HR+/HER2- Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[111].country",
+                  "excerpt": "France"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07413939",
+              "url": "https://clinicaltrials.gov/study/NCT07413939",
+              "brief_title": "RO7771950 Versus Tucatinib in Combination With Trastuzumab and Capecitabine in People With Locally Advanced or Metastatic Breast Cancer That is Human Epidermal Growth Factor Receptor 2 (HER2)-Positive",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2",
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HER2-positive Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[74].country",
+                  "excerpt": "France"
+                }
+              ]
+            }
+          ],
+          "country": "France"
+        },
+        {
+          "datum_id": "d4",
+          "trial_count": 36,
+          "citation_count": 36,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07647328",
+              "url": "https://clinicaltrials.gov/study/NCT07647328",
+              "brief_title": "A Phase IIIb Study to Evaluate Camizestrant Plus Ribociclib in ER-positive, HER2-negative Advanced Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "ER-Positive HER2-Negative Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[26].country",
+                  "excerpt": "Germany"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07492641",
+              "url": "https://clinicaltrials.gov/study/NCT07492641",
+              "brief_title": "BGB-43395 Plus Letrozole Versus CDK4/6i Plus Letrozole for Patients With Advanced or Metastatic HR+/HER2- Breast Cancer Who Have Not Received Prior Treatment for Advanced or Metastatic Disease",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HR+/HER2- Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[115].country",
+                  "excerpt": "Germany"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07413939",
+              "url": "https://clinicaltrials.gov/study/NCT07413939",
+              "brief_title": "RO7771950 Versus Tucatinib in Combination With Trastuzumab and Capecitabine in People With Locally Advanced or Metastatic Breast Cancer That is Human Epidermal Growth Factor Receptor 2 (HER2)-Positive",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2",
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HER2-positive Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[78].country",
+                  "excerpt": "Germany"
+                }
+              ]
+            }
+          ],
+          "country": "Germany"
+        },
+        {
+          "datum_id": "d5",
+          "trial_count": 35,
+          "citation_count": 35,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07647328",
+              "url": "https://clinicaltrials.gov/study/NCT07647328",
+              "brief_title": "A Phase IIIb Study to Evaluate Camizestrant Plus Ribociclib in ER-positive, HER2-negative Advanced Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "ER-Positive HER2-Negative Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[35].country",
+                  "excerpt": "Italy"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07492641",
+              "url": "https://clinicaltrials.gov/study/NCT07492641",
+              "brief_title": "BGB-43395 Plus Letrozole Versus CDK4/6i Plus Letrozole for Patients With Advanced or Metastatic HR+/HER2- Breast Cancer Who Have Not Received Prior Treatment for Advanced or Metastatic Disease",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HR+/HER2- Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[116].country",
+                  "excerpt": "Italy"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07413939",
+              "url": "https://clinicaltrials.gov/study/NCT07413939",
+              "brief_title": "RO7771950 Versus Tucatinib in Combination With Trastuzumab and Capecitabine in People With Locally Advanced or Metastatic Breast Cancer That is Human Epidermal Growth Factor Receptor 2 (HER2)-Positive",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2",
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HER2-positive Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[98].country",
+                  "excerpt": "Italy"
+                }
+              ]
+            }
+          ],
+          "country": "Italy"
+        },
+        {
+          "datum_id": "d6",
+          "trial_count": 34,
+          "citation_count": 34,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07647328",
+              "url": "https://clinicaltrials.gov/study/NCT07647328",
+              "brief_title": "A Phase IIIb Study to Evaluate Camizestrant Plus Ribociclib in ER-positive, HER2-negative Advanced Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "ER-Positive HER2-Negative Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[64].country",
+                  "excerpt": "Spain"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07492641",
+              "url": "https://clinicaltrials.gov/study/NCT07492641",
+              "brief_title": "BGB-43395 Plus Letrozole Versus CDK4/6i Plus Letrozole for Patients With Advanced or Metastatic HR+/HER2- Breast Cancer Who Have Not Received Prior Treatment for Advanced or Metastatic Disease",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HR+/HER2- Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[175].country",
+                  "excerpt": "Spain"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07413939",
+              "url": "https://clinicaltrials.gov/study/NCT07413939",
+              "brief_title": "RO7771950 Versus Tucatinib in Combination With Trastuzumab and Capecitabine in People With Locally Advanced or Metastatic Breast Cancer That is Human Epidermal Growth Factor Receptor 2 (HER2)-Positive",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2",
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HER2-positive Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[143].country",
+                  "excerpt": "Spain"
+                }
+              ]
+            }
+          ],
+          "country": "Spain"
+        },
+        {
+          "datum_id": "d7",
+          "trial_count": 31,
+          "citation_count": 31,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07647328",
+              "url": "https://clinicaltrials.gov/study/NCT07647328",
+              "brief_title": "A Phase IIIb Study to Evaluate Camizestrant Plus Ribociclib in ER-positive, HER2-negative Advanced Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "ER-Positive HER2-Negative Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[48].country",
+                  "excerpt": "South Korea"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07492641",
+              "url": "https://clinicaltrials.gov/study/NCT07492641",
+              "brief_title": "BGB-43395 Plus Letrozole Versus CDK4/6i Plus Letrozole for Patients With Advanced or Metastatic HR+/HER2- Breast Cancer Who Have Not Received Prior Treatment for Advanced or Metastatic Disease",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HR+/HER2- Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[150].country",
+                  "excerpt": "South Korea"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07413939",
+              "url": "https://clinicaltrials.gov/study/NCT07413939",
+              "brief_title": "RO7771950 Versus Tucatinib in Combination With Trastuzumab and Capecitabine in People With Locally Advanced or Metastatic Breast Cancer That is Human Epidermal Growth Factor Receptor 2 (HER2)-Positive",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2",
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HER2-positive Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[133].country",
+                  "excerpt": "South Korea"
+                }
+              ]
+            }
+          ],
+          "country": "South Korea"
+        },
+        {
+          "datum_id": "d8",
+          "trial_count": 29,
+          "citation_count": 29,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07492641",
+              "url": "https://clinicaltrials.gov/study/NCT07492641",
+              "brief_title": "BGB-43395 Plus Letrozole Versus CDK4/6i Plus Letrozole for Patients With Advanced or Metastatic HR+/HER2- Breast Cancer Who Have Not Received Prior Treatment for Advanced or Metastatic Disease",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HR+/HER2- Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[63].country",
+                  "excerpt": "Australia"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07413939",
+              "url": "https://clinicaltrials.gov/study/NCT07413939",
+              "brief_title": "RO7771950 Versus Tucatinib in Combination With Trastuzumab and Capecitabine in People With Locally Advanced or Metastatic Breast Cancer That is Human Epidermal Growth Factor Receptor 2 (HER2)-Positive",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2",
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HER2-positive Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[10].country",
+                  "excerpt": "Australia"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07174336",
+              "url": "https://clinicaltrials.gov/study/NCT07174336",
+              "brief_title": "A Study of Tersolisib (LY4064809/STX-478) With Other Anti-Cancer Treatments in Participants With Advanced Breast Cancer With a Genetic Change (PIK3CA)",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[140].country",
+                  "excerpt": "Australia"
+                }
+              ]
+            }
+          ],
+          "country": "Australia"
+        },
+        {
+          "datum_id": "d9",
+          "trial_count": 28,
+          "citation_count": 28,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07492641",
+              "url": "https://clinicaltrials.gov/study/NCT07492641",
+              "brief_title": "BGB-43395 Plus Letrozole Versus CDK4/6i Plus Letrozole for Patients With Advanced or Metastatic HR+/HER2- Breast Cancer Who Have Not Received Prior Treatment for Advanced or Metastatic Disease",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HR+/HER2- Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[71].country",
+                  "excerpt": "Brazil"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07413939",
+              "url": "https://clinicaltrials.gov/study/NCT07413939",
+              "brief_title": "RO7771950 Versus Tucatinib in Combination With Trastuzumab and Capecitabine in People With Locally Advanced or Metastatic Breast Cancer That is Human Epidermal Growth Factor Receptor 2 (HER2)-Positive",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2",
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HER2-positive Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[25].country",
+                  "excerpt": "Brazil"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07174336",
+              "url": "https://clinicaltrials.gov/study/NCT07174336",
+              "brief_title": "A Study of Tersolisib (LY4064809/STX-478) With Other Anti-Cancer Treatments in Participants With Advanced Breast Cancer With a Genetic Change (PIK3CA)",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[157].country",
+                  "excerpt": "Brazil"
+                }
+              ]
+            }
+          ],
+          "country": "Brazil"
+        },
+        {
+          "datum_id": "d10",
+          "trial_count": 27,
+          "citation_count": 27,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07413939",
+              "url": "https://clinicaltrials.gov/study/NCT07413939",
+              "brief_title": "RO7771950 Versus Tucatinib in Combination With Trastuzumab and Capecitabine in People With Locally Advanced or Metastatic Breast Cancer That is Human Epidermal Growth Factor Receptor 2 (HER2)-Positive",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2",
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HER2-positive Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[32].country",
+                  "excerpt": "Canada"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07174336",
+              "url": "https://clinicaltrials.gov/study/NCT07174336",
+              "brief_title": "A Study of Tersolisib (LY4064809/STX-478) With Other Anti-Cancer Treatments in Participants With Advanced Breast Cancer With a Genetic Change (PIK3CA)",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[173].country",
+                  "excerpt": "Canada"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07085767",
+              "url": "https://clinicaltrials.gov/study/NCT07085767",
+              "brief_title": "Palazestrant in Combination With Ribociclib for the First-line Treatment of ER+/HER2- Advanced Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[79].country",
+                  "excerpt": "Canada"
+                }
+              ]
+            }
+          ],
+          "country": "Canada"
+        },
+        {
+          "datum_id": "d11",
+          "trial_count": 27,
+          "citation_count": 27,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07647328",
+              "url": "https://clinicaltrials.gov/study/NCT07647328",
+              "brief_title": "A Phase IIIb Study to Evaluate Camizestrant Plus Ribociclib in ER-positive, HER2-negative Advanced Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "ER-Positive HER2-Negative Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[40].country",
+                  "excerpt": "Poland"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07492641",
+              "url": "https://clinicaltrials.gov/study/NCT07492641",
+              "brief_title": "BGB-43395 Plus Letrozole Versus CDK4/6i Plus Letrozole for Patients With Advanced or Metastatic HR+/HER2- Breast Cancer Who Have Not Received Prior Treatment for Advanced or Metastatic Disease",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HR+/HER2- Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[144].country",
+                  "excerpt": "Poland"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07413939",
+              "url": "https://clinicaltrials.gov/study/NCT07413939",
+              "brief_title": "RO7771950 Versus Tucatinib in Combination With Trastuzumab and Capecitabine in People With Locally Advanced or Metastatic Breast Cancer That is Human Epidermal Growth Factor Receptor 2 (HER2)-Positive",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2",
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HER2-positive Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[114].country",
+                  "excerpt": "Poland"
+                }
+              ]
+            }
+          ],
+          "country": "Poland"
+        },
+        {
+          "datum_id": "d12",
+          "trial_count": 27,
+          "citation_count": 27,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07492641",
+              "url": "https://clinicaltrials.gov/study/NCT07492641",
+              "brief_title": "BGB-43395 Plus Letrozole Versus CDK4/6i Plus Letrozole for Patients With Advanced or Metastatic HR+/HER2- Breast Cancer Who Have Not Received Prior Treatment for Advanced or Metastatic Disease",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HR+/HER2- Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[187].country",
+                  "excerpt": "United Kingdom"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07413939",
+              "url": "https://clinicaltrials.gov/study/NCT07413939",
+              "brief_title": "RO7771950 Versus Tucatinib in Combination With Trastuzumab and Capecitabine in People With Locally Advanced or Metastatic Breast Cancer That is Human Epidermal Growth Factor Receptor 2 (HER2)-Positive",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2",
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HER2-positive Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[179].country",
+                  "excerpt": "United Kingdom"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07174336",
+              "url": "https://clinicaltrials.gov/study/NCT07174336",
+              "brief_title": "A Study of Tersolisib (LY4064809/STX-478) With Other Anti-Cancer Treatments in Participants With Advanced Breast Cancer With a Genetic Change (PIK3CA)",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[353].country",
+                  "excerpt": "United Kingdom"
+                }
+              ]
+            }
+          ],
+          "country": "United Kingdom"
+        },
+        {
+          "datum_id": "d13",
+          "trial_count": 26,
+          "citation_count": 26,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07413939",
+              "url": "https://clinicaltrials.gov/study/NCT07413939",
+              "brief_title": "RO7771950 Versus Tucatinib in Combination With Trastuzumab and Capecitabine in People With Locally Advanced or Metastatic Breast Cancer That is Human Epidermal Growth Factor Receptor 2 (HER2)-Positive",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2",
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HER2-positive Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[18].country",
+                  "excerpt": "Belgium"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07373782",
+              "url": "https://clinicaltrials.gov/study/NCT07373782",
+              "brief_title": "Continuous Positive Airway Pressure (CPAP) Assisted Radiotherapy in Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2",
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer Early Stage Breast Cancer (Stage 1-3)"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Belgium"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07281833",
+              "url": "https://clinicaltrials.gov/study/NCT07281833",
+              "brief_title": "Phase III Study to Evaluate the Safety, Efficacy, and Impact on Quality of Life of Capivasertib Alongside Standard-of-care Endocrine Treatment in Patients With HR+/HER2- Advanced Breast Cancer and Progression on Prior Endocrine-based Treatment",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Belgium"
+                }
+              ]
+            }
+          ],
+          "country": "Belgium"
+        },
+        {
+          "datum_id": "d14",
+          "trial_count": 22,
+          "citation_count": 22,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07671885",
+              "url": "https://clinicaltrials.gov/study/NCT07671885",
+              "brief_title": "Evaluating the Response-Guided Therapy With Neoadjuvant Endocrine Therapy to Optimize Adjuvant Treatment in Premenopausal HR+/HER2- Breast Cancer (JCOG2402, Young HOPE)",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Japan"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07492641",
+              "url": "https://clinicaltrials.gov/study/NCT07492641",
+              "brief_title": "BGB-43395 Plus Letrozole Versus CDK4/6i Plus Letrozole for Patients With Advanced or Metastatic HR+/HER2- Breast Cancer Who Have Not Received Prior Treatment for Advanced or Metastatic Disease",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HR+/HER2- Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[118].country",
+                  "excerpt": "Japan"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07190443",
+              "url": "https://clinicaltrials.gov/study/NCT07190443",
+              "brief_title": "Adjuvant Abemaciclib for Locoregional Recurrence of HR-positive, HER2-negative Breast Cancer (JCOG2313, AURA)",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Japan"
+                }
+              ]
+            }
+          ],
+          "country": "Japan"
+        },
+        {
+          "datum_id": "d15",
+          "trial_count": 21,
+          "citation_count": 21,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07492641",
+              "url": "https://clinicaltrials.gov/study/NCT07492641",
+              "brief_title": "BGB-43395 Plus Letrozole Versus CDK4/6i Plus Letrozole for Patients With Advanced or Metastatic HR+/HER2- Breast Cancer Who Have Not Received Prior Treatment for Advanced or Metastatic Disease",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HR+/HER2- Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[180].country",
+                  "excerpt": "Taiwan"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07413939",
+              "url": "https://clinicaltrials.gov/study/NCT07413939",
+              "brief_title": "RO7771950 Versus Tucatinib in Combination With Trastuzumab and Capecitabine in People With Locally Advanced or Metastatic Breast Cancer That is Human Epidermal Growth Factor Receptor 2 (HER2)-Positive",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2",
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HER2-positive Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[156].country",
+                  "excerpt": "Taiwan"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07174336",
+              "url": "https://clinicaltrials.gov/study/NCT07174336",
+              "brief_title": "A Study of Tersolisib (LY4064809/STX-478) With Other Anti-Cancer Treatments in Participants With Advanced Breast Cancer With a Genetic Change (PIK3CA)",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[335].country",
+                  "excerpt": "Taiwan"
+                }
+              ]
+            }
+          ],
+          "country": "Taiwan"
+        },
+        {
+          "datum_id": "d16",
+          "trial_count": 21,
+          "citation_count": 21,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07492641",
+              "url": "https://clinicaltrials.gov/study/NCT07492641",
+              "brief_title": "BGB-43395 Plus Letrozole Versus CDK4/6i Plus Letrozole for Patients With Advanced or Metastatic HR+/HER2- Breast Cancer Who Have Not Received Prior Treatment for Advanced or Metastatic Disease",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HR+/HER2- Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[184].country",
+                  "excerpt": "Turkey (Türkiye)"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07413939",
+              "url": "https://clinicaltrials.gov/study/NCT07413939",
+              "brief_title": "RO7771950 Versus Tucatinib in Combination With Trastuzumab and Capecitabine in People With Locally Advanced or Metastatic Breast Cancer That is Human Epidermal Growth Factor Receptor 2 (HER2)-Positive",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2",
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HER2-positive Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[167].country",
+                  "excerpt": "Turkey (Türkiye)"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07174336",
+              "url": "https://clinicaltrials.gov/study/NCT07174336",
+              "brief_title": "A Study of Tersolisib (LY4064809/STX-478) With Other Anti-Cancer Treatments in Participants With Advanced Breast Cancer With a Genetic Change (PIK3CA)",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[342].country",
+                  "excerpt": "Turkey (Türkiye)"
+                }
+              ]
+            }
+          ],
+          "country": "Turkey (Türkiye)"
+        },
+        {
+          "datum_id": "d17",
+          "trial_count": 20,
+          "citation_count": 20,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07413939",
+              "url": "https://clinicaltrials.gov/study/NCT07413939",
+              "brief_title": "RO7771950 Versus Tucatinib in Combination With Trastuzumab and Capecitabine in People With Locally Advanced or Metastatic Breast Cancer That is Human Epidermal Growth Factor Receptor 2 (HER2)-Positive",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2",
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HER2-positive Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[4].country",
+                  "excerpt": "Argentina"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07174336",
+              "url": "https://clinicaltrials.gov/study/NCT07174336",
+              "brief_title": "A Study of Tersolisib (LY4064809/STX-478) With Other Anti-Cancer Treatments in Participants With Advanced Breast Cancer With a Genetic Change (PIK3CA)",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[127].country",
+                  "excerpt": "Argentina"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07173751",
+              "url": "https://clinicaltrials.gov/study/NCT07173751",
+              "brief_title": "ROSETTA Breast-01: The Effects and Safety of Pumitamig in Patients With Triple-Negative Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[71].country",
+                  "excerpt": "Argentina"
+                }
+              ]
+            }
+          ],
+          "country": "Argentina"
+        },
+        {
+          "datum_id": "d18",
+          "trial_count": 17,
+          "citation_count": 17,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07174336",
+              "url": "https://clinicaltrials.gov/study/NCT07174336",
+              "brief_title": "A Study of Tersolisib (LY4064809/STX-478) With Other Anti-Cancer Treatments in Participants With Advanced Breast Cancer With a Genetic Change (PIK3CA)",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[237].country",
+                  "excerpt": "Greece"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07106632",
+              "url": "https://clinicaltrials.gov/study/NCT07106632",
+              "brief_title": "Optimising Adjuvant Chemotherapy Prescription in Young Patients With Hormone-dependent Breast Cancer Using Genomic Tests",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Early Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[54].country",
+                  "excerpt": "Greece"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07085767",
+              "url": "https://clinicaltrials.gov/study/NCT07085767",
+              "brief_title": "Palazestrant in Combination With Ribociclib for the First-line Treatment of ER+/HER2- Advanced Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[99].country",
+                  "excerpt": "Greece"
+                }
+              ]
+            }
+          ],
+          "country": "Greece"
+        },
+        {
+          "datum_id": "d19",
+          "trial_count": 16,
+          "citation_count": 16,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07413939",
+              "url": "https://clinicaltrials.gov/study/NCT07413939",
+              "brief_title": "RO7771950 Versus Tucatinib in Combination With Trastuzumab and Capecitabine in People With Locally Advanced or Metastatic Breast Cancer That is Human Epidermal Growth Factor Receptor 2 (HER2)-Positive",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2",
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HER2-positive Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[123].country",
+                  "excerpt": "Portugal"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07281833",
+              "url": "https://clinicaltrials.gov/study/NCT07281833",
+              "brief_title": "Phase III Study to Evaluate the Safety, Efficacy, and Impact on Quality of Life of Capivasertib Alongside Standard-of-care Endocrine Treatment in Patients With HR+/HER2- Advanced Breast Cancer and Progression on Prior Endocrine-based Treatment",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[15].country",
+                  "excerpt": "Portugal"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07085767",
+              "url": "https://clinicaltrials.gov/study/NCT07085767",
+              "brief_title": "Palazestrant in Combination With Ribociclib for the First-line Treatment of ER+/HER2- Advanced Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[146].country",
+                  "excerpt": "Portugal"
+                }
+              ]
+            }
+          ],
+          "country": "Portugal"
+        },
+        {
+          "datum_id": "d20",
+          "trial_count": 15,
+          "citation_count": 15,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07085767",
+              "url": "https://clinicaltrials.gov/study/NCT07085767",
+              "brief_title": "Palazestrant in Combination With Ribociclib for the First-line Treatment of ER+/HER2- Advanced Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[103].country",
+                  "excerpt": "Hong Kong"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07060807",
+              "url": "https://clinicaltrials.gov/study/NCT07060807",
+              "brief_title": "A Clinical Study of Patritumab Deruxtecan to Treat Breast Cancer (MK-1022-016)",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[104].country",
+                  "excerpt": "Hong Kong"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT06982521",
+              "url": "https://clinicaltrials.gov/study/NCT06982521",
+              "brief_title": "Phase 3 Study of RLY-2608 + Fulvestrant vs Capivasertib + Fulvestrant as Treatment for Locally Advanced or Metastatic PIK3CA-mutant HR+/HER2- Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[1]",
+                  "excerpt": "HER2- Negative Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[150].country",
+                  "excerpt": "Hong Kong"
+                }
+              ]
+            }
+          ],
+          "country": "Hong Kong"
+        },
+        {
+          "datum_id": "d21",
+          "trial_count": 15,
+          "citation_count": 15,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07413939",
+              "url": "https://clinicaltrials.gov/study/NCT07413939",
+              "brief_title": "RO7771950 Versus Tucatinib in Combination With Trastuzumab and Capecitabine in People With Locally Advanced or Metastatic Breast Cancer That is Human Epidermal Growth Factor Receptor 2 (HER2)-Positive",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2",
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HER2-positive Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[91].country",
+                  "excerpt": "Israel"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07085767",
+              "url": "https://clinicaltrials.gov/study/NCT07085767",
+              "brief_title": "Palazestrant in Combination With Ribociclib for the First-line Treatment of ER+/HER2- Advanced Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[110].country",
+                  "excerpt": "Israel"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07062965",
+              "url": "https://clinicaltrials.gov/study/NCT07062965",
+              "brief_title": "A Study to Learn About the Study Medicine Called PF-07248144 in Combination With Fulvestrant in People With HR-positive, HER2-negative Advanced or Metastatic Breast Cancer Who Progressed After a Prior Line of Treatment.",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[157].country",
+                  "excerpt": "Israel"
+                }
+              ]
+            }
+          ],
+          "country": "Israel"
+        },
+        {
+          "datum_id": "d22",
+          "trial_count": 15,
+          "citation_count": 15,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07062965",
+              "url": "https://clinicaltrials.gov/study/NCT07062965",
+              "brief_title": "A Study to Learn About the Study Medicine Called PF-07248144 in Combination With Fulvestrant in People With HR-positive, HER2-negative Advanced or Metastatic Breast Cancer Who Progressed After a Prior Line of Treatment.",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[173].country",
+                  "excerpt": "Mexico"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07060807",
+              "url": "https://clinicaltrials.gov/study/NCT07060807",
+              "brief_title": "A Clinical Study of Patritumab Deruxtecan to Treat Breast Cancer (MK-1022-016)",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[143].country",
+                  "excerpt": "Mexico"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT06926868",
+              "url": "https://clinicaltrials.gov/study/NCT06926868",
+              "brief_title": "A Study of Izalontamab Brengitecan Versus Chemotherapy in Participants With Previously Untreated, Locally Advanced, Recurrent Inoperable, or Metastatic Triple-negative Breast Cancer Ineligible for Anti-PD(L)1 Drugs (IZABRIGHT-Breast01)",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2",
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[212].country",
+                  "excerpt": "Mexico"
+                }
+              ]
+            }
+          ],
+          "country": "Mexico"
+        },
+        {
+          "datum_id": "d23",
+          "trial_count": 14,
+          "citation_count": 14,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07413939",
+              "url": "https://clinicaltrials.gov/study/NCT07413939",
+              "brief_title": "RO7771950 Versus Tucatinib in Combination With Trastuzumab and Capecitabine in People With Locally Advanced or Metastatic Breast Cancer That is Human Epidermal Growth Factor Receptor 2 (HER2)-Positive",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2",
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HER2-positive Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[70].country",
+                  "excerpt": "Czechia"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07173751",
+              "url": "https://clinicaltrials.gov/study/NCT07173751",
+              "brief_title": "ROSETTA Breast-01: The Effects and Safety of Pumitamig in Patients With Triple-Negative Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[110].country",
+                  "excerpt": "Czechia"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07085767",
+              "url": "https://clinicaltrials.gov/study/NCT07085767",
+              "brief_title": "Palazestrant in Combination With Ribociclib for the First-line Treatment of ER+/HER2- Advanced Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[81].country",
+                  "excerpt": "Czechia"
+                }
+              ]
+            }
+          ],
+          "country": "Czechia"
+        },
+        {
+          "datum_id": "d24",
+          "trial_count": 14,
+          "citation_count": 14,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07669467",
+              "url": "https://clinicaltrials.gov/study/NCT07669467",
+              "brief_title": "Nuvastatic® Phase III Trial for Fatigue in Triple-Negative Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[1]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "India"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07062965",
+              "url": "https://clinicaltrials.gov/study/NCT07062965",
+              "brief_title": "A Study to Learn About the Study Medicine Called PF-07248144 in Combination With Fulvestrant in People With HR-positive, HER2-negative Advanced or Metastatic Breast Cancer Who Progressed After a Prior Line of Treatment.",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[153].country",
+                  "excerpt": "India"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT06966700",
+              "url": "https://clinicaltrials.gov/study/NCT06966700",
+              "brief_title": "A Clinical Study of Sacituzumab Tirumotecan (Sac-TMT, MK-2870) in People With Breast Cancer (MK-2870-032)",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[188].country",
+                  "excerpt": "India"
+                }
+              ]
+            }
+          ],
+          "country": "India"
+        },
+        {
+          "datum_id": "d25",
+          "trial_count": 14,
+          "citation_count": 14,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07310758",
+              "url": "https://clinicaltrials.gov/study/NCT07310758",
+              "brief_title": "Contrast-enhanced Ultrasound for Sentinel Node Detection",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2",
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[1]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Netherlands"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07237256",
+              "url": "https://clinicaltrials.gov/study/NCT07237256",
+              "brief_title": "Chemotherapy De-escalation in HR +, HER2-, Intermediate-risk Early Breast Cancer Treated With Adjuvant Ribociclib",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[107].country",
+                  "excerpt": "Netherlands"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07173751",
+              "url": "https://clinicaltrials.gov/study/NCT07173751",
+              "brief_title": "ROSETTA Breast-01: The Effects and Safety of Pumitamig in Patients With Triple-Negative Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[154].country",
+                  "excerpt": "Netherlands"
+                }
+              ]
+            }
+          ],
+          "country": "Netherlands"
+        }
+      ]
+    },
+    "meta": {
+      "interpretation": {
+        "summary": "Computed distinct trials by country for 1 cohort(s): 'breast cancer' (condition=breast cancer, trial_phase=['PHASE3'], overall_status=['RECRUITING']).",
+        "plan": {
+          "cohorts": [
+            {
+              "label": "breast cancer",
+              "filters": {
+                "drug_name": null,
+                "condition": "breast cancer",
+                "sponsor": null,
+                "country": null,
+                "trial_phase": [
+                  "PHASE3"
+                ],
+                "overall_status": [
+                  "RECRUITING"
+                ],
+                "study_type": null
+              }
+            }
+          ],
+          "operation": {
+            "kind": "count_by",
+            "dimension": "country",
+            "second_dimension": null,
+            "measure": null,
+            "x_measure": null
+          },
+          "time": {
+            "date_basis": "start_date",
+            "year_from": null,
+            "year_to": null
+          },
+          "phase_policy": "combined",
+          "top_n": null,
+          "clarification": null,
+          "unsupported_reason": null
+        },
+        "planner_model": "gpt-5.4",
+        "planner_attempts": 1,
+        "repair_feedback": [],
+        "parent_run_id": "7db9e6be-b9e2-4591-9f31-b8b7011c32e5",
+        "plan_diff": {
+          "cohorts[0].filters.trial_phase": {
+            "before": null,
+            "after": [
+              "PHASE3"
+            ]
+          }
+        }
+      },
+      "chart_selection": "counts per category → bar_chart",
+      "cohorts": [
+        {
+          "label": "breast cancer",
+          "filters": {
+            "condition": "breast cancer",
+            "trial_phase": [
+              "PHASE3"
+            ],
+            "overall_status": [
+              "RECRUITING"
+            ]
+          },
+          "api_params": {
+            "query.cond": "\"breast cancer\"",
+            "filter.overallStatus": "RECRUITING",
+            "query.term": "AREA[Phase](PHASE3)"
+          },
+          "total_matches": 206,
+          "records_fetched": 206,
+          "trials_analyzed": 206,
+          "excluded": {},
+          "missing": {},
+          "synonym_matches": {
+            "condition": 24
+          },
+          "complete": true
+        }
+      ],
+      "time": {
+        "date_basis": "start_date",
+        "year_from": null,
+        "year_to": null
+      },
+      "measure": "Distinct trials (NCT IDs) per datum",
+      "units": {
+        "trial_count": "trials"
+      },
+      "sort": "Trial count, descending",
+      "time_granularity": null,
+      "policies": {
+        "counting": "Every value is a count of distinct trials (NCT IDs); a trial counts at most once per datum.",
+        "missing_values": "Trials with no value for the analysed field are not charted; see meta.cohorts[].missing.",
+        "condition_matching": "condition uses ClinicalTrials.gov condition search (query.cond, phrase), which includes synonyms and narrower terms.",
+        "country": "A multi-country trial counts once in each listed country. Counts are trials, not sites or patients."
+      },
+      "assumptions": [],
+      "cohort_overlap": null,
+      "truncation": {
+        "shown": 25,
+        "total": 63,
+        "rule": "Top 25 country categories by trial count"
+      },
+      "source": {
+        "name": "ClinicalTrials.gov API v2",
+        "api_version": "2.0.5",
+        "data_timestamp": "2026-10-01T09:00:05",
+        "retrieved_at": "2026-10-01T20:57:40+00:00"
+      },
+      "timings_ms": {
+        "plan": 3720,
+        "retrieve": 253,
+        "analyze": 22,
+        "build": 2,
+        "verify": 0
+      },
+      "llm_usage": {
+        "calls": 1,
+        "input_tokens": 3725,
+        "output_tokens": 128
+      }
+    },
+    "clarification": null,
+    "error": null
+  }
+}

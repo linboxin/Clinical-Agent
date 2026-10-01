@@ -60,25 +60,46 @@ async def run_case(planner: Planner, grounder: Grounder | None, case: dict[str, 
     }
 
 
+def semantic(plan: dict[str, Any] | None, status: str) -> dict[str, Any] | None:
+    if plan is None or status != "accepted":
+        return None  # only accepted plans are executed; a declined plan's best guess is unused
+    cohorts = sorted(json.dumps(c["filters"], sort_keys=True) for c in plan.get("cohorts", []))
+    return {
+        **{
+            k: v
+            for k, v in plan.items()
+            if k not in {"cohorts", "clarification", "unsupported_reason"}
+        },
+        "cohorts": cohorts,
+        "clarification": plan.get("clarification") is not None,
+        "unsupported": plan.get("unsupported_reason") is not None,
+    }
+
+
 def summarize(rows: list[dict], model: str, repeats: int) -> str:
     by_class: dict[str, list[dict]] = defaultdict(list)
     for r in rows:
         by_class[r["class"]].append(r)
-    total = len(rows)
+    errors = [r for r in rows if r["status"] == "error"]  # provider failures, not plan quality
+    rows = [r for r in rows if r["status"] != "error"]
+    total = max(len(rows), 1)
     passed = sum(1 for r in rows if r.get("passed"))
     first_try = sum(1 for r in rows if r.get("attempts") == 1 and r.get("passed"))
     repaired = sum(1 for r in rows if r.get("attempts", 0) > 1)
     tokens = sum(r.get("input_tokens", 0) + r.get("output_tokens", 0) for r in rows)
     latency = sorted(r.get("latency_s", 0) for r in rows)
-    # Stability: the same case yields the same plan on every repeat.
+    # Stability: the same case yields the same *semantic* plan on every repeat (status plus
+    # every field except free text: cohort labels, clarification wording, unsupported reason).
     plans: dict[str, set[str]] = defaultdict(set)
     for r in rows:
-        plans[r["id"]].add(json.dumps(r.get("plan"), sort_keys=True))
+        key = [r["status"], semantic(r.get("plan"), r["status"])]
+        plans[r["id"]].add(json.dumps(key, sort_keys=True))
     stable = sum(1 for p in plans.values() if len(p) == 1)
     lines = [
         f"## Planner eval — {model}, prompt {PROMPT_VERSION}, {repeats} repeat(s)",
         "",
-        f"- **Pass rate:** {passed}/{total} ({passed / total:.0%})",
+        f"- **Pass rate:** {passed}/{total} ({passed / total:.0%}); provider errors excluded: "
+        f"{len(errors)}",
         f"- **Passed on first try:** {first_try}/{total}; runs that used a repair: {repaired}",
         f"- **Stable across repeats:** {stable}/{len(plans)} cases",
         f"- **Tokens:** {tokens:,} total, {tokens // max(total, 1):,} per run",
@@ -106,7 +127,7 @@ async def main() -> None:
     parser.add_argument("--only", default="", help="run case ids starting with this prefix")
     parser.add_argument("--no-ground", action="store_true", help="skip live grounding")
     parser.add_argument("--no-repair", action="store_true", help="E2: disable the repair call")
-    parser.add_argument("--concurrency", type=int, default=4)
+    parser.add_argument("--concurrency", type=int, default=2)
     args = parser.parse_args()
 
     settings = get_settings()
@@ -142,12 +163,13 @@ async def main() -> None:
     RESULTS.mkdir(exist_ok=True)
     stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%S")
     suffix = "_norepair" if args.no_repair else ""
-    out = RESULTS / f"{stamp}_{model}_{PROMPT_VERSION}{suffix}"
-    out.with_suffix(".jsonl").write_text("\n".join(json.dumps(r) for r in rows) + "\n")
+    # Built by hand, not Path.with_suffix: model names contain dots ("gpt-5.4-mini").
+    base = f"{stamp}_{model}_{PROMPT_VERSION}{suffix}"
+    (RESULTS / f"{base}.jsonl").write_text("\n".join(json.dumps(r) for r in rows) + "\n")
     summary = summarize(list(rows), model, args.repeats)
-    out.with_suffix(".md").write_text(summary)
+    (RESULTS / f"{base}.md").write_text(summary)
     print(summary)
-    print(f"wrote {out}.jsonl / .md")
+    print(f"wrote evals/results/{base}.jsonl / .md")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,92 @@
+{
+  "request": {
+    "query": "How many trials has this drug had per year?",
+    "citations_per_datum": 3
+  },
+  "response": {
+    "schema_version": "1.0",
+    "run_id": "05ac5da2-02c8-4d8f-b1c8-1791821419cc",
+    "status": "needs_clarification",
+    "visualization": null,
+    "meta": {
+      "interpretation": {
+        "summary": "Computed distinct trials per year of study start date for 1 cohort(s): 'this drug' (no filters).",
+        "plan": {
+          "cohorts": [
+            {
+              "label": "this drug",
+              "filters": {
+                "drug_name": null,
+                "condition": null,
+                "sponsor": null,
+                "country": null,
+                "trial_phase": null,
+                "overall_status": null,
+                "study_type": null
+              }
+            }
+          ],
+          "operation": {
+            "kind": "time_trend",
+            "dimension": null,
+            "second_dimension": null,
+            "measure": null,
+            "x_measure": null
+          },
+          "time": {
+            "date_basis": "start_date",
+            "year_from": null,
+            "year_to": null
+          },
+          "phase_policy": "combined",
+          "top_n": null,
+          "clarification": {
+            "question": "Which drug do you want to analyze?",
+            "options": [
+              "Enter a generic drug name",
+              "Enter a brand name",
+              "Enter a development code (for example, a trial drug code)"
+            ]
+          },
+          "unsupported_reason": null
+        },
+        "planner_model": "gpt-5.4",
+        "planner_attempts": 1,
+        "repair_feedback": [],
+        "parent_run_id": null,
+        "plan_diff": null
+      },
+      "chart_selection": null,
+      "cohorts": [],
+      "time": null,
+      "measure": "Distinct trials (NCT IDs) per datum",
+      "units": {
+        "trial_count": "trials"
+      },
+      "sort": null,
+      "time_granularity": null,
+      "policies": {},
+      "assumptions": [],
+      "cohort_overlap": null,
+      "truncation": null,
+      "source": null,
+      "timings_ms": {
+        "plan": 2755
+      },
+      "llm_usage": {
+        "calls": 1,
+        "input_tokens": 3578,
+        "output_tokens": 156
+      }
+    },
+    "clarification": {
+      "question": "Which drug do you want to analyze?",
+      "options": [
+        "Enter a generic drug name",
+        "Enter a brand name",
+        "Enter a development code (for example, a trial drug code)"
+      ]
+    },
+    "error": null
+  }
+}

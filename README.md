@@ -19,7 +19,7 @@ Requires [uv](https://docs.astral.sh/uv/); Python 3.12 is installed automaticall
 ```bash
 uv sync
 cp .env.example .env                      # set OPENAI_API_KEY (and OPENAI_BASE_URL if you were given one)
-uv run python -m scripts.check_openai     # verifies the key, the model, and one structured plan call
+uv run python -m scripts.check_openai     # verifies the key, the model (default gpt-5.4), and one structured plan call
 uv run uvicorn app.main:app --port 8000   # API docs: http://localhost:8000/docs · demo UI: /demo
 ```
 
@@ -44,18 +44,24 @@ curl -s localhost:8000/v1/visualizations -H 'content-type: application/json' -d 
 
 ## Example runs
 
-The files in [`examples/`](examples/) are produced by `scripts/run_examples.py`: real requests through the real pipeline, saved verbatim (request plus response) with 3 inline citations per datum.
+The files in [`examples/`](examples/) are actual outputs of `scripts/run_examples.py`, using the real planner (`gpt-5.4`) and live ClinicalTrials.gov data from 2026-10-01. Each is saved verbatim (request plus response) with 3 inline citations per datum. **01–05 are the five headline examples** (brief §6); 06–12 show the remaining chart types and statuses.
 
-| # | Question | Expected chart |
+| # | Question | Result |
 |---|---|---|
-| 01 | *How has the number of trials for this drug changed over time?* + `drug_name: Pembrolizumab` (the brief's example) | `time_series` |
-| 02 | *Compare phases for trials involving pembrolizumab vs nivolumab in melanoma.* | `grouped_bar_chart` |
-| 03 | *Which countries have the most recruiting trials for breast cancer?* | `bar_chart` (horizontal) |
-| 04 | *Show a network of sponsors and drugs for phase 3 melanoma trials.* | `network_graph` (bipartite) |
-| 05 | *What is the enrollment size distribution of recruiting Alzheimer's trials?* | `histogram` |
-| 06–12 | Drug co-occurrence network, scatter, phase mix over time, preferred pie, clarification, unsupported, and a follow-up of 03 | various |
+| [01](examples/01_time_trend_brief_example.json) | *How has the number of trials for this drug changed over time?* + `drug_name: Pembrolizumab` (the brief's example) | `time_series`: 2,631 trials, 2008–2027 (later years are anticipated starts); 40 matched only via registry synonyms (e.g. MK-3475) |
+| [02](examples/02_comparison_two_drugs.json) | *Compare phases for trials involving pembrolizumab vs nivolumab in melanoma.* | `grouped_bar_chart`: 351 vs 329 trials, 8 phase groups each |
+| [03](examples/03_geographic_recruiting.json) | *Which countries have the most recruiting trials for breast cancer?* | `bar_chart` (horizontal, top 25 of 81 countries): United States 915, China 647, Italy 195, … |
+| [04](examples/04_network_sponsor_drug.json) | *Show a network of sponsors and drugs for phase 3 melanoma trials.* | `network_graph`, bipartite: 221 trials; 40 nodes, 51 edges kept from 345 |
+| [05](examples/05_histogram_enrollment.json) | *What is the enrollment size distribution of recruiting Alzheimer's trials?* | `histogram`: 434 trials in 11 declared bins |
+| [06](examples/06_network_drug_cooccurrence.json) | *Which drugs frequently co-occur in combination studies for multiple myeloma?* | `network_graph`, co-occurrence: 4,049 trials; dexamethasone is the hub (737) |
+| [07](examples/07_scatter_enrollment_vs_start.json) | *Plot enrollment vs start date for phase 3 psoriasis trials, by sponsor type* | `scatter_plot`: 510 points, coloured by sponsor class |
+| [08](examples/08_trend_split_by_phase.json) | *How has the phase mix of interventional obesity trials changed since 2010?* | `time_series`, one line per phase: 10,160 trials |
+| [09](examples/09_pie_preferred.json) | *What share of COVID-19 vaccine trials are randomized?* + `preferred_visualization: pie_chart` | `pie_chart` (honored: allocation is exclusive); 138 trials without an allocation reported as missing |
+| [10](examples/10_needs_clarification.json) | *How many trials has this drug had per year?* | `needs_clarification`: "Which drug do you want to analyze?" |
+| [11](examples/11_unsupported.json) | *Which melanoma drug has the best overall survival?* | `unsupported`, with the supported alternatives |
+| [12](examples/12_follow_up_of_03.json) | *Same, but only phase 3 trials.* + `parent_run_id` of 03 | `bar_chart`; `plan_diff` = `trial_phase: null → [PHASE3]`; 206 trials, China leads |
 
-> **Status:** the example JSON files still have to be generated. The OpenAI key provided during development was rejected by OpenAI (`401 invalid_api_key`), so no run has used the real model yet. Every stage after planning has been run live against ClinicalTrials.gov with hand-written plans (`--plan`); see "Validation" below.
+Every example passed the verification gate on all of its citations. A separate live re-fetch of 75 cited trials across examples 01, 04, 06, 07 and 12 matched 335/335 excerpts.
 
 ## Request
 
@@ -158,13 +164,24 @@ The values above are illustrative. **[docs/response-schema.md](docs/response-sch
   - API routes, path traversal, and strict-schema validity of `QueryPlan` for OpenAI.
 - **The gate on every response:** every cited excerpt is re-resolved against the record it came from.
 - **Live runs against ClinicalTrials.gov** (hand-written plans via `--plan`): histogram (Alzheimer's, 601 trials), scatter (psoriasis, 516), phase mix over time (obesity, 10,160), investigator ↔ site network (glioblastoma), pembrolizumab vs nivolumab in melanoma. All passed the gate.
-- **Spot checks against the live API.** The obesity 2026 bucket (782) matches an independent `countTotal` query exactly. `scripts/audit_citations.py` re-fetched 25 cited trials live, and **86/86 cited excerpts matched**.
+- **Spot checks against the live API.** The obesity 2026 bucket (782) matches an independent `countTotal` query exactly. `scripts/audit_citations.py` re-fetched 100 cited trials live (smoke runs plus examples 01, 04, 06, 07 and 12), and **421/421 cited excerpts matched**.
 - **Visual check of the demo renderer** (headless Chrome screenshots). This caught a UTC/local-time shift in the time axis, which was a renderer bug; the data was correct.
-- **Planner evals:** 34 cases. Not run yet: they need a working OpenAI key.
+- **Planner evals** ([evals/results](evals/results/README.md)): 34 cases × 3 repeats, deterministic scoring.
+
+  | Model (prompt v5) | Pass | Stable across repeats | Median latency |
+  |---|---|---|---|
+  | gpt-5.4-nano | 97/102 | 30/34 | 2.2 s |
+  | gpt-5.4-mini | 101/102 | 32/34 | 2.0 s |
+  | **gpt-5.4 (default)** | **102/102** | **34/34** | 2.5 s |
+  | gpt-5.4-mini without the repair call (E2) | 99/102 | 34/34 | 2.1 s |
+
+  E2 shows the grounding repair loop at work: without it, the misspelling case (`pembrolizumabb`) fails 3/3; with it, it is corrected 3/3. The eval failures also drove the prompt from v3 to v5: keeping the question's value when it conflicts with a field, wording cues for the date basis, and concrete clarification options.
 
 ## Limitations and what I'd improve
 
-- **Planner quality is unmeasured** until the evals run with a working key. Next steps: run E1 (nano / mini / full) and E2 (repair on/off), then add each miss as a case.
+- **The eval set is small (34 cases) and was written by the builder,** so 100% means "no known regressions", not general accuracy. Next: grow it from real user questions and review traces, and add adversarial paraphrases.
+- **No free-text keyword filter.** "COVID-19 vaccine trials" becomes `condition=COVID-19` plus `drug_name=vaccine` (an intervention-name phrase), which works but is indirect. A `keyword` filter on `query.term` would cover topics that aren't a drug, condition or sponsor.
+- **Registry search semantics leak through.** "Alzheimer's" and "Alzheimer's disease" expand to different trial sets (434 vs 601 recruiting). The exact `api_params` are in `meta.cohorts`, but the user isn't warned.
 - **Scale:** 30k trials per cohort, fetched synchronously (~25 s at the cap). Next: count-only facet queries for unscoped questions, and async jobs for large cohorts.
 - **Entity resolution:** brand and generic names, sponsor subsidiaries ("Merck Sharp & Dohme LLC" vs "Merck KGaA") and site spellings aren't merged. Next: MeSH-backed drug identity plus a reviewed alias table.
 - **Semantics:** co-occurrence means co-listed, not co-administered (it would need arm-level data). Status is current, not historical. Enrollment mixes actual and estimated counts (each citation states which).
@@ -177,6 +194,11 @@ The values above are illustrative. **[docs/response-schema.md](docs/response-sch
   - The first built the v1 MVP (contracts, registry, client, three operators, gate, 71 tests).
   - The second reviewed the design against the brief and the live API, then built v3: histogram and scatter, chart rules, the grounding repair loop, membership evidence, traces and evidence endpoints, follow-ups, evals, the demo, and the review and audit scripts.
 - **Design:** three written iterations (v1 → v2 → v3), each change justified in [DESIGN.md Appendix A](DESIGN.md#appendix-a-changes-from-v2-and-v1). The OpenAI-only constraint and the design-first workflow were set by the author.
+- **Iteration driven by measurement:**
+  - planner prompt v3 → v5 (each change answers a specific eval failure);
+  - model choice by experiment E1;
+  - repair-loop value measured by E2;
+  - the time-axis fix found by looking at rendered output.
 - **Deliberate choices, made before coding and checked against the live API:**
   - the model-proposes / code-decides split, with chart selection in code;
   - contributor-set citations re-verified by the gate;

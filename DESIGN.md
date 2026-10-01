@@ -11,7 +11,7 @@
 | D1 | Language | Python 3.12, `uv`, FastAPI, Pydantic v2 | Typed contracts produce the OpenAPI/JSON Schema docs for free |
 | D2 | Footprint | One process. File run store and file page cache. No DB, Docker or queue | Graders run it with `uv sync && uv run`; the brief grades none of that infrastructure (Docker isn't even installed on the dev machine) |
 | D3 | Orchestration | Plain async pipeline; every stage is a traced span | Fixed pipeline; a run takes 1–30 s, so re-running beats resuming (pages are cached) |
-| D4 | LLM | OpenAI only (≤ `gpt-5.4`, Cheiron constraint); default `gpt-5.4-mini`, configurable | A small model suits a constrained schema-filling task. Eval experiment E1 (§12) compares models; it needs a working API key and has not run yet |
+| D4 | LLM | OpenAI only (≤ `gpt-5.4`, Cheiron constraint); default **`gpt-5.4`**, configurable | Chosen by E1 (§12): 102/102 and 34/34 stable, vs mini at 101/102 (its miss would have shipped a misleading chart). The cost is about 0.5 s of latency and the same ~3.8k tokens per run |
 | D5 | LLM role | Writes a `QueryPlan` and nothing else (≤ 2 calls). Never sees trial records; never produces numbers, titles or chart data | Avoids hallucination-prone steps (§7: 20%) |
 | D6 | Chart type | **Derived by code** from the operation, the dimension kinds and data exclusivity; a preference is honored only if compatible | Removes a model output that could be wrong; the rules double as validation |
 | D7 | Agent loop | plan → validate → **ground** (live hit counts) → ≤ 1 repair with that feedback | A bounded tool loop with deterministic tools |
@@ -46,7 +46,7 @@ Each step involves silent judgment calls, so the numbers are hard to defend.
 | §5 Deep citations | Contributor sets + membership evidence (§10) | `verify` gate on every run; `scripts/audit_citations.py` (live) |
 | §6 README, 3–5 real example runs | `examples/` from `scripts/run_examples.py` | Reviewed with `scripts/review_run.py` |
 | §7 System design (35%) | §3, §6–§8 | Golden tests on hand-computed corpora |
-| §7 AI design (20%) | D5–D7, §6 | Evals: pass rate, first-try validity, repair use, stability |
+| §7 AI design (20%) | D5–D7, §6 | Evals: 102/102 with gpt-5.4; E2 shows the repair loop's value |
 | §7 Code quality (20%) | §14, CI | ruff, mypy, 106 offline tests |
 | §7 I/O design (10%) | §5 | JSON Schema export, OpenAPI |
 | §8 Tools, validation, deliberate vs generated | README "How this was built" | Commit history |
@@ -298,6 +298,15 @@ Page cache: `.cache/ctgov/<sha256>.json`, keyed by (adapter version, path, param
 - **Scoring:** deterministic field matching (token-insensitive strings, order-free sets). There is no LLM judge: expected plans are structured, so exact comparison is cheaper, reproducible and can't itself hallucinate.
 - **Reports:** pass rate per class, first-try passes, repair use, stability across repeats, tokens, latency.
 - **Experiments:** E1 compares models (`gpt-5.4-nano` / `-mini` / `gpt-5.4`); E2 compares with and without the repair call (`--no-repair`).
+
+| Prompt v5, 3 repeats | Pass | Stable | Median latency |
+|---|---|---|---|
+| gpt-5.4-nano | 97/102 | 30/34 | 2.2 s |
+| gpt-5.4-mini | 101/102 | 32/34 | 2.0 s |
+| **gpt-5.4** | **102/102** | **34/34** | 2.5 s |
+| gpt-5.4-mini, no repair (E2) | 99/102 (the misspelling case fails 3/3) | 34/34 | 2.1 s |
+
+Prompt v3 → v5 changes each answer a specific eval failure. The full history is in [evals/results/README.md](evals/results/README.md).
 
 **Review:**
 - `scripts/review_run.py <run_id>` renders a Markdown sheet (plan, coverage, data, 3 citations per datum).
