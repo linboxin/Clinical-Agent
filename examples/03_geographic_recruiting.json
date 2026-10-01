@@ -4,12 +4,12 @@
     "citations_per_datum": 3
   },
   "response": {
-    "schema_version": "1.0",
-    "run_id": "7db9e6be-b9e2-4591-9f31-b8b7011c32e5",
+    "schema_version": "1.1",
+    "run_id": "99c8f37f-153f-425d-8e25-928aa7094639",
     "status": "ok",
     "visualization": {
       "type": "bar_chart",
-      "title": "Trials by country — breast cancer",
+      "title": "Trials by country — breast cancer · recruiting",
       "orientation": "horizontal",
       "encoding": {
         "x": {
@@ -1641,21 +1641,27 @@
     },
     "meta": {
       "interpretation": {
-        "summary": "Computed distinct trials by country for 1 cohort(s): 'breast cancer' (condition=breast cancer, overall_status=['RECRUITING']).",
+        "summary": "Computed distinct trials by country for 1 cohort(s): 'breast cancer · recruiting' (conditions=['breast cancer'], overall_status=['RECRUITING']).",
         "plan": {
           "cohorts": [
             {
-              "label": "breast cancer",
+              "label": "breast cancer · recruiting",
               "filters": {
-                "drug_name": null,
-                "condition": "breast cancer",
-                "sponsor": null,
-                "country": null,
+                "drug_names": null,
+                "conditions": [
+                  "breast cancer"
+                ],
+                "sponsors": null,
+                "countries": null,
                 "trial_phase": null,
                 "overall_status": [
                   "RECRUITING"
                 ],
-                "study_type": null
+                "study_type": null,
+                "exclude_drug_names": null,
+                "exclude_conditions": null,
+                "exclude_sponsors": null,
+                "exclude_countries": null
               }
             }
           ],
@@ -1664,7 +1670,8 @@
             "dimension": "country",
             "second_dimension": null,
             "measure": null,
-            "x_measure": null
+            "x_measure": null,
+            "only_listed_values": false
           },
           "time": {
             "date_basis": "start_date",
@@ -1673,6 +1680,8 @@
           },
           "phase_policy": "combined",
           "top_n": null,
+          "expansions": [],
+          "unhandled_constraints": [],
           "clarification": null,
           "unsupported_reason": null
         },
@@ -1685,9 +1694,11 @@
       "chart_selection": "counts per category → bar_chart",
       "cohorts": [
         {
-          "label": "breast cancer",
+          "label": "breast cancer · recruiting",
           "filters": {
-            "condition": "breast cancer",
+            "conditions": [
+              "breast cancer"
+            ],
             "overall_status": [
               "RECRUITING"
             ]
@@ -1702,7 +1713,7 @@
           "excluded": {},
           "missing": {},
           "synonym_matches": {
-            "condition": 347
+            "conditions": 347
           },
           "complete": true
         }
@@ -1713,6 +1724,7 @@
         "year_to": null
       },
       "measure": "Distinct trials (NCT IDs) per datum",
+      "count_method": "fetched",
       "units": {
         "trial_count": "trials"
       },
@@ -1735,20 +1747,23 @@
         "name": "ClinicalTrials.gov API v2",
         "api_version": "2.0.5",
         "data_timestamp": "2026-10-01T09:00:05",
-        "retrieved_at": "2026-10-01T20:57:10+00:00"
+        "retrieved_at": "2026-10-01T23:03:55+00:00"
       },
       "timings_ms": {
-        "plan": 2821,
-        "retrieve": 1453,
-        "analyze": 66,
+        "plan": 3144,
+        "retrieve": 59,
+        "prepare": 34,
+        "normalize": 0,
+        "analyze": 28,
         "build": 3,
         "verify": 0
       },
       "llm_usage": {
         "calls": 1,
-        "input_tokens": 3579,
-        "output_tokens": 125
-      }
+        "input_tokens": 4624,
+        "output_tokens": 168
+      },
+      "normalization": []
     },
     "clarification": null,
     "error": null

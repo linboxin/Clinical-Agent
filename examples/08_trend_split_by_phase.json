@@ -4,12 +4,12 @@
     "citations_per_datum": 3
   },
   "response": {
-    "schema_version": "1.0",
-    "run_id": "542c427a-cb87-4375-bfe1-4ab49dfa665a",
+    "schema_version": "1.1",
+    "run_id": "9128553a-675f-4ebc-b309-6052661a9f43",
     "status": "ok",
     "visualization": {
       "type": "time_series",
-      "title": "Trials per year by study start date, by phase — obesity, since 2010",
+      "title": "Trials per year by study start date, by phase — obesity · interventional, since 2010",
       "time_granularity": "year",
       "encoding": {
         "x": {
@@ -11881,19 +11881,25 @@
     },
     "meta": {
       "interpretation": {
-        "summary": "Computed distinct trials per year of study start date, split by phase for 1 cohort(s): 'obesity' (condition=obesity, study_type=INTERVENTIONAL). Restricted to study start date years 2010–latest.",
+        "summary": "Computed distinct trials per year of study start date, split by phase for 1 cohort(s): 'obesity · interventional' (conditions=['obesity'], study_type=INTERVENTIONAL). Restricted to study start date years 2010–latest.",
         "plan": {
           "cohorts": [
             {
-              "label": "obesity",
+              "label": "obesity · interventional",
               "filters": {
-                "drug_name": null,
-                "condition": "obesity",
-                "sponsor": null,
-                "country": null,
+                "drug_names": null,
+                "conditions": [
+                  "obesity"
+                ],
+                "sponsors": null,
+                "countries": null,
                 "trial_phase": null,
                 "overall_status": null,
-                "study_type": "INTERVENTIONAL"
+                "study_type": "INTERVENTIONAL",
+                "exclude_drug_names": null,
+                "exclude_conditions": null,
+                "exclude_sponsors": null,
+                "exclude_countries": null
               }
             }
           ],
@@ -11902,7 +11908,8 @@
             "dimension": null,
             "second_dimension": "phase",
             "measure": null,
-            "x_measure": null
+            "x_measure": null,
+            "only_listed_values": false
           },
           "time": {
             "date_basis": "start_date",
@@ -11911,6 +11918,8 @@
           },
           "phase_policy": "combined",
           "top_n": null,
+          "expansions": [],
+          "unhandled_constraints": [],
           "clarification": null,
           "unsupported_reason": null
         },
@@ -11923,9 +11932,11 @@
       "chart_selection": "counts per year → time_series (one line per series)",
       "cohorts": [
         {
-          "label": "obesity",
+          "label": "obesity · interventional",
           "filters": {
-            "condition": "obesity",
+            "conditions": [
+              "obesity"
+            ],
             "study_type": "INTERVENTIONAL"
           },
           "api_params": {
@@ -11940,7 +11951,7 @@
             "phase": 3
           },
           "synonym_matches": {
-            "condition": 2239
+            "conditions": 2239
           },
           "complete": true
         }
@@ -11951,6 +11962,7 @@
         "year_to": null
       },
       "measure": "Distinct trials (NCT IDs) per datum",
+      "count_method": "fetched",
       "units": {
         "trial_count": "trials"
       },
@@ -11973,20 +11985,23 @@
         "name": "ClinicalTrials.gov API v2",
         "api_version": "2.0.5",
         "data_timestamp": "2026-10-01T09:00:05",
-        "retrieved_at": "2026-10-01T20:57:27+00:00"
+        "retrieved_at": "2026-10-01T23:04:25+00:00"
       },
       "timings_ms": {
-        "plan": 2388,
-        "retrieve": 109,
-        "analyze": 167,
+        "plan": 2992,
+        "retrieve": 52,
+        "prepare": 102,
+        "normalize": 0,
+        "analyze": 94,
         "build": 10,
         "verify": 2
       },
       "llm_usage": {
         "calls": 1,
-        "input_tokens": 3584,
-        "output_tokens": 123
-      }
+        "input_tokens": 4629,
+        "output_tokens": 167
+      },
+      "normalization": []
     },
     "clarification": null,
     "error": null

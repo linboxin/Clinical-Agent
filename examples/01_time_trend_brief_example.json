@@ -5,8 +5,8 @@
     "citations_per_datum": 3
   },
   "response": {
-    "schema_version": "1.0",
-    "run_id": "9af50d8b-86de-4920-8e9a-10cb3292bc34",
+    "schema_version": "1.1",
+    "run_id": "49c8474d-e9f5-41cd-a599-c622f2239f8a",
     "status": "ok",
     "visualization": {
       "type": "time_series",
@@ -998,19 +998,25 @@
     },
     "meta": {
       "interpretation": {
-        "summary": "Computed distinct trials per year of study start date for 1 cohort(s): 'Pembrolizumab' (drug_name=Pembrolizumab).",
+        "summary": "Computed distinct trials per year of study start date for 1 cohort(s): 'Pembrolizumab' (drug_names=['Pembrolizumab']).",
         "plan": {
           "cohorts": [
             {
               "label": "Pembrolizumab",
               "filters": {
-                "drug_name": "Pembrolizumab",
-                "condition": null,
-                "sponsor": null,
-                "country": null,
+                "drug_names": [
+                  "Pembrolizumab"
+                ],
+                "conditions": null,
+                "sponsors": null,
+                "countries": null,
                 "trial_phase": null,
                 "overall_status": null,
-                "study_type": null
+                "study_type": null,
+                "exclude_drug_names": null,
+                "exclude_conditions": null,
+                "exclude_sponsors": null,
+                "exclude_countries": null
               }
             }
           ],
@@ -1019,7 +1025,8 @@
             "dimension": null,
             "second_dimension": null,
             "measure": null,
-            "x_measure": null
+            "x_measure": null,
+            "only_listed_values": false
           },
           "time": {
             "date_basis": "start_date",
@@ -1028,6 +1035,8 @@
           },
           "phase_policy": "combined",
           "top_n": null,
+          "expansions": [],
+          "unhandled_constraints": [],
           "clarification": null,
           "unsupported_reason": null
         },
@@ -1042,7 +1051,9 @@
         {
           "label": "Pembrolizumab",
           "filters": {
-            "drug_name": "Pembrolizumab"
+            "drug_names": [
+              "Pembrolizumab"
+            ]
           },
           "api_params": {
             "query.term": "(AREA[InterventionName]\"Pembrolizumab\" OR AREA[InterventionOtherName]\"Pembrolizumab\")"
@@ -1055,7 +1066,7 @@
             "start_date": 4
           },
           "synonym_matches": {
-            "drug_name": 40
+            "drug_names": 40
           },
           "complete": true
         }
@@ -1066,6 +1077,7 @@
         "year_to": null
       },
       "measure": "Distinct trials (NCT IDs) per datum",
+      "count_method": "fetched",
       "units": {
         "trial_count": "trials"
       },
@@ -1074,7 +1086,7 @@
       "policies": {
         "counting": "Every value is a count of distinct trials (NCT IDs); a trial counts at most once per datum.",
         "missing_values": "Trials with no value for the analysed field are not charted; see meta.cohorts[].missing.",
-        "drug_matching": "drug_name matches InterventionName or InterventionOtherName (field-scoped search, with ClinicalTrials.gov synonym expansion). Trials that only mention the drug elsewhere, e.g. as prior therapy, are not included.",
+        "drug_matching": "drug_names match InterventionName or InterventionOtherName (field-scoped search, with ClinicalTrials.gov synonym expansion). Trials that only mention the drug elsewhere, e.g. as prior therapy, are not included.",
         "date_basis": "Years come from the study start date. Month-precision dates are bucketed by year. Dates the registry marks ESTIMATED (anticipated, or never updated to actual) are included and counted per year in estimated_date_count."
       },
       "assumptions": [
@@ -1087,20 +1099,23 @@
         "name": "ClinicalTrials.gov API v2",
         "api_version": "2.0.5",
         "data_timestamp": "2026-10-01T09:00:05",
-        "retrieved_at": "2026-10-01T20:57:00+00:00"
+        "retrieved_at": "2026-10-01T23:03:48+00:00"
       },
       "timings_ms": {
-        "plan": 3919,
-        "retrieve": 2540,
-        "analyze": 49,
-        "build": 30,
+        "plan": 4270,
+        "retrieve": 30,
+        "prepare": 39,
+        "normalize": 0,
+        "analyze": 33,
+        "build": 2,
         "verify": 0
       },
       "llm_usage": {
         "calls": 1,
-        "input_tokens": 3594,
-        "output_tokens": 124
-      }
+        "input_tokens": 4639,
+        "output_tokens": 166
+      },
+      "normalization": []
     },
     "clarification": null,
     "error": null

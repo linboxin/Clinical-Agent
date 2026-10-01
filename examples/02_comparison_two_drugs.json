@@ -4,12 +4,12 @@
     "citations_per_datum": 3
   },
   "response": {
-    "schema_version": "1.0",
-    "run_id": "68c0a6a1-5eb7-4c39-881c-c33bef39c619",
+    "schema_version": "1.1",
+    "run_id": "dea97f44-1325-4734-8459-ffd34cf7ff52",
     "status": "ok",
     "visualization": {
       "type": "grouped_bar_chart",
-      "title": "Trials by phase — pembrolizumab vs nivolumab",
+      "title": "Trials by phase — pembrolizumab vs nivolumab (melanoma)",
       "orientation": "vertical",
       "encoding": {
         "x": {
@@ -1165,31 +1165,47 @@
     },
     "meta": {
       "interpretation": {
-        "summary": "Computed distinct trials by phase for 2 cohort(s): 'pembrolizumab' (drug_name=pembrolizumab, condition=melanoma); 'nivolumab' (drug_name=nivolumab, condition=melanoma).",
+        "summary": "Computed distinct trials by phase for 2 cohort(s): 'pembrolizumab' (drug_names=['pembrolizumab'], conditions=['melanoma']); 'nivolumab' (drug_names=['nivolumab'], conditions=['melanoma']).",
         "plan": {
           "cohorts": [
             {
               "label": "pembrolizumab",
               "filters": {
-                "drug_name": "pembrolizumab",
-                "condition": "melanoma",
-                "sponsor": null,
-                "country": null,
+                "drug_names": [
+                  "pembrolizumab"
+                ],
+                "conditions": [
+                  "melanoma"
+                ],
+                "sponsors": null,
+                "countries": null,
                 "trial_phase": null,
                 "overall_status": null,
-                "study_type": null
+                "study_type": null,
+                "exclude_drug_names": null,
+                "exclude_conditions": null,
+                "exclude_sponsors": null,
+                "exclude_countries": null
               }
             },
             {
               "label": "nivolumab",
               "filters": {
-                "drug_name": "nivolumab",
-                "condition": "melanoma",
-                "sponsor": null,
-                "country": null,
+                "drug_names": [
+                  "nivolumab"
+                ],
+                "conditions": [
+                  "melanoma"
+                ],
+                "sponsors": null,
+                "countries": null,
                 "trial_phase": null,
                 "overall_status": null,
-                "study_type": null
+                "study_type": null,
+                "exclude_drug_names": null,
+                "exclude_conditions": null,
+                "exclude_sponsors": null,
+                "exclude_countries": null
               }
             }
           ],
@@ -1198,7 +1214,8 @@
             "dimension": "phase",
             "second_dimension": null,
             "measure": null,
-            "x_measure": null
+            "x_measure": null,
+            "only_listed_values": false
           },
           "time": {
             "date_basis": "start_date",
@@ -1207,6 +1224,8 @@
           },
           "phase_policy": "combined",
           "top_n": null,
+          "expansions": [],
+          "unhandled_constraints": [],
           "clarification": null,
           "unsupported_reason": null
         },
@@ -1221,8 +1240,12 @@
         {
           "label": "pembrolizumab",
           "filters": {
-            "drug_name": "pembrolizumab",
-            "condition": "melanoma"
+            "drug_names": [
+              "pembrolizumab"
+            ],
+            "conditions": [
+              "melanoma"
+            ]
           },
           "api_params": {
             "query.cond": "\"melanoma\"",
@@ -1236,16 +1259,20 @@
             "phase": 13
           },
           "synonym_matches": {
-            "condition": 29,
-            "drug_name": 10
+            "conditions": 29,
+            "drug_names": 10
           },
           "complete": true
         },
         {
           "label": "nivolumab",
           "filters": {
-            "drug_name": "nivolumab",
-            "condition": "melanoma"
+            "drug_names": [
+              "nivolumab"
+            ],
+            "conditions": [
+              "melanoma"
+            ]
           },
           "api_params": {
             "query.cond": "\"melanoma\"",
@@ -1259,8 +1286,8 @@
             "phase": 18
           },
           "synonym_matches": {
-            "condition": 18,
-            "drug_name": 5
+            "conditions": 18,
+            "drug_names": 5
           },
           "complete": true
         }
@@ -1271,6 +1298,7 @@
         "year_to": null
       },
       "measure": "Distinct trials (NCT IDs) per datum",
+      "count_method": "fetched",
       "units": {
         "trial_count": "trials"
       },
@@ -1279,7 +1307,7 @@
       "policies": {
         "counting": "Every value is a count of distinct trials (NCT IDs); a trial counts at most once per datum.",
         "missing_values": "Trials with no value for the analysed field are not charted; see meta.cohorts[].missing.",
-        "drug_matching": "drug_name matches InterventionName or InterventionOtherName (field-scoped search, with ClinicalTrials.gov synonym expansion). Trials that only mention the drug elsewhere, e.g. as prior therapy, are not included.",
+        "drug_matching": "drug_names match InterventionName or InterventionOtherName (field-scoped search, with ClinicalTrials.gov synonym expansion). Trials that only mention the drug elsewhere, e.g. as prior therapy, are not included.",
         "condition_matching": "condition uses ClinicalTrials.gov condition search (query.cond, phrase), which includes synonyms and narrower terms.",
         "phase": "Multi-phase trials form their own combined category, e.g. Phase 1/2.",
         "cohort_overlap": "A trial matching several cohorts counts in each; see meta.cohort_overlap."
@@ -1293,20 +1321,23 @@
         "name": "ClinicalTrials.gov API v2",
         "api_version": "2.0.5",
         "data_timestamp": "2026-10-01T09:00:05",
-        "retrieved_at": "2026-10-01T20:57:07+00:00"
+        "retrieved_at": "2026-10-01T23:03:52+00:00"
       },
       "timings_ms": {
-        "plan": 4147,
-        "retrieve": 15,
-        "analyze": 15,
-        "build": 4,
+        "plan": 4016,
+        "retrieve": 18,
+        "prepare": 17,
+        "normalize": 0,
+        "analyze": 4,
+        "build": 1,
         "verify": 0
       },
       "llm_usage": {
         "calls": 1,
-        "input_tokens": 3584,
-        "output_tokens": 173
-      }
+        "input_tokens": 4629,
+        "output_tokens": 242
+      },
+      "normalization": []
     },
     "clarification": null,
     "error": null

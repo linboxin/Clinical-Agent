@@ -203,7 +203,7 @@
       "additionalProperties": false,
       "properties": {
         "label": {
-          "description": "Short display label, e.g. 'pembrolizumab' or 'breast cancer'.",
+          "description": "Short working label. The backend replaces it with a name generated from the filters.",
           "title": "Label",
           "type": "string"
         },
@@ -221,53 +221,65 @@
     "CohortFilters": {
       "additionalProperties": false,
       "properties": {
-        "drug_name": {
+        "drug_names": {
           "anyOf": [
             {
-              "type": "string"
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
             },
             {
               "type": "null"
             }
           ],
-          "description": "Drug or intervention exactly as the user named it (generic, brand or code). Do not add synonyms; the registry search expands them. Null if unconstrained.",
-          "title": "Drug Name"
+          "description": "Trials listing ANY of these drugs/interventions, as the user named them (generic, brand or code; the registry search expands synonyms). For a drug class ('PD-1 inhibitors') list its member drugs and record the class in plan.expansions. Null if unconstrained.",
+          "title": "Drug Names"
         },
-        "condition": {
+        "conditions": {
           "anyOf": [
             {
-              "type": "string"
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
             },
             {
               "type": "null"
             }
           ],
-          "description": "Condition/disease as named by the user, or null.",
-          "title": "Condition"
+          "description": "Trials for ANY of these conditions/diseases, or null.",
+          "title": "Conditions"
         },
-        "sponsor": {
+        "sponsors": {
           "anyOf": [
             {
-              "type": "string"
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
             },
             {
               "type": "null"
             }
           ],
-          "description": "Lead sponsor organisation, or null.",
-          "title": "Sponsor"
+          "description": "Lead sponsor is ANY of these, or null.",
+          "title": "Sponsors"
         },
-        "country": {
+        "countries": {
           "anyOf": [
             {
-              "type": "string"
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
             },
             {
               "type": "null"
             }
           ],
-          "description": "Country of a trial location (English name), or null.",
-          "title": "Country"
+          "description": "At least one trial location in ANY of these countries (English names), or null.",
+          "title": "Countries"
         },
         "trial_phase": {
           "anyOf": [
@@ -309,16 +321,80 @@
             }
           ],
           "description": "Restrict study type, or null."
+        },
+        "exclude_drug_names": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Drop trials listing any of these drugs ('excluding Keytruda'), or null.",
+          "title": "Exclude Drug Names"
+        },
+        "exclude_conditions": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Drop trials for any of these conditions, or null.",
+          "title": "Exclude Conditions"
+        },
+        "exclude_sponsors": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Drop trials whose lead sponsor is any of these, or null.",
+          "title": "Exclude Sponsors"
+        },
+        "exclude_countries": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Drop trials with a location in any of these countries ('outside the US'), or null.",
+          "title": "Exclude Countries"
         }
       },
       "required": [
-        "drug_name",
-        "condition",
-        "sponsor",
-        "country",
+        "drug_names",
+        "conditions",
+        "sponsors",
+        "countries",
         "trial_phase",
         "overall_status",
-        "study_type"
+        "study_type",
+        "exclude_drug_names",
+        "exclude_conditions",
+        "exclude_sponsors",
+        "exclude_countries"
       ],
       "title": "CohortFilters",
       "type": "object"
@@ -573,6 +649,40 @@
       "title": "Evidence",
       "type": "object"
     },
+    "Expansion": {
+      "additionalProperties": false,
+      "properties": {
+        "term": {
+          "description": "The class or group as the user wrote it, e.g. 'PD-1 inhibitors'.",
+          "title": "Term",
+          "type": "string"
+        },
+        "field": {
+          "description": "Filter list it expands into.",
+          "enum": [
+            "drug_names",
+            "conditions"
+          ],
+          "title": "Field",
+          "type": "string"
+        },
+        "members": {
+          "description": "The explicit members used, e.g. generic drug names.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Members",
+          "type": "array"
+        }
+      },
+      "required": [
+        "term",
+        "field",
+        "members"
+      ],
+      "title": "Expansion",
+      "type": "object"
+    },
     "GroupedBarChartSpec": {
       "properties": {
         "type": {
@@ -777,6 +887,16 @@
           "title": "Measure",
           "type": "string"
         },
+        "count_method": {
+          "default": "fetched",
+          "description": "fetched: every trial was downloaded and counted here (full citation sets). server_count: the cohort was too large to fetch, so each datum is the registry's own totalCount for its source_query and citations are samples.",
+          "enum": [
+            "fetched",
+            "server_count"
+          ],
+          "title": "Count Method",
+          "type": "string"
+        },
         "units": {
           "additionalProperties": {
             "type": "string"
@@ -875,9 +995,39 @@
           "description": "Planner tokens: input, output, calls.",
           "title": "Llm Usage",
           "type": "object"
+        },
+        "normalization": {
+          "description": "Drug/condition names normalized by a small model before grouping.",
+          "items": {
+            "$ref": "#/$defs/Normalization"
+          },
+          "title": "Normalization",
+          "type": "array"
         }
       },
       "title": "Meta",
+      "type": "object"
+    },
+    "NameMerge": {
+      "properties": {
+        "canonical": {
+          "title": "Canonical",
+          "type": "string"
+        },
+        "variants": {
+          "description": "Raw registry spellings grouped under canonical.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Variants",
+          "type": "array"
+        }
+      },
+      "required": [
+        "canonical",
+        "variants"
+      ],
+      "title": "NameMerge",
       "type": "object"
     },
     "NetworkData": {
@@ -1040,6 +1190,67 @@
       "title": "NodeDatum",
       "type": "object"
     },
+    "Normalization": {
+      "description": "What the name normalizer changed for one dimension (citations keep raw values).",
+      "properties": {
+        "dimension": {
+          "title": "Dimension",
+          "type": "string"
+        },
+        "model": {
+          "title": "Model",
+          "type": "string"
+        },
+        "names_in": {
+          "description": "Distinct raw names seen.",
+          "title": "Names In",
+          "type": "integer"
+        },
+        "names_sent": {
+          "description": "Most frequent names sent to the model (rarer keep raw).",
+          "title": "Names Sent",
+          "type": "integer"
+        },
+        "names_unmapped": {
+          "description": "Sent names left raw because the model's answer failed validation.",
+          "title": "Names Unmapped",
+          "type": "integer"
+        },
+        "names_mapped": {
+          "description": "Names the model changed (merged, split or dropped).",
+          "title": "Names Mapped",
+          "type": "integer"
+        },
+        "dropped": {
+          "description": "Raw names judged not to be a drug/condition.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Dropped",
+          "type": "array"
+        },
+        "merges": {
+          "description": "Largest merges, most variants first.",
+          "items": {
+            "$ref": "#/$defs/NameMerge"
+          },
+          "title": "Merges",
+          "type": "array"
+        }
+      },
+      "required": [
+        "dimension",
+        "model",
+        "names_in",
+        "names_sent",
+        "names_unmapped",
+        "names_mapped",
+        "dropped",
+        "merges"
+      ],
+      "title": "Normalization",
+      "type": "object"
+    },
     "Operation": {
       "additionalProperties": false,
       "properties": {
@@ -1089,6 +1300,11 @@
             }
           ],
           "description": "scatter: the x axis. Otherwise null."
+        },
+        "only_listed_values": {
+          "description": "True when grouping by drug, condition, lead_sponsor or country should count only the values in the cohort's own list for that field (e.g. rank the listed PD-1 inhibitors and ignore co-listed chemotherapy). Otherwise false.",
+          "title": "Only Listed Values",
+          "type": "boolean"
         }
       },
       "required": [
@@ -1096,7 +1312,8 @@
         "dimension",
         "second_dimension",
         "measure",
-        "x_measure"
+        "x_measure",
+        "only_listed_values"
       ],
       "title": "Operation",
       "type": "object"
@@ -1235,6 +1452,22 @@
           "description": "Show only the N largest categories/nodes (1-100), or null for the default.",
           "title": "Top N"
         },
+        "expansions": {
+          "description": "Every class or group name you replaced by explicit members. Empty if none.",
+          "items": {
+            "$ref": "#/$defs/Expansion"
+          },
+          "title": "Expansions",
+          "type": "array"
+        },
+        "unhandled_constraints": {
+          "description": "Parts of the question this plan does NOT apply (e.g. 'only placebo-controlled trials'). Never drop a constraint silently. Empty if everything is applied.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Unhandled Constraints",
+          "type": "array"
+        },
         "clarification": {
           "anyOf": [
             {
@@ -1265,6 +1498,8 @@
         "time",
         "phase_policy",
         "top_n",
+        "expansions",
+        "unhandled_constraints",
         "clarification",
         "unsupported_reason"
       ],
@@ -1513,8 +1748,8 @@
   "description": "Envelope. `status` decides which of visualization / clarification / error is set:\n\nok \u2192 visualization; empty \u2192 visualization with no data; needs_clarification \u2192\nclarification; unsupported / failed \u2192 error.",
   "properties": {
     "schema_version": {
-      "const": "1.0",
-      "default": "1.0",
+      "const": "1.1",
+      "default": "1.1",
       "title": "Schema Version",
       "type": "string"
     },

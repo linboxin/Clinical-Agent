@@ -1,6 +1,6 @@
 # Design: ClinicalTrials.gov Query-to-Visualization Agent
 
-**Status:** v3, as built · 2026-10-01
+**Status:** v3.1, as built · 2026-10-01 (v3.1 = plan-language building blocks, server counts, name normalization; see Appendix B)
 **Brief:** [ASSIGNMENT.md](ASSIGNMENT.md) · **Supersedes:** v2 (the previous draft of this file) and v1 ([ClinicalTrials-System-Design.md](ClinicalTrials-System-Design.md)). Changes and reasons are in [Appendix A](#appendix-a-changes-from-v2-and-v1).
 **Renderer contract:** [docs/response-schema.md](docs/response-schema.md)
 
@@ -16,6 +16,9 @@
 | D6 | Chart type | **Derived by code** from the operation, the dimension kinds and data exclusivity; a preference is honored only if compatible | Removes a model output that could be wrong; the rules double as validation |
 | D7 | Agent loop | plan → validate → **ground** (live hit counts) → ≤ 1 repair with that feedback | A bounded tool loop with deterministic tools |
 | D8 | Evidence | Each count is the size of a contributor set; citations come from the same set; a gate re-checks every excerpt | Deep citations (bonus) that cannot drift from the numbers |
+| D9 | Plan language | General building blocks, not per-question handling: any-of value lists, `exclude_*` lists, class `expansions` (each member grounded), `only_listed_values`, and `unhandled_constraints` → clarification | A question like "Excluding Keytruda, which PD-1 inhibitors…" composes from these; nothing is silently dropped |
+| D10 | Very large cohorts | Above the cap, countable plans are counted **on the server** (one `totalCount` query per bucket + 3 sample citations + a `source_query` URL); other plans ask the user to narrow | Exact answers for whole-registry questions without fetching 600k records |
+| D11 | Entity names | A small model (`gpt-5.4-mini`) normalizes drug/condition names under guardrails (only given names, validated answers, disk cache, raw values still cited, merges disclosed) | Brand/code/generic and combination strings group correctly in networks and rankings |
 
 ## 1. Problem, users, goal
 
@@ -151,15 +154,28 @@ Full field-by-field documentation is in [docs/response-schema.md](docs/response-
 
 ```json
 {
-  "cohorts": [{"label": "pembrolizumab", "filters": {"drug_name": "pembrolizumab", "condition": "melanoma",
-               "sponsor": null, "country": null, "trial_phase": null, "overall_status": null, "study_type": null}}],
-  "operation": {"kind": "count_by", "dimension": "phase", "second_dimension": null, "measure": null, "x_measure": null},
+  "cohorts": [{"label": "…", "filters": {
+      "drug_names": ["nivolumab", "cemiplimab", "dostarlimab", "tislelizumab", "toripalimab"],
+      "conditions": null, "sponsors": null, "countries": null,
+      "trial_phase": ["PHASE3"], "overall_status": null, "study_type": null,
+      "exclude_drug_names": ["Keytruda"], "exclude_conditions": null,
+      "exclude_sponsors": null, "exclude_countries": null}}],
+  "operation": {"kind": "count_by", "dimension": "drug", "second_dimension": null,
+                "measure": null, "x_measure": null, "only_listed_values": true},
   "time": {"date_basis": "start_date", "year_from": null, "year_to": null},
-  "phase_policy": "combined", "top_n": null, "clarification": null, "unsupported_reason": null
+  "phase_policy": "combined", "top_n": null,
+  "expansions": [{"term": "PD-1 inhibitors", "field": "drug_names", "members": ["nivolumab", "…"]}],
+  "unhandled_constraints": [], "clarification": null, "unsupported_reason": null
 }
 ```
 
-The model can decline by setting `clarification` or `unsupported_reason` instead of forcing a plan.
+The plan above is "Excluding Keytruda, which PD-1 inhibitors have the most Phase 3 trials?".
+- **Free-text filters** are any-of lists, and `exclude_*` lists compile to `NOT` clauses (which honour the registry's synonyms).
+- **A class** is expanded into members, and each member is grounded.
+- **`only_listed_values`** ranks only the listed drugs, not co-listed chemotherapy.
+- **Anything the language can't express** goes into `unhandled_constraints`, which becomes a clarification.
+- **Cohort labels** are regenerated from the filters, so model prose never reaches titles.
+- **Declining:** the model can set `clarification` or `unsupported_reason` instead of forcing a plan.
 
 **Operators**
 
@@ -178,6 +194,10 @@ The model can decline by setting `clarification` or `unsupported_reason` instead
 - histograms need a binned measure;
 - scatter colour must be single-valued;
 - 1–4 cohorts with unique labels;
+- `only_listed_values` needs a drug, condition, sponsor or country dimension, and that list set in every cohort;
+- expansion members must appear in the cohort lists;
+- a value can't be both included and excluded;
+- at most 12 values per list;
 - `year_from ≤ year_to`;
 - `top_n` between 1 and 100.
 
@@ -209,13 +229,19 @@ The model can decline by setting `clarification` or `unsupported_reason` instead
 
 | Filter | Compiled to | Verified |
 |---|---|---|
-| drug | `query.term=(AREA[InterventionName]"X" OR AREA[InterventionOtherName]"X")` | pembrolizumab = MK-3475 = keytruda = 2,631 (the broad `query.intr` gives 2,964, because it includes trials that only mention the drug) |
-| condition | `query.cond="X"` | the phrase is narrower than any-word ("lung cancer": 13,362 vs 14,593); synonyms are kept |
+| drug | `query.term=(AREA[InterventionName]"X" OR AREA[InterventionOtherName]"X" OR …)` | pembrolizumab = MK-3475 = keytruda = 2,631 (the broad `query.intr` gives 2,964, because it includes trials that only mention the drug) |
+| exclusions | `NOT (AREA[…]"X" OR …)`; conditions use `NOT AREA[ConditionSearch]"X"` | nivolumab phase 3 = 174; NOT pembrolizumab = NOT keytruda = 151 (synonyms are honoured) |
+| condition | `query.cond="X" OR "Y"` | the phrase is narrower than any-word ("lung cancer": 13,362 vs 14,593); synonyms are kept; breast OR prostate cancer = 23,505 |
 | sponsor / country / phase / study type / years | `AREA[LeadSponsorName]"X"`, `AREA[LocationCountry]"X"`, `AREA[Phase](…)`, `AREA[StudyType]X`, `AREA[StartDate]RANGE[…]`, AND-ed | ✔ |
 | status | `filter.overallStatus=A,B` | ✔ |
 
 - **Injection-safe:** user text is stripped of `" [ ] ( )` and quoted, so `"x OR y"` is a literal phrase (0 hits). An unknown `AREA` returns 400, which is treated as a compiler bug and not retried.
-- **Cap:** 30,000 trials per cohort (about 25 s), checked at grounding. Above it → `needs_clarification` with narrowing options; an unscoped question (605k trials) asks the user to narrow.
+- **Cap:** 30,000 trials per cohort (about 25 s), checked at grounding. Above the cap:
+  - **countable plans are counted on the server.** These are `count_by` / `time_trend` over phase (exact combined categories via `AND NOT`), status, study type, sponsor class, allocation, primary purpose, intervention type or year, with ≤ 48 queries.
+  - Each bucket is `cohort AND bucket` with `countTotal` plus 3 sample records.
+  - Every datum carries the reproducing `source_query`. `meta.count_method = "server_count"` says that citations are samples and that local re-checks and normalization don't apply.
+  - Measured: the whole-registry phase breakdown (605,357 trials) takes 6 s; the yearly trend 2010–2027 takes 22 s.
+  - Anything else gets `needs_clarification` with narrowing options.
 - **Completeness:** `complete` is true only when pagination ends normally. A mid-run upstream failure → `failed`, never a silent partial result.
 - **Local re-check:** phase, status, study type and year range are re-checked on every record; failures are excluded and counted by reason.
 
@@ -229,7 +255,7 @@ The model can decline by setting `clarification` or `unsupported_reason` instead
 | "Over time" | Start date by default (stated in assumptions). Buckets are zero-filled inside the range, and the current partial year is flagged |
 | Countries / sites | A trial counts once per distinct country or site. Sponsor site numbers (`( Site 5303)`) are stripped |
 | Cohort overlap | A trial in two cohorts counts in both; `meta.cohort_overlap` reports it. Stacked or pie charts are refused when groups overlap |
-| Drug names | The grouping key drops case, ®/™, dose suffixes (`80 mg`) and salt words (`hydrochloride`, `HCl`, …). The label is the most frequent spelling. Brand and generic names are not merged, and the model never merges entities |
+| Drug names | Two layers. (1) A deterministic key: case, ®/™, dose suffixes (`80 mg`) and salt words dropped; placebos removed. (2) For drug and condition groupings, a small model maps the 600 most frequent names to canonical names (Keytruda / MK-3475 → pembrolizumab; combinations split; non-drugs dropped). Guardrails: the model only maps names it was given; out-of-range, duplicate or malformed answers are discarded (one retry, then only validated lines are used); answers are cached per name; citations quote the raw value; `meta.normalization` lists merges, drops and unmapped names; `NAME_NORMALIZER=off` disables it |
 | Free-text membership | A literal match is cited with token matching ("Alzheimer's disease" ≈ "Alzheimer Disease"). Registry synonym matches (MK-3475 for pembrolizumab) are counted in `synonym_matches` |
 | Co-occurrence | Means *co-listed in one trial record*, not "given together" |
 | Enrollment | ACTUAL and ESTIMATED are mixed, and each citation shows which; never summed as a trial count |
@@ -306,6 +332,11 @@ Page cache: `.cache/ctgov/<sha256>.json`, keyed by (adapter version, path, param
 | **gpt-5.4** | **102/102** | **34/34** | 2.5 s |
 | gpt-5.4-mini, no repair (E2) | 99/102 (the misspelling case fails 3/3) | 34/34 | 2.1 s |
 
+| Prompt v7, 41 cases × 3 (adds classes, exclusions, lists, unhandled constraints, whole-registry) | Pass | Stable |
+|---|---|---|
+| **gpt-5.4** | **123/123** | 40/41 |
+| gpt-5.4-mini | 117/123 | 35/41 |
+
 Prompt v3 → v5 changes each answer a specific eval failure. The full history is in [evals/results/README.md](evals/results/README.md).
 
 **Review:**
@@ -355,12 +386,13 @@ tests/   examples/   docs/{response-schema.md,schemas/}
 |---|---|
 | v1 MVP | contracts, registry, compiler, client + cache + limiter, `count_by` / `time_trend` / `network`, spec builder, gate, 71 tests |
 | v3 | histogram, scatter, trend split, 4 dimensions, 3 measures; chart rules + pie/stacked; grounding repair loop; membership evidence + `excerpt`; traces; evidence/trace endpoints; follow-ups; evals; demo; review/audit scripts; CI |
+| v3.1 | plan-language building blocks (lists, exclusions, class expansion, listed values, unhandled constraints, filter-derived labels); server counts; guarded name normalization; schema 1.1 with read-time migration; redesigned demo; 41 eval cases |
 
 ## 16. Production path (documented, not built)
 
 - **Storage and execution:** Postgres for runs, evidence and cache, plus S3 for pages; an async job queue for large cohorts; auth and tenancy.
-- **Unscoped questions:** answer them with per-bucket `countTotal` queries plus sampled citations, instead of fetching every record.
-- **Entity resolution:** MeSH-backed (`derivedSection.*BrowseModule`), with a reviewed alias table.
+- **Entity resolution:** reviewed alias tables on top of the model normalizer, and MeSH where it fits.
+- **Server counts for more shapes:** two-dimension crosstabs, and drug rankings via per-drug count queries.
 - **Tracing:** export spans to an OTLP collector such as Arize Phoenix, and collect human labels there into eval cases.
 - **AWS deployment** (as in v1's production section): ECS Fargate, RDS, S3, Secrets Manager.
 
@@ -381,3 +413,12 @@ tests/   examples/   docs/{response-schema.md,schemas/}
 | 20k cap, 10 citations | 30k cap (measured ~25 s), 5 inline + paginated full set | Measured page cost; smaller responses |
 
 **v1 → v2** (kept): plain runner instead of LangGraph; the brief's top-level field names; no `partial` status; API facts verified live; evals and tracing added; v1's production expansion moved to §16.
+
+## Appendix B: Changes in v3.1, and why
+
+| Trigger | Finding | Change |
+|---|---|---|
+| A user test: "Excluding Keytruda, which PD-1 inhibitors have the most Phase 3 trials?" | Returned `ok` but was wrong. The class name was searched literally (20 trials), the exclusion was silently dropped, and the title (model-written label) claimed an exclusion that never happened | General plan-language blocks (D9); titles and labels generated from filters; no-silent-drop rule. The same question now ranks nivolumab 152, tislelizumab 80, toripalimab 63, … |
+| Comparing with another implementation of this brief | It counted large result sets on the server and normalized names with a model | Adopted both, with stricter guarantees: never-partial semantics, a `source_query` per datum, and validated/cached/disclosed normalization (D10, D11) |
+| Stored runs failing to load after the plan changed (found by the UI agent) | Required plan fields missing in 1.0 records | Response schema 1.1 with read-time migration of 1.0 records |
+| Eval regression (v6): "COVID-19 vaccine trials" was reported as unhandled | Honest, but expressible as an intervention-name phrase | Prompt v7 hint; the case passes 3/3 |

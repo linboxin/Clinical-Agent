@@ -5,12 +5,12 @@
     "citations_per_datum": 3
   },
   "response": {
-    "schema_version": "1.0",
-    "run_id": "048d3319-6602-4e00-a768-6e6ad1fb9759",
+    "schema_version": "1.1",
+    "run_id": "fb2b648f-7c35-46b4-b8a6-93c3928aa72b",
     "status": "ok",
     "visualization": {
       "type": "pie_chart",
-      "title": "Trials by allocation — COVID-19 vaccine",
+      "title": "Trials by allocation — vaccine · COVID-19",
       "encoding": {
         "theta": {
           "field": "trial_count",
@@ -230,19 +230,27 @@
     },
     "meta": {
       "interpretation": {
-        "summary": "Computed distinct trials by allocation for 1 cohort(s): 'COVID-19 vaccine' (drug_name=vaccine, condition=COVID-19).",
+        "summary": "Computed distinct trials by allocation for 1 cohort(s): 'vaccine · COVID-19' (drug_names=['vaccine'], conditions=['COVID-19']).",
         "plan": {
           "cohorts": [
             {
-              "label": "COVID-19 vaccine",
+              "label": "vaccine · COVID-19",
               "filters": {
-                "drug_name": "vaccine",
-                "condition": "COVID-19",
-                "sponsor": null,
-                "country": null,
+                "drug_names": [
+                  "vaccine"
+                ],
+                "conditions": [
+                  "COVID-19"
+                ],
+                "sponsors": null,
+                "countries": null,
                 "trial_phase": null,
                 "overall_status": null,
-                "study_type": null
+                "study_type": null,
+                "exclude_drug_names": null,
+                "exclude_conditions": null,
+                "exclude_sponsors": null,
+                "exclude_countries": null
               }
             }
           ],
@@ -251,7 +259,8 @@
             "dimension": "allocation",
             "second_dimension": null,
             "measure": null,
-            "x_measure": null
+            "x_measure": null,
+            "only_listed_values": false
           },
           "time": {
             "date_basis": "start_date",
@@ -260,6 +269,8 @@
           },
           "phase_policy": "combined",
           "top_n": null,
+          "expansions": [],
+          "unhandled_constraints": [],
           "clarification": null,
           "unsupported_reason": null
         },
@@ -272,10 +283,14 @@
       "chart_selection": "preferred_visualization=pie_chart honored (compatible)",
       "cohorts": [
         {
-          "label": "COVID-19 vaccine",
+          "label": "vaccine · COVID-19",
           "filters": {
-            "drug_name": "vaccine",
-            "condition": "COVID-19"
+            "drug_names": [
+              "vaccine"
+            ],
+            "conditions": [
+              "COVID-19"
+            ]
           },
           "api_params": {
             "query.cond": "\"COVID-19\"",
@@ -289,7 +304,7 @@
             "allocation": 138
           },
           "synonym_matches": {
-            "condition": 240
+            "conditions": 240
           },
           "complete": true
         }
@@ -300,6 +315,7 @@
         "year_to": null
       },
       "measure": "Distinct trials (NCT IDs) per datum",
+      "count_method": "fetched",
       "units": {
         "trial_count": "trials"
       },
@@ -308,7 +324,7 @@
       "policies": {
         "counting": "Every value is a count of distinct trials (NCT IDs); a trial counts at most once per datum.",
         "missing_values": "Trials with no value for the analysed field are not charted; see meta.cohorts[].missing.",
-        "drug_matching": "drug_name matches InterventionName or InterventionOtherName (field-scoped search, with ClinicalTrials.gov synonym expansion). Trials that only mention the drug elsewhere, e.g. as prior therapy, are not included.",
+        "drug_matching": "drug_names match InterventionName or InterventionOtherName (field-scoped search, with ClinicalTrials.gov synonym expansion). Trials that only mention the drug elsewhere, e.g. as prior therapy, are not included.",
         "condition_matching": "condition uses ClinicalTrials.gov condition search (query.cond, phrase), which includes synonyms and narrower terms."
       },
       "assumptions": [],
@@ -318,20 +334,23 @@
         "name": "ClinicalTrials.gov API v2",
         "api_version": "2.0.5",
         "data_timestamp": "2026-10-01T09:00:05",
-        "retrieved_at": "2026-10-01T20:57:30+00:00"
+        "retrieved_at": "2026-10-01T23:04:28+00:00"
       },
       "timings_ms": {
-        "plan": 2591,
-        "retrieve": 407,
-        "analyze": 16,
-        "build": 0,
+        "plan": 2464,
+        "retrieve": 13,
+        "prepare": 20,
+        "normalize": 0,
+        "analyze": 3,
+        "build": 1,
         "verify": 0
       },
       "llm_usage": {
         "calls": 1,
-        "input_tokens": 3587,
-        "output_tokens": 123
-      }
+        "input_tokens": 4632,
+        "output_tokens": 166
+      },
+      "normalization": []
     },
     "clarification": null,
     "error": null

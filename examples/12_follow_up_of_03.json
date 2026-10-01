@@ -2,15 +2,15 @@
   "request": {
     "query": "Same, but only phase 3 trials.",
     "citations_per_datum": 3,
-    "parent_run_id": "7db9e6be-b9e2-4591-9f31-b8b7011c32e5"
+    "parent_run_id": "99c8f37f-153f-425d-8e25-928aa7094639"
   },
   "response": {
-    "schema_version": "1.0",
-    "run_id": "85222504-9321-4846-a7ea-00a7678f3e46",
+    "schema_version": "1.1",
+    "run_id": "3a98ee58-30e6-4d97-8140-b7d599233d26",
     "status": "ok",
     "visualization": {
       "type": "bar_chart",
-      "title": "Trials by country — breast cancer",
+      "title": "Trials by country — breast cancer · Phase 3 · recruiting",
       "orientation": "horizontal",
       "encoding": {
         "x": {
@@ -2116,23 +2116,29 @@
     },
     "meta": {
       "interpretation": {
-        "summary": "Computed distinct trials by country for 1 cohort(s): 'breast cancer' (condition=breast cancer, trial_phase=['PHASE3'], overall_status=['RECRUITING']).",
+        "summary": "Computed distinct trials by country for 1 cohort(s): 'breast cancer · Phase 3 · recruiting' (conditions=['breast cancer'], trial_phase=['PHASE3'], overall_status=['RECRUITING']).",
         "plan": {
           "cohorts": [
             {
-              "label": "breast cancer",
+              "label": "breast cancer · Phase 3 · recruiting",
               "filters": {
-                "drug_name": null,
-                "condition": "breast cancer",
-                "sponsor": null,
-                "country": null,
+                "drug_names": null,
+                "conditions": [
+                  "breast cancer"
+                ],
+                "sponsors": null,
+                "countries": null,
                 "trial_phase": [
                   "PHASE3"
                 ],
                 "overall_status": [
                   "RECRUITING"
                 ],
-                "study_type": null
+                "study_type": null,
+                "exclude_drug_names": null,
+                "exclude_conditions": null,
+                "exclude_sponsors": null,
+                "exclude_countries": null
               }
             }
           ],
@@ -2141,7 +2147,8 @@
             "dimension": "country",
             "second_dimension": null,
             "measure": null,
-            "x_measure": null
+            "x_measure": null,
+            "only_listed_values": false
           },
           "time": {
             "date_basis": "start_date",
@@ -2150,13 +2157,15 @@
           },
           "phase_policy": "combined",
           "top_n": null,
+          "expansions": [],
+          "unhandled_constraints": [],
           "clarification": null,
           "unsupported_reason": null
         },
         "planner_model": "gpt-5.4",
         "planner_attempts": 1,
         "repair_feedback": [],
-        "parent_run_id": "7db9e6be-b9e2-4591-9f31-b8b7011c32e5",
+        "parent_run_id": "99c8f37f-153f-425d-8e25-928aa7094639",
         "plan_diff": {
           "cohorts[0].filters.trial_phase": {
             "before": null,
@@ -2169,9 +2178,11 @@
       "chart_selection": "counts per category → bar_chart",
       "cohorts": [
         {
-          "label": "breast cancer",
+          "label": "breast cancer · Phase 3 · recruiting",
           "filters": {
-            "condition": "breast cancer",
+            "conditions": [
+              "breast cancer"
+            ],
             "trial_phase": [
               "PHASE3"
             ],
@@ -2190,7 +2201,7 @@
           "excluded": {},
           "missing": {},
           "synonym_matches": {
-            "condition": 24
+            "conditions": 24
           },
           "complete": true
         }
@@ -2201,6 +2212,7 @@
         "year_to": null
       },
       "measure": "Distinct trials (NCT IDs) per datum",
+      "count_method": "fetched",
       "units": {
         "trial_count": "trials"
       },
@@ -2223,20 +2235,23 @@
         "name": "ClinicalTrials.gov API v2",
         "api_version": "2.0.5",
         "data_timestamp": "2026-10-01T09:00:05",
-        "retrieved_at": "2026-10-01T20:57:40+00:00"
+        "retrieved_at": "2026-10-01T23:04:37+00:00"
       },
       "timings_ms": {
-        "plan": 3720,
-        "retrieve": 253,
-        "analyze": 22,
+        "plan": 2975,
+        "retrieve": 14,
+        "prepare": 5,
+        "normalize": 0,
+        "analyze": 24,
         "build": 2,
         "verify": 0
       },
       "llm_usage": {
         "calls": 1,
-        "input_tokens": 3725,
-        "output_tokens": 128
-      }
+        "input_tokens": 4820,
+        "output_tokens": 176
+      },
+      "normalization": []
     },
     "clarification": null,
     "error": null

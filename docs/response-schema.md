@@ -14,7 +14,7 @@ Every key is always present; unused keys are `null`. Branch on `status`:
 | `unsupported` | `error.message` and `error.details` (the questions the service does support) | `error` | 200 |
 | `failed` | `error.code` / `error.message` | `error` | 404 `parent_run_not_found` · 503 `planner_*` / `upstream_unavailable` · 504 `deadline_exceeded` · 500 `output_verification_failed` |
 
-`schema_version` is `"1.0"`. `run_id` addresses the stored run (`GET /v1/runs/{run_id}`, `/evidence`, `/trace`) and is used as `parent_run_id` for follow-up questions.
+`schema_version` is `"1.1"`. Stored 1.0 records are upgraded on read. `run_id` addresses the stored run (`GET /v1/runs/{run_id}`, `/evidence`, `/trace`) and is used as `parent_run_id` for follow-up questions.
 
 ## 2. Common to every chart
 
@@ -42,6 +42,12 @@ Every key is always present; unused keys are `null`. Branch on `status`:
 | `citation_count` | Always equal to `trial_count` |
 | `citations[]` | The first `citations_per_datum` supporting trials (newest NCT IDs first) |
 | `citations_truncated` | `true` when `citations` lists fewer than `citation_count` |
+
+**Server counts.** When a cohort is too large to fetch (more than 30,000 trials) and the analysis groups by something the API can count, `meta.count_method` is `"server_count"`:
+- every datum's `trial_count` is the registry's exact `totalCount` for the datum's **`source_query`**, a URL you can open to reproduce the number;
+- `citations` are 3 sample trials, `citations_truncated` is `true`, and `/evidence` returns only those samples.
+
+Show a "Verify this count" link, and don't offer to load every citation.
 
 **Citation:** `{nct_id, url, brief_title, evidence: [{field_path, excerpt}]}`.
 - `excerpt` is the **exact** value at `field_path` in the ClinicalTrials.gov v2 record, verbatim. It is a string for text fields, and a list or number where the API returns one (e.g. `["PHASE1","PHASE2"]`, `250`).
@@ -113,10 +119,13 @@ Every key is always present; unused keys are `null`. Branch on `status`:
 | `interpretation.repair_feedback` | Validation or grounding errors the planner corrected (e.g. a misspelt drug) |
 | `interpretation.parent_run_id`, `plan_diff` | Follow-ups only: `{"cohorts[0].filters.trial_phase": {"before": null, "after": ["PHASE3"]}}` |
 | `chart_selection` | Why this chart type was chosen, including why a preferred type was declined |
-| `cohorts[]` | Per cohort: `filters`, exact `api_params`, `total_matches`, `records_fetched`, `trials_analyzed`, `excluded{reason: n}`, `missing{field: n}`, `synonym_matches{filter: n}`, `complete` |
+| `cohorts[]` | Per cohort: `filters`, exact `api_params`, `total_matches`, `records_fetched`, `trials_analyzed`, `excluded{reason: n}`, `missing{field: n}`, `synonym_matches{filter: n}`, `complete`. In `filters`, the drug, condition, sponsor and country fields are **lists** (a trial matches any value), and `exclude_drug_names`, `exclude_conditions`, `exclude_sponsors` and `exclude_countries` list removed values |
+| `interpretation.plan.expansions` | Classes the planner expanded, e.g. `{term: "PD-1 inhibitors", field: "drug_names", members: [...]}`. Also stated in `assumptions` |
+| `count_method` | `fetched` (every trial downloaded; full citation sets) or `server_count` (see above) |
+| `normalization[]` | One entry per normalized dimension: `{dimension, model, names_in, names_sent, names_mapped, names_unmapped, dropped[], merges[{canonical, variants[]}]}`. Raw spellings stay in the citations |
 | `cohort_overlap` | `"A ∩ B": n`: trials counted in both cohorts |
 | `policies` | Counting rules in plain words (multi-phase, multi-country, drug grouping, bins, …) |
 | `assumptions` | Defaults applied ("over time = start year"), partial-year notes, empty-result reasons |
 | `units`, `sort`, `time_granularity`, `truncation` | Axis units, sort rule, time bucket, display caps |
 | `source` | `api_version`, registry `data_timestamp`, `retrieved_at` |
-| `timings_ms`, `llm_usage` | Per-stage latency; planner calls and tokens |
+| `timings_ms`, `llm_usage` | Per-stage latency (`plan`, then `retrieve`, `prepare`, `normalize`, `analyze`, or `count` for server counts, then `build`, `verify`); planner calls and tokens |

@@ -434,7 +434,9 @@ def _scope(plan: QueryPlan) -> str:
             for k, v in plan.cohorts[0].filters.model_dump(mode="json").items()
             if all(c.filters.model_dump(mode="json")[k] == v for c in plan.cohorts)
         }
-        common = describe_filters(CohortFilters.model_validate(shared))
+        common = describe_filters(
+            CohortFilters.model_validate({k: shared.get(k) for k in CohortFilters.model_fields})
+        )
         scope = " vs ".join(c.label for c in plan.cohorts)
         if common != "all trials":
             scope += f" ({common})"

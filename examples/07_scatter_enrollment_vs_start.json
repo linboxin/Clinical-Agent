@@ -4,12 +4,12 @@
     "citations_per_datum": 3
   },
   "response": {
-    "schema_version": "1.0",
-    "run_id": "068afe22-efd6-4bf6-87c4-dbc011aadf51",
+    "schema_version": "1.1",
+    "run_id": "cc1890d4-386d-49dc-a4be-1ee65342ace4",
     "status": "ok",
     "visualization": {
       "type": "scatter_plot",
-      "title": "Enrollment vs start date — psoriasis",
+      "title": "Enrollment vs start date — psoriasis · Phase 3",
       "encoding": {
         "x": {
           "field": "start_date",
@@ -22544,21 +22544,27 @@
     },
     "meta": {
       "interpretation": {
-        "summary": "Computed one point per trial: enrollment against start_date, coloured by sponsor_class for 1 cohort(s): 'psoriasis' (condition=psoriasis, trial_phase=['PHASE3']).",
+        "summary": "Computed one point per trial: enrollment against start_date, coloured by sponsor_class for 1 cohort(s): 'psoriasis · Phase 3' (conditions=['psoriasis'], trial_phase=['PHASE3']).",
         "plan": {
           "cohorts": [
             {
-              "label": "psoriasis",
+              "label": "psoriasis · Phase 3",
               "filters": {
-                "drug_name": null,
-                "condition": "psoriasis",
-                "sponsor": null,
-                "country": null,
+                "drug_names": null,
+                "conditions": [
+                  "psoriasis"
+                ],
+                "sponsors": null,
+                "countries": null,
                 "trial_phase": [
                   "PHASE3"
                 ],
                 "overall_status": null,
-                "study_type": null
+                "study_type": null,
+                "exclude_drug_names": null,
+                "exclude_conditions": null,
+                "exclude_sponsors": null,
+                "exclude_countries": null
               }
             }
           ],
@@ -22567,7 +22573,8 @@
             "dimension": "sponsor_class",
             "second_dimension": null,
             "measure": "enrollment",
-            "x_measure": "start_date"
+            "x_measure": "start_date",
+            "only_listed_values": false
           },
           "time": {
             "date_basis": "start_date",
@@ -22576,6 +22583,8 @@
           },
           "phase_policy": "combined",
           "top_n": null,
+          "expansions": [],
+          "unhandled_constraints": [],
           "clarification": null,
           "unsupported_reason": null
         },
@@ -22588,9 +22597,11 @@
       "chart_selection": "two per-trial measures → scatter_plot (one point/trial)",
       "cohorts": [
         {
-          "label": "psoriasis",
+          "label": "psoriasis · Phase 3",
           "filters": {
-            "condition": "psoriasis",
+            "conditions": [
+              "psoriasis"
+            ],
             "trial_phase": [
               "PHASE3"
             ]
@@ -22608,7 +22619,7 @@
             "start_date": 5
           },
           "synonym_matches": {
-            "condition": 104
+            "conditions": 104
           },
           "complete": true
         }
@@ -22619,6 +22630,7 @@
         "year_to": null
       },
       "measure": "Distinct trials (NCT IDs) per datum",
+      "count_method": "fetched",
       "units": {
         "trial_count": "trials",
         "enrollment": "participants"
@@ -22638,20 +22650,23 @@
         "name": "ClinicalTrials.gov API v2",
         "api_version": "2.0.5",
         "data_timestamp": "2026-10-01T09:00:05",
-        "retrieved_at": "2026-10-01T20:57:25+00:00"
+        "retrieved_at": "2026-10-01T23:04:22+00:00"
       },
       "timings_ms": {
-        "plan": 2910,
-        "retrieve": 7,
+        "plan": 3847,
+        "retrieve": 10,
+        "prepare": 4,
+        "normalize": 0,
         "analyze": 6,
-        "build": 3,
-        "verify": 2
+        "build": 26,
+        "verify": 3
       },
       "llm_usage": {
         "calls": 1,
-        "input_tokens": 3583,
-        "output_tokens": 126
-      }
+        "input_tokens": 4628,
+        "output_tokens": 167
+      },
+      "normalization": []
     },
     "clarification": null,
     "error": null

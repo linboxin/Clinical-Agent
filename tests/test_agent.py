@@ -65,6 +65,24 @@ def test_stored_1_0_records_are_migrated_on_read(tmp_path: Path) -> None:
 
     example = json.loads(Path("examples/02_comparison_two_drugs.json").read_text())
     run_id = example["response"]["run_id"]
+    # Rebuild the 1.0 shape: singular filters, no plan-language fields.
+    example["response"]["schema_version"] = "1.0"
+    stored_plan = example["response"]["meta"]["interpretation"]["plan"]
+    for key in ("expansions", "unhandled_constraints"):
+        stored_plan.pop(key)
+    stored_plan["operation"].pop("only_listed_values")
+    for cohort in stored_plan["cohorts"]:
+        f = cohort["filters"]
+        for old, new in (
+            ("drug_name", "drug_names"),
+            ("condition", "conditions"),
+            ("sponsor", "sponsors"),
+            ("country", "countries"),
+        ):
+            values = f.pop(new)
+            f[old] = values[0] if values else None
+        for key in [k for k in f if k.startswith("exclude_")]:
+            f.pop(key)
     record = {
         "run_id": run_id,
         "created_at": "2026-10-01T00:00:00+00:00",

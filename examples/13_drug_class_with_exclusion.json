@@ -1,0 +1,967 @@
+{
+  "request": {
+    "query": "Excluding Keytruda, which PD-1 inhibitors have the most Phase 3 trials?",
+    "citations_per_datum": 3
+  },
+  "response": {
+    "schema_version": "1.1",
+    "run_id": "9c9fb8aa-c926-4d30-be43-d26eb34debd3",
+    "status": "ok",
+    "visualization": {
+      "type": "bar_chart",
+      "title": "Trials by drug — PD-1 inhibitors · Phase 3 · excluding Keytruda",
+      "orientation": "horizontal",
+      "encoding": {
+        "x": {
+          "field": "drug",
+          "type": "nominal",
+          "title": "Drug",
+          "unit": null,
+          "sort": [
+            "nivolumab",
+            "tislelizumab",
+            "toripalimab",
+            "cemiplimab",
+            "dostarlimab"
+          ]
+        },
+        "y": {
+          "field": "trial_count",
+          "type": "quantitative",
+          "title": "Trials",
+          "unit": "trials",
+          "sort": null
+        },
+        "series": null
+      },
+      "data": [
+        {
+          "datum_id": "d1",
+          "trial_count": 152,
+          "citation_count": 152,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07818070",
+              "url": "https://clinicaltrials.gov/study/NCT07818070",
+              "brief_title": "A Trial of ONO-4578 Versus Placebo in Combination With Nivolumab and Chemotherapy in Participants With Gastric Cancer, Esophagogastric Junction Cancer, or Esophageal Adenocarcinoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[2].name",
+                  "excerpt": "Nivolumab"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07815574",
+              "url": "https://clinicaltrials.gov/study/NCT07815574",
+              "brief_title": "iSCIB1+ in Combination With Ipilimumab and Nivolumab as First-Line Treatment for Advanced Unresectable Melanoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[1].name",
+                  "excerpt": "Nivolumab & Ipilimumab"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07700979",
+              "url": "https://clinicaltrials.gov/study/NCT07700979",
+              "brief_title": "Phase 3 Study of Cadonilimab Combined With Chemotherapy vs Chemotherapy in Combination With or Without Nivolumab for the 1L Treatment of Participants With HER2-negative, Previously Untreated, Unresectable or Metastatic Gastric/GEJ Adenocarcinoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[2].name",
+                  "excerpt": "Nivolumab"
+                }
+              ]
+            }
+          ],
+          "drug": "nivolumab"
+        },
+        {
+          "datum_id": "d2",
+          "trial_count": 80,
+          "citation_count": 80,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07833202",
+              "url": "https://clinicaltrials.gov/study/NCT07833202",
+              "brief_title": "A Phase 3 Study of Sosimerasib in Combination With IN10018 Versus Standard Therapy for First Line Non-squamous Non-small Cell Lung Cancer With KRAS G12C Mutation",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[1].name",
+                  "excerpt": "Tislelizumab + Carboplatin + Pemetrexed"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07829549",
+              "url": "https://clinicaltrials.gov/study/NCT07829549",
+              "brief_title": "Phase III Study of RC148 Plus Chemotherapy Versus Tislelizumab Plus Chemotherapy as First-Line Treatment for Non-Squamous Non-Small Cell Lung Cancer Without Actionable Genomic Alterations",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[1].name",
+                  "excerpt": "Tislelizumab Injection plus Pemetrexed Disodium for Injection and Carboplatin Injection"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07822542",
+              "url": "https://clinicaltrials.gov/study/NCT07822542",
+              "brief_title": "A Study Evaluating HS-10370 Plus Platinum-based Doublet Chemotherapy With or Without Adebrelimab vs. Tislelizumab Plus Chemotherapy as First-Line Therapy in Patients With Advanced KRAS G12C-Mutant Non-small Cell Lung Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[5].name",
+                  "excerpt": "Tislelizumab"
+                }
+              ]
+            }
+          ],
+          "drug": "tislelizumab"
+        },
+        {
+          "datum_id": "d3",
+          "trial_count": 63,
+          "citation_count": 63,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07823348",
+              "url": "https://clinicaltrials.gov/study/NCT07823348",
+              "brief_title": "JS207 Plus JS007 Versus Toripalimab Plus Bevacizumab as First-Line Treatment for Advanced Liver Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[2].name",
+                  "excerpt": "Toripalimab"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07756008",
+              "url": "https://clinicaltrials.gov/study/NCT07756008",
+              "brief_title": "Bladder-Sparing Treatment With Disitamab Vedotin and Toripalimab With or Without Pelvic Lymph Node Dissection in Bladder Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2",
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[1].name",
+                  "excerpt": "Toripalimab"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07706985",
+              "url": "https://clinicaltrials.gov/study/NCT07706985",
+              "brief_title": "Efficacy and Safety of TPC Induction Chemotherapy Combined With Nimotuzumab and Toripalimab \"Immune Sandwich\" Regimen Versus Full-Course Immunotherapy for Locally Advanced Nasopharyngeal Carcinoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "Toripalimab combined with Nimotuzumab"
+                }
+              ]
+            }
+          ],
+          "drug": "toripalimab"
+        },
+        {
+          "datum_id": "d4",
+          "trial_count": 11,
+          "citation_count": 11,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT06931717",
+              "url": "https://clinicaltrials.gov/study/NCT06931717",
+              "brief_title": "A Clinical Study to Assess the Efficacy of Adjuvant Immunotherapy With Cemiplimab in Patients With Surgically Removed Non-small Cell Lung Cancer Who Have Not Received Prior Chemotherapy",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "Cemiplimab"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT06908304",
+              "url": "https://clinicaltrials.gov/study/NCT06908304",
+              "brief_title": "A Phase III Study With THIO + Cemiplimab vs Chemotherapy as 3rd Line Treatment in Advanced/Metastatic NSCLC",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[1].name",
+                  "excerpt": "Cemiplimab"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT06616584",
+              "url": "https://clinicaltrials.gov/study/NCT06616584",
+              "brief_title": "Adding the Immunotherapy Drug Cemiplimab to Usual Treatment for People With Advanced Non-Small Cell Lung Cancer Who Had Previous Treatment With Platinum Chemotherapy and Immunotherapy (An Expanded Lung-MAP Treatment Trial)",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2",
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[1].name",
+                  "excerpt": "Cemiplimab"
+                }
+              ]
+            }
+          ],
+          "drug": "cemiplimab"
+        },
+        {
+          "datum_id": "d5",
+          "trial_count": 10,
+          "citation_count": 10,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07740720",
+              "url": "https://clinicaltrials.gov/study/NCT07740720",
+              "brief_title": "A Study of the Duration of Dostarlimab in Untreated Mismatch Repair Deficient (dMMR)/ Microsatellite Instability-high (MSI-H) Locally Advanced Rectal Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "Dostarlimab"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT06762405",
+              "url": "https://clinicaltrials.gov/study/NCT06762405",
+              "brief_title": "PRODIGE 90 - (FFCD 2204) Neoadjuvant Dostarlimab with Short Course Radiotherapy in a Watch-and-wait Strategy for Microsatellite Unstable or Mismatch Repair-deficient Locally Advanced Rectal Cancer Patients",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[1].name",
+                  "excerpt": "Dostarlimab"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT06256588",
+              "url": "https://clinicaltrials.gov/study/NCT06256588",
+              "brief_title": "A Study of Dostarlimab vs Placebo After Chemoradiation in Adult Participants With Locally Advanced Unresected Head and Neck Squamous Cell Carcinoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "Dostarlimab"
+                }
+              ]
+            }
+          ],
+          "drug": "dostarlimab"
+        }
+      ]
+    },
+    "meta": {
+      "interpretation": {
+        "summary": "Computed distinct trials by drug, counting only the values listed in each cohort's filter for 1 cohort(s): 'PD-1 inhibitors · Phase 3 · excluding Keytruda' (drug_names=['nivolumab', 'cemiplimab', 'dostarlimab', 'tislelizumab', 'toripalimab'], trial_phase=['PHASE3'], exclude_drug_names=['Keytruda']).",
+        "plan": {
+          "cohorts": [
+            {
+              "label": "PD-1 inhibitors · Phase 3 · excluding Keytruda",
+              "filters": {
+                "drug_names": [
+                  "nivolumab",
+                  "cemiplimab",
+                  "dostarlimab",
+                  "tislelizumab",
+                  "toripalimab"
+                ],
+                "conditions": null,
+                "sponsors": null,
+                "countries": null,
+                "trial_phase": [
+                  "PHASE3"
+                ],
+                "overall_status": null,
+                "study_type": null,
+                "exclude_drug_names": [
+                  "Keytruda"
+                ],
+                "exclude_conditions": null,
+                "exclude_sponsors": null,
+                "exclude_countries": null
+              }
+            }
+          ],
+          "operation": {
+            "kind": "count_by",
+            "dimension": "drug",
+            "second_dimension": null,
+            "measure": null,
+            "x_measure": null,
+            "only_listed_values": true
+          },
+          "time": {
+            "date_basis": "start_date",
+            "year_from": null,
+            "year_to": null
+          },
+          "phase_policy": "combined",
+          "top_n": null,
+          "expansions": [
+            {
+              "term": "PD-1 inhibitors",
+              "field": "drug_names",
+              "members": [
+                "nivolumab",
+                "cemiplimab",
+                "dostarlimab",
+                "tislelizumab",
+                "toripalimab"
+              ]
+            }
+          ],
+          "unhandled_constraints": [],
+          "clarification": null,
+          "unsupported_reason": null
+        },
+        "planner_model": "gpt-5.4",
+        "planner_attempts": 1,
+        "repair_feedback": [],
+        "parent_run_id": null,
+        "plan_diff": null
+      },
+      "chart_selection": "counts per category → bar_chart",
+      "cohorts": [
+        {
+          "label": "PD-1 inhibitors · Phase 3 · excluding Keytruda",
+          "filters": {
+            "drug_names": [
+              "nivolumab",
+              "cemiplimab",
+              "dostarlimab",
+              "tislelizumab",
+              "toripalimab"
+            ],
+            "trial_phase": [
+              "PHASE3"
+            ],
+            "exclude_drug_names": [
+              "Keytruda"
+            ]
+          },
+          "api_params": {
+            "query.term": "(AREA[InterventionName]\"nivolumab\" OR AREA[InterventionOtherName]\"nivolumab\" OR AREA[InterventionName]\"cemiplimab\" OR AREA[InterventionOtherName]\"cemiplimab\" OR AREA[InterventionName]\"dostarlimab\" OR AREA[InterventionOtherName]\"dostarlimab\" OR AREA[InterventionName]\"tislelizumab\" OR AREA[InterventionOtherName]\"tislelizumab\" OR AREA[InterventionName]\"toripalimab\" OR AREA[InterventionOtherName]\"toripalimab\") AND AREA[Phase](PHASE3) AND NOT (AREA[InterventionName]\"Keytruda\" OR AREA[InterventionOtherName]\"Keytruda\")"
+          },
+          "total_matches": 320,
+          "records_fetched": 320,
+          "trials_analyzed": 320,
+          "excluded": {},
+          "missing": {
+            "drug": 5
+          },
+          "synonym_matches": {
+            "drug_names": 2
+          },
+          "complete": true
+        }
+      ],
+      "time": {
+        "date_basis": "start_date",
+        "year_from": null,
+        "year_to": null
+      },
+      "measure": "Distinct trials (NCT IDs) per datum",
+      "count_method": "fetched",
+      "units": {
+        "trial_count": "trials"
+      },
+      "sort": "Trial count, descending",
+      "time_granularity": null,
+      "policies": {
+        "counting": "Every value is a count of distinct trials (NCT IDs); a trial counts at most once per datum.",
+        "missing_values": "Trials with no value for the analysed field are not charted; see meta.cohorts[].missing.",
+        "drug_matching": "drug_names match InterventionName or InterventionOtherName (field-scoped search, with ClinicalTrials.gov synonym expansion). Trials that only mention the drug elsewhere, e.g. as prior therapy, are not included.",
+        "drug_dimension": "Drugs are interventions of type DRUG, BIOLOGICAL or COMBINATION_PRODUCT, excluding placebos. Names are grouped case-insensitively with dose and salt suffixes removed (e.g. 'Erlotinib Hydrochloride' = 'erlotinib'); brand and generic names are not merged.",
+        "exclusions": "Excluded values are removed with NOT clauses in the registry search (which honour synonyms) and re-checked on every record; see meta.cohorts[].excluded.",
+        "value_lists": "A list of values in one filter matches trials with ANY of them.",
+        "only_listed_values": "Only values matching the cohort's own list are counted (e.g. the listed drugs, not co-listed chemotherapy); each bar is named after the listed value it matched.",
+        "drug_names": "Drug names were normalized by gpt-5.4-mini before grouping (brand/code → generic name, spelling variants merged, combinations split, non-entities dropped); citations still quote the raw registry values and meta.normalization lists the merges."
+      },
+      "assumptions": [
+        "'PD-1 inhibitors' was interpreted as: nivolumab, cemiplimab, dostarlimab, tislelizumab, toripalimab (class membership comes from the planner model's knowledge; each member was checked against the live registry)."
+      ],
+      "cohort_overlap": null,
+      "truncation": null,
+      "source": {
+        "name": "ClinicalTrials.gov API v2",
+        "api_version": "2.0.5",
+        "data_timestamp": "2026-10-01T09:00:05",
+        "retrieved_at": "2026-10-01T23:04:40+00:00"
+      },
+      "timings_ms": {
+        "plan": 2727,
+        "retrieve": 23,
+        "prepare": 25,
+        "normalize": 5,
+        "analyze": 24,
+        "build": 0,
+        "verify": 0
+      },
+      "llm_usage": {
+        "calls": 1,
+        "input_tokens": 4632,
+        "output_tokens": 232
+      },
+      "normalization": [
+        {
+          "dimension": "drug",
+          "model": "gpt-5.4-mini",
+          "names_in": 371,
+          "names_sent": 371,
+          "names_unmapped": 0,
+          "names_mapped": 219,
+          "dropped": [
+            "ADT (androgen deprivation therapy)",
+            "Adjuvant chemotherapy",
+            "Biological study on circulating tumor DNA (optional for the patient)",
+            "Chemotherapy",
+            "Chemotherapy Drugs",
+            "Concurrent chemo-radiotherapy",
+            "Concurrent chemoradiotherapy (cCRT)",
+            "Endocrine Therapy",
+            "FOLFIRI Protocol",
+            "FOLFRINOX",
+            "Folfox Protocol",
+            "Investigator Choice (IC) Chemotherapy",
+            "Investigator's Choice of Chemotherapy",
+            "Neoadjuvant Chemotherapy",
+            "Neoadjuvant Chemotherapy (NACT)",
+            "PD-1/VEGF Bispecific Antibody",
+            "Placebos",
+            "Prior failed checkpoint inhibitor",
+            "Radiation with Concurrent Chemotherapy",
+            "Salvage Chemotherapy",
+            "Standard Chemotherapy",
+            "Standard of care",
+            "XELIRI",
+            "XELOX",
+            "anthracycline"
+          ],
+          "merges": [
+            {
+              "canonical": "toripalimab",
+              "variants": [
+                "3 cycles (Toripalimab + chemotherapy)",
+                "4cycles(Toripalimab IV 240mg + platinum-based doublet chemotherapy)+13 cycles(Toripalimab IV 240mg); Biological: Toripalimab",
+                "Adjuvant therapy in control group,Toripalimab Injection and Gemcitabine based therapy",
+                "Adjuvant therapy in experimental group,Toripalimab Injection and Gemcitabine based therapy",
+                "Afatinib + Toripalimab",
+                "Axitinib plus Toripalimab",
+                "Biological : Toripalimab Drug: Axitinib",
+                "Docetaxel+Oxaliplatin+S-1+Toripalimab",
+                "Gemcitabine + Cisplatin（GC）+Toripalimab",
+                "Immunotherapy,Toripalimab Injection",
+                "Injection JS107&Toripalimab& Oxaliplatin Injection& Capecitabine",
+                "JS004 in combination with Toripalimab",
+                "LM-108 in combination with Toripalimab",
+                "Maintenance Therapy with Toripalimab and Capecitabine",
+                "Neoadjuvant Chemotherapy in Combination with Toripalimab",
+                "Neoadjuvant therapy,Toripalimab Injection and Gemcitabine based therapy",
+                "Nimotuzumab,Toripalimab，Cisplatin, Gemcitabine",
+                "Nimotuzumab,Toripalimab，Cisplatin, albumin paclitaxel, capecitabine",
+                "Oxaliplatin+S-1+Toripalimab",
+                "Surufatinib plus Toripalimab",
+                "TORIPALIMAB INJECTION (JS001 ) combine with GP chemotherapy",
+                "TORIPALIMAB INJECTION (JS001 ) combine with chemotherapy",
+                "TORIPALIMAB INJECTION(JS001 )",
+                "TORIPALIMAB INJECTION(JS001 ) combine with chemotherapy",
+                "Toripalimab",
+                "Toripalimab (JS001 )",
+                "Toripalimab (anti-programmed death-1 inhibitor)",
+                "Toripalimab + Nab-paclitaxel + Platinum-based Chemotherapy",
+                "Toripalimab Combined with Chemotherapy",
+                "Toripalimab Injection",
+                "Toripalimab combined with Bevacizumab",
+                "Toripalimab combined with Lenvatinib",
+                "Toripalimab combined with Nimotuzumab",
+                "Toripalimab combined with cisplatin and paclitaxel",
+                "Toripalimab monotherapy",
+                "Toripalimab plus Anlotinib",
+                "Toripalimab plus concurrent chemo-radiotherapy",
+                "WX390 1.1mg + Toripalimab 240mg",
+                "gemcitabine,nimotuzumab, toripalimab"
+              ]
+            },
+            {
+              "canonical": "nivolumab",
+              "variants": [
+                "Adjuvant Nivolumab",
+                "Adjuvant Nivolumab and Ipilimumab",
+                "BMS-936558 (Nivolumab)",
+                "BMS-986489 (Atigotatug+Nivolumab)",
+                "EU-Opdivo®",
+                "EU-authorized Nivolumab",
+                "FDA-licensed Nivolumab",
+                "HBI-8000 in combination with nivolumab",
+                "IPI1/NIVO3",
+                "IPI3/NIVO1",
+                "Ipilimumab and Nivolumab",
+                "MB11 (Proposed Nivolumab Biosimilar)",
+                "Neoadjuvant Nivolumab",
+                "Neoadjuvant ipilimumab + nivolumab",
+                "Nivolumab",
+                "Nivolumab & Ipilimumab",
+                "Nivolumab + Ipilimumab",
+                "Nivolumab + Relatlimab",
+                "Nivolumab + Relatlimab Fixed Dose Combination",
+                "Nivolumab Protocol",
+                "Nivolumab and IPILIMUMAB",
+                "Nivolumab and TACE/TAE",
+                "Nivolumab and rHuPH20",
+                "Nivolumab-relatlimab FDC",
+                "Nivolumab/rHuPH20",
+                "ONO-4538",
+                "Opdivo-EU (Induction)",
+                "Opdivo-EU (Maintenance)",
+                "Opdivo-US (Induction)",
+                "Opdivo®",
+                "REGN2810",
+                "REGN2810/chemo/ipi",
+                "US- sourced Opdivo®",
+                "relatlimab+nivolumab"
+              ]
+            },
+            {
+              "canonical": "tislelizumab",
+              "variants": [
+                "Adjuvant tislelizumab",
+                "Adjuvant tislelizumab plus lenvatinib",
+                "Disitamab Vedotin+Tislelizumab+Oxaliplatin+Capecitabine",
+                "Fruquintinib and Tislelizumab combined with mCapeOX",
+                "GP combined with Tislelizumab",
+                "Intravenous Tislelizumab",
+                "Lenvatinib, tislelizumab, gemcitabine and cisplatin",
+                "Neoadjuvant and maintenance Tislelizumab",
+                "PD-1 Inhibitor Tislelizumab maintenance therapy",
+                "Paclitaxel +/- Tislelizumab",
+                "Sintilimab or Tislelizumab (based on investigator's choice)",
+                "Subcutaneous Tislelizumab",
+                "TPC combined with Tislelizumab",
+                "Tislelizumab",
+                "Tislelizumab + Carboplatin + Pemetrexed",
+                "Tislelizumab + SOX Chemotherapy",
+                "Tislelizumab Injection plus Pemetrexed Disodium for Injection and Carboplatin Injection",
+                "Tislelizumab combined with GP",
+                "Tislelizumab combined with GX",
+                "Tislelizumab combined with the CAPOX regimen",
+                "Tislelizumab in Combination with Bacillus Calmette-Guérin",
+                "Tislelizumab in Combination with Oxaliplatin and Tegafur",
+                "Tislelizumab injection",
+                "Tislelizumab plus Carboplatin and Paclitaxel",
+                "Tislelizumab+Oxaliplatin+Capecitabine",
+                "Tislelizumab, Carboplatin, Paxlitaxel",
+                "Tislelizumab, Carboplatin, Pemetrexed",
+                "Tislelizumab, Cisplatin, Gemcitabine",
+                "Tislelizumab, Cisplatin, Gemcitabine and Trilaciclib",
+                "Tislelizumab, paclitaxel, Carboplatin",
+                "Tislelizumab（adjuvant）",
+                "Tislelizumab（neoadjuvant）",
+                "albumin paclitaxel, cispatin, tislelizumab",
+                "tislelizumab, and platinum-based chemotherapy"
+              ]
+            },
+            {
+              "canonical": "cisplatin",
+              "variants": [
+                "CDDP, 5 Fu",
+                "Cisplatin",
+                "Cisplatin for Injection / Carboplatin Injection",
+                "Cisplatin injection",
+                "Cisplatin （neoadjuvant）",
+                "Cisplatin, Carboplatin, Pemetrexed, Gemcitabine, Paclitaxel, Docetaxel",
+                "Cisplatin/Carboplatin",
+                "Cisplatin/Platinol",
+                "Cisplatin（adjuvant）",
+                "Docetaxel and Cisplatin",
+                "Etoposide, Cisplatin",
+                "Gemcitabine + Cisplatin（GC）+Toripalimab",
+                "Gemcitabine + cisplatin (GP)",
+                "Gemcitabine and cisplatin",
+                "Lenvatinib, tislelizumab, gemcitabine and cisplatin",
+                "Nimotuzumab,Toripalimab，Cisplatin, Gemcitabine",
+                "Nimotuzumab,Toripalimab，Cisplatin, albumin paclitaxel, capecitabine",
+                "Paclitaxel+Carboplatin or Pemetrexed + Cisplatin/Carboplatin",
+                "Tislelizumab combined with GP",
+                "Tislelizumab, Cisplatin, Gemcitabine",
+                "Tislelizumab, Cisplatin, Gemcitabine and Trilaciclib",
+                "Toripalimab combined with cisplatin and paclitaxel",
+                "albumin paclitaxel, cispatin, tislelizumab",
+                "gemcitabine, cisplatin"
+              ]
+            },
+            {
+              "canonical": "gemcitabine",
+              "variants": [
+                "Adjuvant therapy in control group,Toripalimab Injection and Gemcitabine based therapy",
+                "Adjuvant therapy in experimental group,Toripalimab Injection and Gemcitabine based therapy",
+                "Bendamustine or gemcitabine",
+                "Chemotherapy,Gemcitabine based regimen",
+                "Cisplatin, Carboplatin, Pemetrexed, Gemcitabine, Paclitaxel, Docetaxel",
+                "GP combined with Tislelizumab",
+                "Gemcitabine",
+                "Gemcitabine + Cisplatin（GC）+Toripalimab",
+                "Gemcitabine + cisplatin (GP)",
+                "Gemcitabine Hydrochloride for Injection",
+                "Gemcitabine Injection",
+                "Gemcitabine alone",
+                "Gemcitabine and cisplatin",
+                "Lenvatinib, tislelizumab, gemcitabine and cisplatin",
+                "Neoadjuvant therapy,Toripalimab Injection and Gemcitabine based therapy",
+                "Nimotuzumab,Toripalimab，Cisplatin, Gemcitabine",
+                "TORIPALIMAB INJECTION (JS001 ) combine with GP chemotherapy",
+                "Tislelizumab combined with GP",
+                "Tislelizumab, Cisplatin, Gemcitabine",
+                "Tislelizumab, Cisplatin, Gemcitabine and Trilaciclib",
+                "gemcitabine, cisplatin",
+                "gemcitabine,nimotuzumab, toripalimab"
+              ]
+            },
+            {
+              "canonical": "carboplatin",
+              "variants": [
+                "AK112, Carboplatin, Paxlitaxel",
+                "Carboplatin",
+                "Carboplatin (adjuvant）",
+                "Carboplatin (neoadjuvant）",
+                "Carboplatin Injection",
+                "Carboplatin-Paclitaxel",
+                "Carboplatin/Paraplatin",
+                "Cisplatin for Injection / Carboplatin Injection",
+                "Cisplatin, Carboplatin, Pemetrexed, Gemcitabine, Paclitaxel, Docetaxel",
+                "Cisplatin/Carboplatin",
+                "Etoposide, Carboplatin",
+                "Paclitaxel+Carboplatin or Pemetrexed + Cisplatin/Carboplatin",
+                "RC148 Injection plus Pemetrexed Disodium for Injection and Carboplatin Injection",
+                "RC148 plus Carboplatin and Paclitaxel",
+                "Tislelizumab + Carboplatin + Pemetrexed",
+                "Tislelizumab Injection plus Pemetrexed Disodium for Injection and Carboplatin Injection",
+                "Tislelizumab plus Carboplatin and Paclitaxel",
+                "Tislelizumab, Carboplatin, Paxlitaxel",
+                "Tislelizumab, Carboplatin, Pemetrexed",
+                "Tislelizumab, paclitaxel, Carboplatin"
+              ]
+            },
+            {
+              "canonical": "oxaliplatin",
+              "variants": [
+                "CAPOX (oxaliplatin/capecitabine)",
+                "Capox",
+                "Disitamab Vedotin+Tislelizumab+Oxaliplatin+Capecitabine",
+                "Docetaxel+Oxaliplatin+S-1+Toripalimab",
+                "FOLFOX (5-fluorouracil, Leucovorin, Oxaliplatin)",
+                "Fruquintinib and Tislelizumab combined with mCapeOX",
+                "Injection JS107&Toripalimab& Oxaliplatin Injection& Capecitabine",
+                "Oxaliplatin",
+                "Oxaliplatin for injection",
+                "Oxaliplatin injection",
+                "Oxaliplatin+S-1+Toripalimab",
+                "SOX Chemotherapy",
+                "SOX or CAPOX regimen",
+                "Sintilimab& Oxaliplatin Injection& Capecitabine",
+                "Tislelizumab + SOX Chemotherapy",
+                "Tislelizumab in Combination with Oxaliplatin and Tegafur",
+                "Tislelizumab+Oxaliplatin+Capecitabine",
+                "oxaliplatin , fluorouracil, and leucovorin"
+              ]
+            },
+            {
+              "canonical": "paclitaxel",
+              "variants": [
+                "Carboplatin-Paclitaxel",
+                "Cisplatin, Carboplatin, Pemetrexed, Gemcitabine, Paclitaxel, Docetaxel",
+                "Docetaxel/Paclitaxel",
+                "Nab paclitaxel",
+                "Paclitaxel",
+                "Paclitaxel +/- Tislelizumab",
+                "Paclitaxel for Injection",
+                "Paclitaxel injection",
+                "Paclitaxel injection intravenous infusion",
+                "Paclitaxel+Carboplatin or Pemetrexed + Cisplatin/Carboplatin",
+                "RC148 plus Carboplatin and Paclitaxel",
+                "Ramucirumab + Paclitaxel",
+                "Tislelizumab plus Carboplatin and Paclitaxel",
+                "Tislelizumab, paclitaxel, Carboplatin",
+                "Toripalimab combined with cisplatin and paclitaxel",
+                "albumin paclitaxel, cispatin, tislelizumab",
+                "paclitaxel (PTX)"
+              ]
+            },
+            {
+              "canonical": "capecitabine",
+              "variants": [
+                "CAPOX (oxaliplatin/capecitabine)",
+                "Capecitabine",
+                "Capecitabine Tablets",
+                "Capox",
+                "Disitamab Vedotin+Tislelizumab+Oxaliplatin+Capecitabine",
+                "Fruquintinib and Tislelizumab combined with mCapeOX",
+                "Injection JS107&Toripalimab& Oxaliplatin Injection& Capecitabine",
+                "Maintenance Therapy with Capecitabine",
+                "Maintenance Therapy with Toripalimab and Capecitabine",
+                "Nimotuzumab,Toripalimab，Cisplatin, albumin paclitaxel, capecitabine",
+                "SOX or CAPOX regimen",
+                "Sintilimab& Oxaliplatin Injection& Capecitabine",
+                "Tislelizumab+Oxaliplatin+Capecitabine"
+              ]
+            },
+            {
+              "canonical": "fluorouracil",
+              "variants": [
+                "5-Fluorouracil",
+                "5-fluorouracil (5-FU)",
+                "5-fluorouracil, Calcium folinate and Irinotecan",
+                "5Fluorouracil",
+                "CDDP, 5 Fu",
+                "FOLFOX (5-fluorouracil, Leucovorin, Oxaliplatin)",
+                "Fluorouracil",
+                "Fluorouracil (5-FU)",
+                "Fluorouracil/Adrucil",
+                "SOX Chemotherapy",
+                "Simmtecan, 5-FU and l-LV",
+                "Tislelizumab + SOX Chemotherapy",
+                "oxaliplatin , fluorouracil, and leucovorin"
+              ]
+            },
+            {
+              "canonical": "ipilimumab",
+              "variants": [
+                "Adjuvant Nivolumab and Ipilimumab",
+                "Fotemustine and Ipilimumab",
+                "IPI1/NIVO3",
+                "IPI3/NIVO1",
+                "Ipilimumab",
+                "Ipilimumab and Nivolumab",
+                "Neoadjuvant ipilimumab + nivolumab",
+                "Nivolumab & Ipilimumab",
+                "Nivolumab + Ipilimumab",
+                "Nivolumab and IPILIMUMAB",
+                "REGN2810/chemo/ipi",
+                "Yervoy-EU (Induction)"
+              ]
+            },
+            {
+              "canonical": "pemetrexed",
+              "variants": [
+                "Cisplatin, Carboplatin, Pemetrexed, Gemcitabine, Paclitaxel, Docetaxel",
+                "Paclitaxel+Carboplatin or Pemetrexed + Cisplatin/Carboplatin",
+                "Pemetrexed",
+                "Pemetrexed Disodium",
+                "Pemetrexed injection",
+                "RC148 Injection plus Pemetrexed Disodium for Injection and Carboplatin Injection",
+                "Tislelizumab + Carboplatin + Pemetrexed",
+                "Tislelizumab Injection plus Pemetrexed Disodium for Injection and Carboplatin Injection",
+                "Tislelizumab, Carboplatin, Pemetrexed"
+              ]
+            },
+            {
+              "canonical": "leucovorin",
+              "variants": [
+                "FOLFOX (5-fluorouracil, Leucovorin, Oxaliplatin)",
+                "Leucovorin",
+                "SOX Chemotherapy",
+                "Simmtecan, 5-FU and l-LV",
+                "Tislelizumab + SOX Chemotherapy",
+                "oxaliplatin , fluorouracil, and leucovorin"
+              ]
+            },
+            {
+              "canonical": "docetaxel",
+              "variants": [
+                "Cisplatin, Carboplatin, Pemetrexed, Gemcitabine, Paclitaxel, Docetaxel",
+                "Docetaxel",
+                "Docetaxel and Cisplatin",
+                "Docetaxel+Oxaliplatin+S-1+Toripalimab",
+                "Docetaxel/Paclitaxel"
+              ]
+            },
+            {
+              "canonical": "lenvatinib",
+              "variants": [
+                "Adjuvant tislelizumab plus lenvatinib",
+                "Lenvatinib",
+                "Lenvatinib mesylate capsules",
+                "Lenvatinib, tislelizumab, gemcitabine and cisplatin",
+                "Toripalimab combined with Lenvatinib"
+              ]
+            },
+            {
+              "canonical": "nimotuzumab",
+              "variants": [
+                "Nimotuzumab",
+                "Nimotuzumab,Toripalimab，Cisplatin, Gemcitabine",
+                "Nimotuzumab,Toripalimab，Cisplatin, albumin paclitaxel, capecitabine",
+                "Toripalimab combined with Nimotuzumab",
+                "gemcitabine,nimotuzumab, toripalimab"
+              ]
+            },
+            {
+              "canonical": "relatlimab",
+              "variants": [
+                "Nivolumab + Relatlimab",
+                "Nivolumab + Relatlimab Fixed Dose Combination",
+                "Nivolumab-relatlimab FDC",
+                "Relatlimab",
+                "relatlimab+nivolumab"
+              ]
+            },
+            {
+              "canonical": "anlotinib",
+              "variants": [
+                "Anlotinib",
+                "Anlotinib hydrochloride capsule",
+                "Toripalimab plus Anlotinib",
+                "anlotinib combined with benmelstobart"
+              ]
+            },
+            {
+              "canonical": "cetuximab",
+              "variants": [
+                "Cetuximab",
+                "Cetuximab/Erbitux",
+                "Encorafenib/Binimetinib/Cetuximab Protocol"
+              ]
+            },
+            {
+              "canonical": "dostarlimab",
+              "variants": [
+                "Dostarlimab",
+                "Dostarlimab (TSR-042)",
+                "Niraparib + TSR-042 (Dostarlimab)"
+              ]
+            },
+            {
+              "canonical": "etoposide",
+              "variants": [
+                "Etoposide",
+                "Etoposide, Carboplatin",
+                "Etoposide, Cisplatin"
+              ]
+            },
+            {
+              "canonical": "nab-paclitaxel",
+              "variants": [
+                "Nab-paclitaxel",
+                "Nab-paclitaxel （neoadjuvant）",
+                "Toripalimab + Nab-paclitaxel + Platinum-based Chemotherapy"
+              ]
+            },
+            {
+              "canonical": "rhuph20",
+              "variants": [
+                "Nivolumab and rHuPH20",
+                "Nivolumab/rHuPH20",
+                "rHuPH20"
+              ]
+            },
+            {
+              "canonical": "s-1",
+              "variants": [
+                "Docetaxel+Oxaliplatin+S-1+Toripalimab",
+                "Oxaliplatin+S-1+Toripalimab",
+                "S-1"
+              ]
+            },
+            {
+              "canonical": "albumin paclitaxel",
+              "variants": [
+                "Albumin paclitaxel",
+                "Nimotuzumab,Toripalimab，Cisplatin, albumin paclitaxel, capecitabine"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "clarification": null,
+    "error": null
+  }
+}

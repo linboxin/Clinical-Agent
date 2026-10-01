@@ -65,6 +65,16 @@ EXAMPLES: list[tuple[str, dict[str, object]]] = [
     ("11_unsupported", {"query": "Which melanoma drug has the best overall survival?"}),
     # Follow-up: refines example 03's plan (parent_run_id is filled in from that run).
     ("12_follow_up_of_03", {"query": "Same, but only phase 3 trials.", "_parent": "03"}),
+    # Plan language: a drug class expanded into grounded members, with an exclusion.
+    (
+        "13_drug_class_with_exclusion",
+        {"query": "Excluding Keytruda, which PD-1 inhibitors have the most Phase 3 trials?"},
+    ),
+    # Too large to fetch (600k+ trials): counted on the server, with verifiable source queries.
+    (
+        "14_whole_registry_server_counts",
+        {"query": "How are all registered clinical trials distributed across phases?"},
+    ),
 ]
 
 

@@ -112,7 +112,11 @@ def test_labels_and_titles_come_from_filters_not_the_model() -> None:
             ("another label", {"drug_name": "nivolumab", "condition": "melanoma"}),
         ]
     )
-    assert [c.label for c in relabel(compare).cohorts] == ["pembrolizumab", "nivolumab"]
+    relabelled = relabel(compare)
+    assert [c.label for c in relabelled.cohorts] == ["pembrolizumab", "nivolumab"]
+    from app.viz.build import _title
+
+    assert _title(relabelled) == "Trials by phase — pembrolizumab vs nivolumab (melanoma)"
 
 
 async def test_unhandled_constraint_becomes_a_clarification_not_a_dropped_clause() -> None:

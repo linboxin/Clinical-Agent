@@ -1,6 +1,6 @@
 # Planner eval results
 
-Each run is listed as `<timestamp>_<model>_<prompt version>[_norepair]`: a `.jsonl` file (one row per case run, with the produced plan) and a `.md` summary. The cases are in [`../cases.yaml`](../cases.yaml): 34 cases, each run 3 times (102 runs). Scoring is deterministic.
+Each run is listed as `<timestamp>_<model>_<prompt version>[_norepair]`: a `.jsonl` file (one row per case run, with the produced plan) and a `.md` summary. The cases are in [`../cases.yaml`](../cases.yaml): 34 cases up to prompt v5, then 41 from v7. Each is run 3 times. Scoring is deterministic.
 
 | Prompt | Model | Pass | First try | Repair used | Stable | Median latency | Notes |
 |---|---|---|---|---|---|---|---|
@@ -14,6 +14,8 @@ Each run is listed as `<timestamp>_<model>_<prompt version>[_norepair]`: a `.jso
 | v5 | gpt-5.4-mini | 101/102 | 98 | 3 | 32/34 | 2.0 s | once accepted "recruiting *in March 2019*" (historical status) |
 | **v5** | **gpt-5.4** | **102/102** | **99** | **3** | **34/34** | **2.5 s** | **chosen default** |
 | v5 | gpt-5.4-mini, `--no-repair` (E2) | 99/102 | 99 | 0 | 34/34 | 2.1 s | the misspelling case fails 3/3 without the repair call |
+| v7 (41 cases) | **gpt-5.4** | **123/123** | 120 | 3 | 40/41 | 3.1 s | adds classes, exclusions, lists, unhandled constraints, whole-registry; v6 (deleted) failed "COVID-19 vaccine" as unhandled, which led to the v7 hint |
+| v7 (41 cases) | gpt-5.4-mini | 117/123 | 114 | 3 | 35/41 | 2.5 s | misses the "answer without" follow-up and splits a two-condition list into cohorts |
 
 **How to read the columns:**
 - **Stable** = the same status and the same semantic plan (free text such as labels and clarification wording ignored) in all 3 repeats. The v3 runs used an earlier, stricter definition, so they aren't comparable.
