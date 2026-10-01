@@ -16,8 +16,10 @@ class Settings(BaseSettings):
     openai_base_url: str | None = None
     planner_model: str = "gpt-5.4"
     planner_reasoning_effort: str | None = None
-    # Drug/condition name normalization by a small model (guarded; see app/normalize.py).
-    name_normalizer: str = "model"  # "model" | "off"
+    # Drug/condition name normalization by a small model (see app/normalize.py). Off by default:
+    # an audit found confident wrong mappings for investigational codes (REGN2810 -> nivolumab),
+    # so groupings stay deterministic unless this is explicitly turned on.
+    name_normalizer: str = "off"  # "off" | "model"
     normalizer_model: str = "gpt-5.4-mini"
     names_cache_path: Path | None = Path(".cache/names.json")
 

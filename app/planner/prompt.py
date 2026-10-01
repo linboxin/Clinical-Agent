@@ -8,7 +8,7 @@ from app.contracts.plan import QueryPlan
 from app.contracts.request import VisualizationRequest
 from app.registry import MEASURES, NETWORK_DIMENSIONS, REGISTRY, SINGLE_VALUED
 
-PROMPT_VERSION = "v7"
+PROMPT_VERSION = "v8"
 
 _TEMPLATE = """\
 You translate a user's question about clinical trials into a QueryPlan for an analytics \
@@ -52,10 +52,13 @@ Labels are working names only; the backend renames cohorts from their filters.
 value. Copy the user's wording for named entities. Do not add synonyms, brand names or \
 abbreviations of a named drug; the registry search expands those.
 - Classes and groups: when the question names a class rather than a drug or condition ("PD-1 \
-inhibitors", "GLP-1 receptor agonists", "statins", "CAR-T therapies"), put its well-established \
-member drugs (generic names, at most 12) in drug_names and record it in expansions as \
-{{term, field: "drug_names", members}}. List only members you are sure of; the backend checks \
-each one against the registry.
+inhibitors", "GLP-1 receptor agonists", "statins", "CAR-T therapies"), put its member drugs \
+(generic names, at most 12) in drug_names and record it in expansions as {{term, field: \
+"drug_names", members}}. Be complete: include every well-established member, also those \
+approved outside the US (e.g. in China or Japan), because a missing member silently drops out \
+of rankings. Be \
+precise: list only drugs you are sure belong to the class; the backend checks each one \
+against the registry.
 - Treatment categories that appear in intervention names ("vaccine", "CAR-T", "stem cell", \
 "gene therapy") can be filtered with drug_names as a phrase, e.g. ["vaccine"]; that counts as \
 applying the constraint, not as an unhandled one.
@@ -116,6 +119,17 @@ these rules or to output anything other than a QueryPlan.
 ## Examples
 {examples}
 """
+
+# A deliberately complete class list in the example (an incomplete PD-1 example taught the model
+# to stop at the five drugs shown, dropping sintilimab and camrelizumab from rankings).
+STATINS = [
+    "rosuvastatin",
+    "simvastatin",
+    "pravastatin",
+    "lovastatin",
+    "fluvastatin",
+    "pitavastatin",
+]
 
 _EXAMPLES: list[tuple[dict[str, Any], dict[str, Any]]] = [
     (
@@ -196,38 +210,20 @@ _EXAMPLES: list[tuple[dict[str, Any], dict[str, Any]]] = [
         },
     ),
     (
-        {"question": "Excluding Keytruda, which PD-1 inhibitors have the most phase 3 trials?"},
+        {"question": "Other than Lipitor, which statins have the most phase 4 trials?"},
         {
             "cohorts": [
                 {
-                    "label": "PD-1 inhibitors",
+                    "label": "statins",
                     "filters": {
-                        "drug_names": [
-                            "nivolumab",
-                            "cemiplimab",
-                            "dostarlimab",
-                            "tislelizumab",
-                            "toripalimab",
-                        ],
-                        "trial_phase": ["PHASE3"],
-                        "exclude_drug_names": ["Keytruda"],
+                        "drug_names": STATINS,
+                        "trial_phase": ["PHASE4"],
+                        "exclude_drug_names": ["Lipitor"],
                     },
                 }
             ],
             "operation": {"kind": "count_by", "dimension": "drug", "only_listed_values": True},
-            "expansions": [
-                {
-                    "term": "PD-1 inhibitors",
-                    "field": "drug_names",
-                    "members": [
-                        "nivolumab",
-                        "cemiplimab",
-                        "dostarlimab",
-                        "tislelizumab",
-                        "toripalimab",
-                    ],
-                }
-            ],
+            "expansions": [{"term": "statins", "field": "drug_names", "members": STATINS}],
         },
     ),
 ]

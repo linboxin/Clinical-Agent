@@ -1,6 +1,6 @@
 # Design: ClinicalTrials.gov Query-to-Visualization Agent
 
-**Status:** v3.1, as built · 2026-10-01 (v3.1 = plan-language building blocks, server counts, name normalization; see Appendix B)
+**Status:** v3.1, as built · 2026-10-01 (v3.1 = plan-language building blocks, server counts, optional name normalization; see Appendix B)
 **Brief:** [ASSIGNMENT.md](ASSIGNMENT.md) · **Supersedes:** v2 and v1 (earlier drafts, retired once the build diverged from them). Changes and reasons are in [Appendix A](#appendix-a-changes-from-v2-and-v1).
 **Renderer contract:** [docs/response-schema.md](docs/response-schema.md)
 
@@ -12,13 +12,13 @@
 | D2 | Footprint | One process. File run store and file page cache. No DB, Docker or queue | Graders run it with `uv sync && uv run`; the brief grades none of that infrastructure (Docker isn't even installed on the dev machine) |
 | D3 | Orchestration | Plain async pipeline; every stage is a traced span | Fixed pipeline; a run takes 1–30 s, so re-running beats resuming (pages are cached) |
 | D4 | LLM | OpenAI only (≤ `gpt-5.4`, Cheiron constraint); default **`gpt-5.4`**, configurable | Chosen by E1 (§12): 102/102 and 34/34 stable, vs mini at 101/102 (its miss would have shipped a misleading chart). The cost is about 0.5 s of latency and the same ~3.8k tokens per run |
-| D5 | LLM role | Writes a `QueryPlan` and nothing else (≤ 2 calls). Never sees trial records; never produces numbers, titles or chart data | Avoids hallucination-prone steps (§7: 20%) |
+| D5 | LLM role | Writes a `QueryPlan` and nothing else (≤ 2 calls). Never sees trial records; never produces numbers, titles or chart data. By default no model influences which bar a trial lands in (the optional normalizer, D11, is off) | Avoids hallucination-prone steps (§7: 20%) |
 | D6 | Chart type | **Derived by code** from the operation, the dimension kinds and data exclusivity; a preference is honored only if compatible | Removes a model output that could be wrong; the rules double as validation |
 | D7 | Agent loop | plan → validate → **ground** (live hit counts) → ≤ 1 repair with that feedback | A bounded tool loop with deterministic tools |
 | D8 | Evidence | Each count is the size of a contributor set; citations come from the same set; a gate re-checks every excerpt | Deep citations (bonus) that cannot drift from the numbers |
 | D9 | Plan language | General building blocks, not per-question handling: any-of value lists, `exclude_*` lists, class `expansions` (each member grounded), `only_listed_values`, and `unhandled_constraints` → clarification | A question like "Excluding Keytruda, which PD-1 inhibitors…" composes from these; nothing is silently dropped |
 | D10 | Very large cohorts | Above the cap, countable plans are counted **on the server** (one `totalCount` query per bucket + 3 sample citations + a `source_query` URL); other plans ask the user to narrow | Exact answers for whole-registry questions without fetching 600k records |
-| D11 | Entity names | A small model (`gpt-5.4-mini`) normalizes drug/condition names under guardrails (only given names, validated answers, disk cache, raw values still cited, merges disclosed) | Brand/code/generic and combination strings group correctly in networks and rankings |
+| D11 | Entity names | **Deterministic by default.** Drug names are grouped by a rule-based key (case, ®, dose, salt). Listed drugs also match through the `otherNames` the registry record itself gives for that intervention (REGN2810 → cemiplimab). Model-based normalization (`gpt-5.4-mini`) is **optional and off by default**: an audit of its answers found confident wrong mappings for investigational codes (REGN2810 → nivolumab, LEE011 → lesinurad), and one reached a shipped example | No model judgement inside any count. Brand and code names stay separate unless the record links them |
 
 ## 1. Problem, users, goal
 
@@ -49,8 +49,8 @@ Each step involves silent judgment calls, so the numbers are hard to defend.
 | §5 Deep citations | Contributor sets + membership evidence (§10) | `verify` gate on every run; `scripts/audit_citations.py` (live) |
 | §6 README, 3–5 real example runs | `examples/` from `scripts/run_examples.py` | Reviewed with `scripts/review_run.py` |
 | §7 System design (35%) | §3, §6–§8 | Golden tests on hand-computed corpora |
-| §7 AI design (20%) | D5–D7, §6 | Evals: 102/102 with gpt-5.4; E2 shows the repair loop's value |
-| §7 Code quality (20%) | §14, CI | ruff, mypy, 124 offline tests |
+| §7 AI design (20%) | D5–D7, §6 | Evals: 123/123 with gpt-5.4 (41 cases, v8); E2 shows the repair loop's value; normalizer audit (D11) |
+| §7 Code quality (20%) | §14, CI | ruff, mypy, 127 offline tests |
 | §7 I/O design (10%) | §5 | JSON Schema export, OpenAPI |
 | §8 Tools, validation, deliberate vs generated | README "How this was built" | Commit history |
 
@@ -87,8 +87,8 @@ flowchart LR
 | `count` *(over the cap only)* | one `totalCount` + 3 samples per bucket; `source_query` per datum; replaces retrieve → analyze | `analytics/server_count.py` |
 | `retrieve` | paged fetch (1,000/page) with field projection, cache, rate limiter, retries | `ctgov/` |
 | `prepare` | dedupe; re-check exact filters and exclusions locally; record membership evidence; count synonym-only matches | `analytics/prepare.py` |
-| `normalize` | drug/condition names → canonical names (guarded small model, cached) | `normalize.py` |
-| `analyze` | one of 5 operators, reading values through one `ValueView` (normalization, listed values) → rows + contributor evidence | `analytics/` |
+| `normalize` | *optional, off by default:* drug/condition names → canonical names (small model, guarded, cached) | `normalize.py` |
+| `analyze` | one of 5 operators, reading values through one `ValueView` (listed values via name or registry `otherNames`; optional normalization) → rows + contributor evidence | `analytics/` |
 | `build_spec` | chart rules → typed spec, citations, deterministic title, policies | `viz/build.py` |
 | `verify` | output gate (§10); a failure returns `failed` and nothing is patched | `viz/verify.py` |
 | `save` | request, response, trace and full evidence → `data/runs/` | `storage.py` |
@@ -257,7 +257,7 @@ The plan above is "Excluding Keytruda, which PD-1 inhibitors have the most Phase
 | "Over time" | Start date by default (stated in assumptions). Buckets are zero-filled inside the range, and the current partial year is flagged |
 | Countries / sites | A trial counts once per distinct country or site. Sponsor site numbers (`( Site 5303)`) are stripped |
 | Cohort overlap | A trial in two cohorts counts in both; `meta.cohort_overlap` reports it. Stacked or pie charts are refused when groups overlap |
-| Drug names | Two layers. (1) A deterministic key: case, ®/™, dose suffixes (`80 mg`) and salt words dropped; placebos removed. (2) For drug and condition groupings, a small model maps the 600 most frequent names to canonical names (Keytruda / MK-3475 → pembrolizumab; combinations split; non-drugs dropped). Guardrails: the model only maps names it was given; out-of-range, duplicate or malformed answers are discarded (one retry, then only validated lines are used); answers are cached per name; citations quote the raw value; `meta.normalization` lists merges, drops and unmapped names; `NAME_NORMALIZER=off` disables it |
+| Drug names | Rule-based key: case, ®/™, dose suffixes (`80 mg`) and salt words dropped; placebos removed. With `only_listed_values`, a listed drug matches an intervention by its name or by an `otherName` in the same record, and the citation quotes that otherName. Brand, code and generic names are **not** merged otherwise. Optional model normalization (`NAME_NORMALIZER=model`) maps the 600 most frequent names to canonical names under guardrails (only given names, validated and cached answers, raw values still cited, merges listed in `meta.normalization`); it is off by default because its code mappings were unreliable in an audit (§ Appendix B) |
 | Free-text membership | A literal match is cited with token matching ("Alzheimer's disease" ≈ "Alzheimer Disease"). Registry synonym matches (MK-3475 for pembrolizumab) are counted in `synonym_matches` |
 | Co-occurrence | Means *co-listed in one trial record*, not "given together" |
 | Enrollment | ACTUAL and ESTIMATED are mixed, and each citation shows which; never summed as a trial count |
@@ -336,10 +336,11 @@ Page cache: `.cache/ctgov/<sha256>.json`, keyed by (adapter version, path, param
 | **gpt-5.4** | **102/102** | **34/34** | 2.5 s |
 | gpt-5.4-mini, no repair (E2) | 99/102 (the misspelling case fails 3/3) | 34/34 | 2.1 s |
 
-| Prompt v7, 41 cases × 3 (adds classes, exclusions, lists, unhandled constraints, whole-registry) | Pass | Stable |
+| Prompt v7 / v8, 41 cases × 3 (adds classes, exclusions, lists, unhandled constraints, whole-registry) | Pass | Stable |
 |---|---|---|
-| **gpt-5.4** | **123/123** | 40/41 |
-| gpt-5.4-mini | 117/123 | 35/41 |
+| gpt-5.4, v7 | 123/123 | 40/41 |
+| gpt-5.4-mini, v7 | 117/123 | 35/41 |
+| **gpt-5.4, v8** (complete-class rule; checks that sintilimab is listed) | **123/123** | 38/41: the tail of class member lists varies between runs |
 
 Prompt v3 → v5 changes each answer a specific eval failure. The full history is in [evals/results/README.md](evals/results/README.md).
 
@@ -357,7 +358,7 @@ Prompt v3 → v5 changes each answer a specific eval failure. The full history i
 - 2 planner calls;
 - networks: 40 nodes / 150 edges;
 - server counts: ≤ 48 bucket queries, 3 sample citations each, 20-year default window for trends;
-- name normalization: the 600 most frequent names per dimension, batches of 60;
+- name normalization (off by default): the 600 most frequent names per dimension, batches of 60;
 - scatter: 3,000 points;
 - 5 inline citations per datum.
 
@@ -368,7 +369,7 @@ Prompt v3 → v5 changes each answer a specific eval failure. The full history i
 | Unknown entity after the repair call | `needs_clarification` naming the term |
 | Over the cap, countable plan | Counted on the server (`count_method: server_count`); citations are samples |
 | Over the cap, not countable | `needs_clarification` (narrowing options), before any page fetch |
-| Name normalizer error or invalid answer | Raw names kept for those lines; reported in `meta.normalization` / `assumptions`; the run continues |
+| Name normalizer (if enabled) error or invalid answer | Raw names kept for those lines; reported in `meta.normalization` / `assumptions`; the run continues |
 | Question needs a constraint the plan can't express | `needs_clarification` listing it (`unhandled_constraints`) |
 | Every entity exists but the combination has 0 trials | `empty`, with the reason |
 | Upstream failure | `failed` 503; never partial |
@@ -396,12 +397,13 @@ tests/   examples/   docs/{response-schema.md,schemas/}
 |---|---|
 | v1 MVP | contracts, registry, compiler, client + cache + limiter, `count_by` / `time_trend` / `network`, spec builder, gate, 71 tests |
 | v3 | histogram, scatter, trend split, 4 dimensions, 3 measures; chart rules + pie/stacked; grounding repair loop; membership evidence + `excerpt`; traces; evidence/trace endpoints; follow-ups; evals; demo; review/audit scripts; CI |
-| v3.1 | plan-language building blocks (lists, exclusions, class expansion, listed values, unhandled constraints, filter-derived labels); server counts; guarded name normalization; schema 1.1 with read-time migration; redesigned demo; 41 eval cases |
+| v3.1 | plan-language building blocks (lists, exclusions, class expansion, listed values, unhandled constraints, filter-derived labels); server counts; name normalization (later made optional, off by default, after an audit); registry `otherNames` matching; schema 1.1 with read-time migration; redesigned demo; 41 eval cases |
 
 ## 16. Production path (documented, not built)
 
 - **Storage and execution:** Postgres for runs, evidence and cache, plus S3 for pages; an async job queue for large cohorts; auth and tenancy.
-- **Entity resolution:** reviewed alias tables on top of the model normalizer, and MeSH where it fits.
+- **Entity resolution:** registry-confirmed merges. A model may *propose* "REGN2810 → cemiplimab", but the merge is accepted only if the registry links the names (the same intervention's `otherNames`). Add reviewed alias tables, a hand-labelled accuracy eval for the normalizer, and MeSH where it fits.
+- **Class completeness:** check expanded classes against a reference list (e.g. ATC or MeSH pharmacologic action), so a missing member is detected, not just an invented one.
 - **Server counts for more shapes:** two-dimension crosstabs, and drug rankings via per-drug count queries.
 - **Tracing:** export spans to an OTLP collector such as Arize Phoenix, and collect human labels there into eval cases.
 - **AWS deployment:** ECS Fargate, RDS, S3, Secrets Manager.
@@ -428,7 +430,10 @@ tests/   examples/   docs/{response-schema.md,schemas/}
 
 | Trigger | Finding | Change |
 |---|---|---|
-| A user test: "Excluding Keytruda, which PD-1 inhibitors have the most Phase 3 trials?" | Returned `ok` but was wrong. The class name was searched literally (20 trials), the exclusion was silently dropped, and the title (model-written label) claimed an exclusion that never happened | General plan-language blocks (D9); titles and labels generated from filters; no-silent-drop rule. The same question now ranks nivolumab 152, tislelizumab 80, toripalimab 63, … |
+| A user test: "Excluding Keytruda, which PD-1 inhibitors have the most Phase 3 trials?" | Returned `ok` but was wrong. The class name was searched literally (20 trials), the exclusion was silently dropped, and the title (model-written label) claimed an exclusion that never happened | General plan-language blocks (D9); titles and labels generated from filters; no-silent-drop rule. The same question now ranks nivolumab 149, tislelizumab 81, toripalimab 64, camrelizumab 63, sintilimab 63, … (after the fixes below) |
 | Comparing with another implementation of this brief | It counted large result sets on the server and normalized names with a model | Adopted both, with stricter guarantees: never-partial semantics, a `source_query` per datum, and validated/cached/disclosed normalization (D10, D11) |
 | Stored runs failing to load after the plan changed (found by the UI agent) | Required plan fields missing in 1.0 records | Response schema 1.1 with read-time migration of 1.0 records |
 | Eval regression (v6): "COVID-19 vaccine trials" was reported as unhandled | Honest, but expressible as an intervention-name phrase | Prompt v7 hint; the case passes 3/3 |
+| Audit of the normalizer's cached answers (by a parallel review session) | ~20 of 98 code/brand mappings were wrong (REGN2810 → nivolumab, RO5185426 → binimetinib, LEE011 → lesinurad, BT062 → belantamab mafodotin, …), and example 13 put a cemiplimab trial in the nivolumab bar. The guardrails checked the *form* of answers, not their truth | Normalization off by default; listed drugs match through the record's own `otherNames`; examples 04, 06 and 13 regenerated with no model judgement in any count. Registry-confirmed merges are the production fix (§16) |
+| Re-grade of example 13 | The PD-1 class list stopped at the 5 drugs in the prompt's worked example, so sintilimab and camrelizumab (63 phase 3 trials each) were missing from the ranking | Prompt v8: the worked example uses a complete statin list, plus an explicit completeness rule; the eval case now requires sintilimab. Example 13 lists 10 members |
+| Re-grade | A pie could be offered after top-N truncation (slices wouldn't sum to the whole) | Pie refused when categories are truncated |

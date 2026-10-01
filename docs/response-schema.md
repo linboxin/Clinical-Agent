@@ -122,7 +122,7 @@ Show a "Verify this count" link, and don't offer to load every citation.
 | `cohorts[]` | Per cohort: `filters`, exact `api_params`, `total_matches`, `records_fetched`, `trials_analyzed`, `excluded{reason: n}`, `missing{field: n}`, `synonym_matches{filter: n}`, `complete`. In `filters`, the drug, condition, sponsor and country fields are **lists** (a trial matches any value), and `exclude_drug_names`, `exclude_conditions`, `exclude_sponsors` and `exclude_countries` list removed values |
 | `interpretation.plan.expansions` | Classes the planner expanded, e.g. `{term: "PD-1 inhibitors", field: "drug_names", members: [...]}`. Also stated in `assumptions` |
 | `count_method` | `fetched` (every trial downloaded; full citation sets) or `server_count` (see above) |
-| `normalization[]` | One entry per normalized dimension: `{dimension, model, names_in, names_sent, names_mapped, names_unmapped, dropped[], merges[{canonical, variants[]}]}`. Raw spellings stay in the citations |
+| `normalization[]` | Empty unless optional name normalization is enabled (`NAME_NORMALIZER=model`; off by default). Then one entry per normalized dimension: `{dimension, model, names_in, names_sent, names_mapped, names_unmapped, dropped[], merges[{canonical, variants[]}]}`. Raw spellings stay in the citations |
 | `cohort_overlap` | `"A ∩ B": n`: trials counted in both cohorts |
 | `policies` | Counting rules in plain words (multi-phase, multi-country, drug grouping, bins, …) |
 | `assumptions` | Defaults applied ("over time = start year"), partial-year notes, empty-result reasons |

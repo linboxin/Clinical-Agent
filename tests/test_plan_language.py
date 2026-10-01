@@ -176,3 +176,44 @@ async def test_pd1_question_end_to_end() -> None:
     assert spec.title == "Trials by drug — PD-1 inhibitors · Phase 3 · excluding pembrolizumab"
     assert any("'PD-1 inhibitors' was interpreted as" in a for a in response.meta.assumptions)
     assert response.meta.cohorts[0].excluded == {"excluded_drug_listed": 1}
+
+
+def test_listed_drug_matches_through_the_records_own_other_names() -> None:
+    """A trial that registers cemiplimab only as its code counts under cemiplimab, cited by the
+    otherName in its own record; with no such synonym it counts under no listed drug."""
+    corpus = [
+        study(
+            "NCT7",
+            phases=["PHASE3"],
+            interventions=[("BIOLOGICAL", "REGN2810")],
+            other_names={"REGN2810": ["cemiplimab"]},
+        ),
+        study("NCT8", phases=["PHASE3"], interventions=[("BIOLOGICAL", "REGN2810")]),
+    ]
+    p = plan(
+        dimension="drug",
+        cohorts=[("x", {"drug_names": ["nivolumab", "cemiplimab"]})],
+        only_listed_values=True,
+    )
+    ct, _ = prepare_cohort(p.cohorts[0], corpus, p.time)
+    result = run_analysis(p, [ct])
+    assert isinstance(result, CountResult)
+    assert [(r.label, sorted(r.bucket.contributors)) for r in result.rows] == [
+        ("cemiplimab", ["NCT7"])
+    ]
+    assert (
+        "protocolSection.armsInterventionsModule.interventions[0].otherNames[0]",
+        "cemiplimab",
+    ) in result.rows[0].bucket.contributors["NCT7"]
+    assert result.missing == {"x": {"drug": 1}}  # NCT8: no listed drug by name or otherName
+
+
+def test_pie_is_refused_when_categories_are_truncated() -> None:
+    from app.contracts.enums import ChartType
+    from app.viz.build import choose_chart
+
+    p = plan(dimension="lead_sponsor", top_n=1)
+    sponsors = [study(f"NCT{i}", sponsor=f"S{i}") for i in range(3)]
+    ct, _ = prepare_cohort(p.cohorts[0], sponsors, p.time)
+    chart, reason = choose_chart(p, run_analysis(p, [ct]), ChartType.PIE_CHART)
+    assert chart is ChartType.BAR_CHART and "top categories" in reason

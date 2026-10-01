@@ -147,9 +147,13 @@ def choose_chart(
                 "to the whole"
                 if not result.categories_exclusive
                 else (
-                    f"more than {MAX_PIE_SLICES} categories"
-                    if len(result.category_order) > MAX_PIE_SLICES
-                    else None
+                    "only the top categories are shown, so slices would not sum to the whole"
+                    if result.truncation is not None
+                    else (
+                        f"more than {MAX_PIE_SLICES} categories"
+                        if len(result.category_order) > MAX_PIE_SLICES
+                        else None
+                    )
                 )
             )
     if result.kind == "time_trend":
@@ -605,7 +609,9 @@ def policies(plan: QueryPlan) -> dict[str, str]:
     if plan.operation.only_listed_values:
         out["only_listed_values"] = (
             "Only values matching the cohort's own list are counted (e.g. the listed drugs, not "
-            "co-listed chemotherapy); each bar is named after the listed value it matched."
+            "co-listed chemotherapy); each bar is named after the listed value it matched. An "
+            "intervention registered under a code matches through the otherNames its own record "
+            "lists (REGN2810 -> cemiplimab), and the citation quotes that otherName."
         )
     if len(plan.cohorts) > 1:
         out["cohort_overlap"] = (

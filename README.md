@@ -38,9 +38,9 @@ curl -s localhost:8000/v1/visualizations -H 'content-type: application/json' -d 
 | `uv run python -m scripts.review_run <run_id>` | Markdown review sheet for a stored run |
 | `uv run python -m scripts.audit_citations <run_id>` | Re-fetches cited trials live and re-checks every cited excerpt |
 | `uv run python -m evals.run [--model gpt-5.4-nano] [--repeats 3]` | Planner eval set (41 cases, deterministic scoring) |
-| `uv run pytest` | 124 offline tests (no key, no network) |
+| `uv run pytest` | 127 offline tests (no key, no network) |
 
-`OPENAI_API_KEY` is only needed for the planner (`PLANNER_MODEL`, default `gpt-5.4`) and the name normalizer (`NORMALIZER_MODEL`, default `gpt-5.4-mini`; set `NAME_NORMALIZER=off` to disable it). Everything else (retrieval, analytics, citations, the gate, the demo, the tests) runs without it. All settings are listed in `.env.example`.
+`OPENAI_API_KEY` is only needed for the planner (`PLANNER_MODEL`, default `gpt-5.4`). Everything else (retrieval, analytics, citations, the gate, the demo, the tests) runs without it. Optional model-based name normalization (`NAME_NORMALIZER=model`, `NORMALIZER_MODEL` default `gpt-5.4-mini`) is **off by default**; see Limitations. All settings are listed in `.env.example`.
 
 ## Example runs
 
@@ -51,16 +51,16 @@ The files in [`examples/`](examples/) are actual outputs of `scripts/run_example
 | [01](examples/01_time_trend_brief_example.json) | *How has the number of trials for this drug changed over time?* + `drug_name: Pembrolizumab` (the brief's example) | `time_series`: 2,631 trials, 2008–2027 (later years are anticipated starts) |
 | [02](examples/02_comparison_two_drugs.json) | *Compare phases for trials involving pembrolizumab vs nivolumab in melanoma.* | `grouped_bar_chart`: 351 vs 329 trials, 8 phase groups each |
 | [03](examples/03_geographic_recruiting.json) | *Which countries have the most recruiting trials for breast cancer?* | `bar_chart`, horizontal: top 25 of 81 countries; United States 915, China 647, Italy 195 |
-| [04](examples/04_network_sponsor_drug.json) | *Show a network of sponsors and drugs for phase 3 melanoma trials.* | `network_graph`, bipartite: 221 trials; 40 nodes and 55 of 324 edges; drug names normalized (135 changed) |
+| [04](examples/04_network_sponsor_drug.json) | *Show a network of sponsors and drugs for phase 3 melanoma trials.* | `network_graph`, bipartite: 221 trials; 40 nodes and 51 of 345 edges (Bristol-Myers Squibb ↔ Nivolumab strongest) |
 | [05](examples/05_histogram_enrollment.json) | *What is the enrollment size distribution of recruiting Alzheimer's trials?* | `histogram`: 601 trials in 11 declared bins |
-| [06](examples/06_network_drug_cooccurrence.json) | *Which drugs frequently co-occur in combination studies for multiple myeloma?* | `network_graph`, co-occurrence: 4,049 trials; dexamethasone is the hub (782); BTZ / Velcade → bortezomib |
+| [06](examples/06_network_drug_cooccurrence.json) | *Which drugs frequently co-occur in combination studies for multiple myeloma?* | `network_graph`, co-occurrence: 4,049 trials; dexamethasone is the hub (737); 150 of 6,302 edges shown |
 | [07](examples/07_scatter_enrollment_vs_start.json) | *Plot enrollment vs start date for phase 3 psoriasis trials, by sponsor type* | `scatter_plot`: 510 points, coloured by sponsor class |
 | [08](examples/08_trend_split_by_phase.json) | *How has the phase mix of interventional obesity trials changed since 2010?* | `time_series`, one line per phase: 10,160 trials |
 | [09](examples/09_pie_preferred.json) | *What share of COVID-19 vaccine trials are randomized?* + `preferred_visualization: pie_chart` | `pie_chart` (honored: allocation is exclusive), 627 trials |
 | [10](examples/10_needs_clarification.json) | *How many trials has this drug had per year?* | `needs_clarification`: "Which drug do you want to analyze per year?" |
 | [11](examples/11_unsupported.json) | *Which melanoma drug has the best overall survival?* | `unsupported`, with the supported alternatives |
 | [12](examples/12_follow_up_of_03.json) | *Same, but only phase 3 trials.* + `parent_run_id` of 03 | `bar_chart`; `plan_diff` = `trial_phase: null → [PHASE3]`; 206 trials |
-| [13](examples/13_drug_class_with_exclusion.json) | *Excluding Keytruda, which PD-1 inhibitors have the most Phase 3 trials?* | `bar_chart`: the class is expanded into 5 grounded members and Keytruda is excluded; nivolumab 152, tislelizumab 80, toripalimab 63, cemiplimab 11, dostarlimab 10 |
+| [13](examples/13_drug_class_with_exclusion.json) | *Excluding Keytruda, which PD-1 inhibitors have the most Phase 3 trials?* | `bar_chart`: the class is expanded into 10 grounded members and Keytruda is excluded; nivolumab 149, tislelizumab 81, toripalimab 64, camrelizumab 63, sintilimab 63, … A trial registered only as "REGN2810" counts under cemiplimab through its own record's `otherNames` |
 | [14](examples/14_whole_registry_server_counts.json) | *How are all registered clinical trials distributed across phases?* | `bar_chart`, **server counts** over all 605,357 trials; each bar links a `source_query` that reproduces it |
 
 Every example passed the verification gate on all of its citations. Separate live re-fetches of cited trials (§ Validation) matched every excerpt.
@@ -141,7 +141,7 @@ The values above are illustrative. **[docs/response-schema.md](docs/response-sch
 3. **Ground.** One live `countTotal` call per cohort, plus one per member of an expanded class (an invented member goes back to the planner). A cohort with zero hits gets a per-entity probe, which separates an unknown term (`pembrolizumabb`) from a genuine zero. Unknown terms go back to the planner as feedback for its **one** repair call. A cohort over 30k trials is detected here, *before* anything is fetched, and takes the server-count path below.
 4. **Retrieve.** Allowlisted, quoted API parameters (drug matching is scoped to the intervention fields; value lists become `OR`, exclusions become `NOT`). Pagination with field projection, a page cache keyed by the registry's `dataTimestamp`, a client-side rate limiter (the API returns 429 on bursts) and bounded retries.
    - **Above the cap:** if the analysis groups by something the API can count, each bucket is counted **on the server**: the exact `totalCount` plus 3 sample citations and a `source_query` URL. Otherwise the user is asked to narrow.
-5. **Prepare, normalize and analyze.** Exact filters and exclusions are re-checked on every record. For drug and condition groupings, a small model normalizes names under guardrails (see below). Each trial records *why it is in the cohort*. The operators work on sets of NCT IDs, so a count is always the size of its contributor set.
+5. **Prepare and analyze.** Exact filters and exclusions are re-checked on every record. Drug names group by a rule-based key, and a listed drug also matches through the `otherNames` the record itself registers (REGN2810 → cemiplimab). No model is involved; optional model normalization is off by default. Each trial records *why it is in the cohort*. The operators work on sets of NCT IDs, so a count is always the size of its contributor set.
 6. **Build and verify.** Code picks the chart type (§9 of DESIGN). The title, summary and policies are deterministic text. The gate re-resolves **every cited `field_path`** in the retrieved record and compares it with the `excerpt`, checks counts against citation counts, and checks network integrity. A failure returns `failed`; nothing is patched.
 
 ## Key design decisions and tradeoffs
@@ -152,25 +152,26 @@ The values above are illustrative. **[docs/response-schema.md](docs/response-sch
 | One operator set + a field registry (5 operators × 13 dimensions × 3 measures → 8 chart types) | New question classes are registry entries, not handlers; the prompt and `/capabilities` are generated from the registry | Some phrasing needs a clarification instead of a creative interpretation |
 | A composable plan language (any-of lists, exclusions, class expansion with grounded members, "count only listed values", declared unhandled constraints) | A PD-1-style question composes from general blocks, with no per-question code; nothing is silently dropped, and titles are built from filters, never model text | Class membership comes from model knowledge. It's shown in `meta.assumptions`, and every member is checked against the registry |
 | Server-side counting above the cap (idea adopted after comparing with another implementation) | Whole-registry questions get exact answers in seconds, each bar reproducible from its `source_query` | Citations are 3 samples per datum; local re-checks and normalization don't apply (stated in `meta`) |
-| Model-based name normalization with guardrails (also adopted from that comparison) | Keytruda / MK-3475 / "pembrolizumab 200 mg" group as one drug; combination strings split | A model judges identity. It only maps the names it's given; answers are validated and cached; raw values stay in the citations; merges are listed in `meta.normalization`; `NAME_NORMALIZER=off` disables it |
+| Model-based name normalization: **built, then switched off by default** (adopted from that comparison) | It merges brand/code/generic names, but an audit of its cached answers found confident wrong mappings for investigational codes (REGN2810 → nivolumab), and one reached a shipped example | Off by default: brand and code names stay separate unless the registry record links them via `otherNames`. Registry-confirmed merges are the next step |
 | Code chooses the chart; preferences must be compatible | A pie or stacked bar over overlapping groups would double-count, so the rules are also validation | Less stylistic freedom |
 | A grounding tool in the agent loop (live hit counts → one repair) | Fixes misspellings and invented entities without user round-trips, and stays bounded (≤ 2 model calls) | One extra cheap API call per cohort; a typo that exists in the registry (one trial lists "pembrolizumb") passes grounding |
 | Field-scoped drug search instead of `query.intr` | Measured: 11% of `query.intr` hits for pembrolizumab only mention it (e.g. prior therapy) | Relies on registry synonym expansion; those trials are counted in `synonym_matches` |
 | Full retrieval up to 30k trials per cohort; server counts above that | Exact counts with complete contributor sets wherever the cohort fits | Above the cap, citations are samples, and shapes the API can't count (drug rankings, networks) must be narrowed |
-| A deterministic drug key (dose, salt, ®) underneath the model normalizer, not MeSH | Measured: raw names split "erlotinib" / "erlotinib hydrochloride", and MeSH mixes in non-drugs ("Radiotherapy"). The key works with no model call; the model layer adds brand/code → generic | Names outside the 600 most frequent keep the deterministic key only |
+| A deterministic drug key (dose, salt, ®) plus the registry's own `otherNames`, not MeSH or a model | Measured: raw names split "erlotinib" / "erlotinib hydrochloride", and MeSH mixes in non-drugs ("Radiotherapy"). Deterministic and auditable | Brand and code names not linked in the record stay separate bars or nodes |
 | File store, file cache, in-process traces; no DB or Docker | Runs with `uv` alone; persistence and infrastructure aren't graded | Single-instance; the Protocol seams are where Postgres, S3 and OTLP would go |
 | Deterministic evals (field matching), no LLM judge | Reproducible, cheap, can't hallucinate | Only checks what each case specifies |
 
 ## Validation
 
-- **124 offline tests** (`uv run pytest`):
+- **127 offline tests** (`uv run pytest`):
   - hand-computed golden counts and contributor sets for every operator;
   - chart-selection rules and normalization;
   - a mocked-registry pipeline covering pagination, grounding, too-broad, upstream failure, typo → repair, follow-up diff, and the gate catching a tampered excerpt or count;
   - API routes, path traversal, and strict-schema validity of `QueryPlan` for OpenAI.
-- **The gate on every response:** every cited excerpt is re-resolved against the record it came from.
+- **The gate on every response:** every inline citation's excerpt is re-resolved against the record it came from, and counts are checked against citation counts. It verifies the quoted evidence, not an independent recount of each bucket (each count is the size of the cited set by construction).
 - **Live runs against ClinicalTrials.gov** (hand-written plans via `--plan`): histogram (Alzheimer's, 601 trials), scatter (psoriasis, 516), phase mix over time (obesity, 10,160), investigator ↔ site network (glioblastoma), pembrolizumab vs nivolumab in melanoma. All passed the gate.
-- **Spot checks against the live API.** The obesity 2026 bucket (782) matches an independent `countTotal` query exactly. `scripts/audit_citations.py` re-fetched 124 cited trials live (smoke runs plus examples 01, 04, 06, 07, 12 and 13), and **485/485 cited excerpts matched**.
+- **Spot checks against the live API.** The obesity 2026 bucket (782) matches an independent `countTotal` query exactly. `scripts/audit_citations.py` re-fetched 144 cited trials live (smoke runs plus examples 01, 04, 06, 07, 12 and 13), and **526/526 cited excerpts matched**.
+- **Normalizer audit.** A parallel review read every cached answer of the model normalizer. About 20 of 98 code/brand mappings were wrong (REGN2810 → nivolumab, LEE011 → lesinurad, …), and one had put a cemiplimab trial in example 13's nivolumab bar. So the normalizer is now off by default and the affected examples were regenerated. A script check confirms every placement in examples 04, 06 and 13 is supported by the trial's own name or `otherNames` (except deterministic salt merges such as vincristine / vincristine sulfate).
 - **Visual check of the demo renderer** (headless Chrome screenshots). This caught a UTC/local-time shift in the time axis, which was a renderer bug; the data was correct.
 - **Planner evals** ([evals/results](evals/results/README.md)): 34 cases × 3 repeats on prompt v5 (below), then 41 cases on v7; deterministic scoring.
 
@@ -181,7 +182,7 @@ The values above are illustrative. **[docs/response-schema.md](docs/response-sch
   | **gpt-5.4 (default)** | **102/102** | **34/34** | 2.5 s |
   | gpt-5.4-mini without the repair call (E2) | 99/102 | 34/34 | 2.1 s |
 
-  With the plan-language cases added (41 cases, prompt v7): **gpt-5.4 passes 123/123**, and mini 117/123.
+  With the plan-language cases added (41 cases): **gpt-5.4 passes 123/123** on prompt v7 (40/41 stable) and on v8 (38/41 stable; the long tail of class member lists varies); mini passes 117/123 on v7.
 
   E2 shows the grounding repair loop at work: without it, the misspelling case (`pembrolizumabb`) fails 3/3; with it, it is corrected 3/3. The eval failures also drove the prompt from v3 to v5: keeping the question's value when it conflicts with a field, wording cues for the date basis, and concrete clarification options.
 
@@ -190,10 +191,11 @@ The values above are illustrative. **[docs/response-schema.md](docs/response-sch
 - **The eval set is small (41 cases) and was written by the builder,** so 100% means "no known regressions", not general accuracy. Next: grow it from real user questions and review traces, and add adversarial paraphrases.
 - **No free-text keyword filter.** "COVID-19 vaccine trials" becomes `conditions=[COVID-19]` plus `drug_names=[vaccine]` (an intervention-name phrase), which works but is indirect. Constraints the language can't express (e.g. "placebo-controlled") get a clarification rather than being dropped.
 - **Server counts cover common shapes only:** one countable dimension (or a year trend), ≤ 48 queries. Drug rankings and networks over 30k+ trials still ask the user to narrow.
-- **Name normalization is model judgement.** It's guarded and disclosed, but a wrong merge would change a grouping. Citations still show the raw names, so it's auditable.
+- **Brand, code and generic names are not merged by default.** "Keytruda" and "pembrolizumab" can be separate bars or nodes unless the trial's own record links them via `otherNames`. The optional model normalizer merges them, but an audit found it unreliable for investigational codes, so it's off.
+- **Drug-class expansion relies on model knowledge.** Grounding proves each listed member exists in the registry, not that it belongs to the class, and nothing detects a missing member. The prompt requires complete lists (v8), but the long tail varies between runs.
 - **Registry search semantics leak through.** "Alzheimer's" and "Alzheimer's disease" expand to different trial sets (434 vs 601 recruiting). The exact `api_params` are in `meta.cohorts`, but the user isn't warned.
 - **Scale:** 30k trials per cohort, fetched synchronously (~25 s at the cap). Next: async jobs for large cohorts, so drug rankings and networks over 30k+ trials can be fully retrieved instead of narrowed.
-- **Entity resolution:** sponsor subsidiaries ("Merck Sharp & Dohme LLC" vs "Merck KGaA") and site spellings aren't merged; only drug and condition names are normalized.
+- **Entity resolution:** sponsor subsidiaries ("Merck Sharp & Dohme LLC" vs "Merck KGaA") and site spellings aren't merged. Next: registry-confirmed name merges, a hand-labelled normalizer accuracy eval, and class lists checked against a reference (ATC / MeSH).
 - **Semantics:** co-occurrence means co-listed, not co-administered (it would need arm-level data). Status is current, not historical. Enrollment mixes actual and estimated counts (each citation states which).
 - **Typos that exist in the registry** pass grounding (e.g. a single trial lists "pembrolizumb"). A low-hit-count heuristic or a spelling suggestion could flag them.
 - **Single instance:** file storage, no auth. The production path (Postgres, S3, job queue, auth, OTLP export to Phoenix) is in DESIGN §16.
@@ -206,7 +208,8 @@ The values above are illustrative. **[docs/response-schema.md](docs/response-sch
 - **Design:** three written iterations (v1 → v2 → v3), each change justified in [DESIGN.md Appendix A](DESIGN.md#appendix-a-changes-from-v2-and-v1). The OpenAI-only constraint and the design-first workflow were set by the author.
 - **Comparison and testing drove iteration:**
   - a user test of "Excluding Keytruda, which PD-1 inhibitors…" exposed a confident wrong answer, which led to the general plan-language blocks;
-  - comparing with another implementation of this brief led to adopting server-side counting and model-based name normalization, with stricter guardrails;
+  - comparing with another implementation of this brief led to adopting server-side counting and model-based name normalization;
+  - a parallel review session then audited the normalizer's actual answers, found wrong code mappings (one in a shipped example), and also found the PD-1 class list was incomplete. The normalizer was switched off by default, drug matching was moved to the registry's own `otherNames`, and the prompt was fixed (v8);
   - a parallel Claude Code agent redesigned the `/demo` page while the backend changed; its screenshots also caught a schema-migration bug.
 - **Iteration driven by measurement:**
   - planner prompt v3 → v7 (each change answers a specific eval failure);

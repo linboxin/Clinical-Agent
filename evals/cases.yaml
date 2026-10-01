@@ -272,7 +272,8 @@
   expect:
     status: accepted
     plan: {operation.kind: count_by, operation.dimension: drug, operation.only_listed_values: true,
-           "cohorts[*].filters.drug_names": nivolumab, "cohorts[*].filters.exclude_drug_names": {one_of: [keytruda, pembrolizumab]},
+           "cohorts[*].filters.drug_names": nivolumab, "cohorts[0].filters.drug_names": sintilimab,
+           "cohorts[*].filters.exclude_drug_names": {one_of: [keytruda, pembrolizumab]},
            "cohorts[*].filters.trial_phase": [PHASE3], "expansions[0].term": PD-1 inhibitors}
 
 - id: class_glp1_outside_us
