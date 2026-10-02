@@ -1,0 +1,1127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trial Question Charts</title>
+<meta name="description" content="Ask a question about clinical trials; get a chart computed from ClinicalTrials.gov with every number linked to its source trials.">
+<script src="https://cdn.jsdelivr.net/npm/vega@5.30.0/build/vega.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@5.21.0/build/vega-lite.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.26.0/build/vega-embed.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<style>
+  /* Tokens. Categorical slots follow the validated reference palette (dataviz skill), in fixed
+     order, with separately stepped dark values. Status colours are reserved and always ship with
+     an icon + label. */
+  :root {
+    color-scheme: light;
+    --surface: #f7f7f5; --panel: #ffffff; --panel-2: #fbfbfa; --border: #e4e3df; --border-strong: #d3d2cd;
+    --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #7a7974;
+    --accent: #2a78d6; --accent-strong: #1c5cab; --accent-soft: #e8f1fc; --grid: #ecebe8;
+    --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100;
+    --s5: #e87ba4; --s6: #008300; --s7: #4a3aa7; --s8: #e34948;
+    --good: #0ca30c; --warning: #fab219; --serious: #ec835a; --critical: #d03b3b;
+    --shadow: 0 1px 2px rgba(20, 20, 18, .04), 0 4px 16px rgba(20, 20, 18, .05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --surface: #141413; --panel: #1f1f1e; --panel-2: #252524; --border: #343432; --border-strong: #45453f;
+      --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #94938b;
+      --accent: #3987e5; --accent-strong: #86b6ef; --accent-soft: #1b2a3e; --grid: #2e2e2c;
+      --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
+      --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 4px 16px rgba(0, 0, 0, .25);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface: #141413; --panel: #1f1f1e; --panel-2: #252524; --border: #343432; --border-strong: #45453f;
+    --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #94938b;
+    --accent: #3987e5; --accent-strong: #86b6ef; --accent-soft: #1b2a3e; --grid: #2e2e2c;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
+    --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 4px 16px rgba(0, 0, 0, .25);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--surface); color: var(--text-primary);
+         font: 14px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  code, .mono { font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .wrap { max-width: 1320px; margin: 0 auto; padding: 0 24px; }
+  @media (max-width: 640px) { .wrap { padding: 0 16px; } }
+
+  /* Header */
+  header.top { border-bottom: 1px solid var(--border); background: var(--panel); }
+  header.top .wrap { display: flex; align-items: center; gap: 16px; min-height: 60px; flex-wrap: wrap; padding-top: 8px; padding-bottom: 8px; }
+  .brand { display: flex; align-items: center; gap: 10px; margin-right: auto; min-width: 0; }
+  .logo { width: 30px; height: 30px; border-radius: 8px; background: var(--accent); display: grid; place-items: center; flex: none; }
+  .logo svg { width: 18px; height: 18px; }
+  .brand h1 { font-size: 16px; margin: 0; letter-spacing: -.01em; }
+  .brand p { margin: 0; color: var(--text-secondary); font-size: 12.5px; }
+  nav.links { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .btn { border: 1px solid var(--border); background: var(--panel); border-radius: 8px; padding: 7px 12px; cursor: pointer;
+         display: inline-flex; align-items: center; gap: 6px; line-height: 1.2; white-space: nowrap; }
+  .btn:hover { border-color: var(--border-strong); background: var(--panel-2); text-decoration: none; }
+  .btn:focus-visible, .chip:focus-visible, .seg button:focus-visible, textarea:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 2px; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+  .btn.primary:hover { background: var(--accent-strong); border-color: var(--accent-strong); }
+  :root[data-theme="dark"] .btn.primary:hover { color: #0b0b0b; }
+  .btn:disabled { opacity: .55; cursor: progress; }
+  .btn.ghost { background: transparent; }
+  .btn.sm { padding: 5px 10px; font-size: 12.5px; }
+  .icon { width: 15px; height: 15px; flex: none; }
+
+  /* Ask card */
+  .ask { margin: 20px 0 0; background: var(--panel); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow); padding: 16px; }
+  .ask-row { display: flex; gap: 10px; align-items: stretch; }
+  .ask textarea { flex: 1; min-width: 0; resize: vertical; min-height: 52px; border: 1px solid var(--border); border-radius: 10px;
+                  background: var(--panel-2); padding: 12px 14px; font-size: 15px; }
+  .ask-actions { display: flex; flex-direction: column; gap: 8px; }
+  .ask-actions .btn.primary { padding: 10px 18px; flex: 1; justify-content: center; }
+  @media (max-width: 640px) {
+    .ask { padding: 12px; }
+    .ask-row { flex-direction: column; }
+    .ask-actions { flex-direction: row; }
+    .ask-actions .btn.primary { flex: 1; }
+    .card-head { padding: 14px 14px 8px; }
+    .chart { padding: 4px 6px 6px; }
+    .panel-body { padding-left: 14px; padding-right: 14px; }
+    .brand p { display: none; }
+  }
+  .hint { color: var(--text-muted); font-size: 12px; }
+  .chips-label { margin: 14px 0 6px; font-size: 12px; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { border: 1px solid var(--border); background: var(--panel-2); border-radius: 999px; padding: 5px 12px 5px 10px; cursor: pointer;
+          display: inline-flex; align-items: center; gap: 7px; font-size: 13px; max-width: 100%; text-align: left; }
+  .chip:hover { border-color: var(--accent); background: var(--accent-soft); }
+  .chip .tag { font-size: 10.5px; font-weight: 600; color: var(--text-secondary); border: 1px solid var(--border-strong); border-radius: 999px;
+               padding: 0 6px; text-transform: uppercase; letter-spacing: .03em; white-space: nowrap; }
+  .chip .q { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  details.adv { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 10px; }
+  details.adv.ex { border-top: 0; padding-top: 0; }
+  .cohort { border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; background: var(--panel-2); }
+  .cohort + .cohort { margin-top: 8px; }
+  .cohort-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .cohort details { margin-top: 6px; }
+  .cohort details summary { cursor: pointer; font-size: 12px; color: var(--text-muted); }
+  .cohort code { display: block; margin-top: 4px; word-break: break-word; color: var(--text-secondary); }
+  details.adv > summary { cursor: pointer; color: var(--text-secondary); font-size: 13px; font-weight: 600; list-style: none; display: inline-flex; gap: 6px; align-items: center; }
+  details.adv > summary::-webkit-details-marker { display: none; }
+  details.adv > summary .caret { transition: transform .15s; display: inline-block; }
+  details.adv[open] > summary .caret { transform: rotate(90deg); }
+  .fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; margin-top: 10px; }
+  .fields label { display: grid; gap: 4px; font-size: 12px; color: var(--text-secondary); }
+  .fields input, .fields select { width: 100%; border: 1px solid var(--border); border-radius: 8px; background: var(--panel-2); padding: 7px 9px; }
+
+  /* Results */
+  .results { margin: 20px 0 40px; }
+  .res-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 3px 10px 3px 8px; font-size: 12.5px; font-weight: 600;
+          border: 1px solid var(--status); background: color-mix(in srgb, var(--status) 14%, transparent); color: var(--text-primary); }
+  .pill .dot { width: 16px; height: 16px; border-radius: 50%; background: var(--status); color: #fff; display: grid; place-items: center; font-size: 10.5px; line-height: 1; }
+  .pill.ok { --status: var(--good); } .pill.empty { --status: var(--text-muted); } .pill.needs_clarification { --status: var(--warning); }
+  .pill.needs_clarification .dot { color: #0b0b0b; }
+  .pill.unsupported { --status: var(--serious); } .pill.failed { --status: var(--critical); }
+  .runid { color: var(--text-muted); font-size: 12px; cursor: copy; border: 0; background: none; padding: 2px 4px; border-radius: 6px; }
+  .runid:hover { background: var(--panel-2); color: var(--text-secondary); }
+  .badge { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; border: 1px solid var(--border-strong); border-radius: 6px; padding: 2px 8px;
+           color: var(--text-secondary); background: var(--panel); }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 14px; }
+  .kpis.few { grid-template-columns: repeat(auto-fill, minmax(150px, 210px)); }
+  .kpi { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 11px 14px; }
+  .kpi .k { font-size: 11.5px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .05em; font-weight: 600; }
+  .kpi .v { font-size: 22px; font-weight: 650; letter-spacing: -.02em; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .kpi .s { font-size: 12px; color: var(--text-muted); }
+  .grid { display: grid; grid-template-columns: minmax(0, 1fr) 390px; gap: 16px; align-items: start; }
+  @media (max-width: 1040px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow); min-width: 0; }
+  .card-head { display: flex; gap: 14px; align-items: flex-start; justify-content: space-between; padding: 16px 18px 10px; flex-wrap: wrap; }
+  .card-head h2 { font-size: 17px; margin: 0 0 4px; letter-spacing: -.01em; }
+  .card-head .subtitle { margin: 0; color: var(--text-secondary); font-size: 13px; max-width: 760px; }
+  .why { margin: 8px 0 0; font-size: 12.5px; color: var(--text-secondary); }
+  .why b { font-weight: 600; color: var(--text-primary); }
+  .badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .seg button { border: 0; background: var(--panel); padding: 6px 12px; cursor: pointer; font-size: 13px; color: var(--text-secondary); }
+  .seg button + button { border-left: 1px solid var(--border); }
+  .seg button[aria-pressed="true"] { background: var(--accent-soft); color: var(--text-primary); font-weight: 600; }
+  .chart { padding: 4px 14px 6px; min-height: 360px; position: relative; overflow: hidden; }
+  .chart svg { display: block; max-width: 100%; }
+  .chart-foot { padding: 0 18px 14px; font-size: 12px; color: var(--text-secondary); display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; }
+  .legend-item { display: inline-flex; align-items: center; gap: 6px; }
+  .swatch { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
+  .footnote { color: var(--text-muted); }
+  .net-reset { position: absolute; top: 8px; right: 18px; }
+  .net-label { font-size: 11px; fill: var(--text-primary); pointer-events: none; paint-order: stroke; stroke: var(--panel); stroke-width: 3.5px; stroke-linejoin: round; }
+
+  /* Table view */
+  .table-wrap { max-height: 560px; overflow: auto; margin: 0 14px 14px; border: 1px solid var(--border); border-radius: 10px; }
+  table { border-collapse: collapse; width: 100%; font-size: 12.5px; }
+  th, td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  thead th { position: sticky; top: 0; background: var(--panel-2); color: var(--text-secondary); font-weight: 600; z-index: 1; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tbody tr.clickable { cursor: pointer; }
+  tbody tr.clickable:hover { background: var(--accent-soft); }
+  tbody tr.sel { background: var(--accent-soft); }
+  caption { caption-side: top; text-align: left; padding: 10px 10px 6px; font-weight: 600; color: var(--text-secondary); }
+
+  /* Side panels */
+  .side { display: grid; gap: 16px; min-width: 0; }
+  .panel-body { padding: 4px 18px 16px; }
+  .panel-title { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--text-secondary); font-weight: 650; margin: 14px 0 8px; }
+  .panel-title:first-child { margin-top: 0; }
+  .ev-head h3 { margin: 2px 0 2px; font-size: 15px; }
+  .eyebrow { font-size: 11.5px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; font-weight: 600; }
+  .muted { color: var(--text-muted); }
+  .sec { color: var(--text-secondary); }
+  .ev-list { display: grid; gap: 8px; margin-top: 10px; max-height: 620px; overflow: auto; padding-right: 2px; }
+  .cite { border: 1px solid var(--border); border-radius: 10px; padding: 9px 11px; background: var(--panel-2); }
+  .cite-top { display: flex; gap: 8px; align-items: baseline; justify-content: space-between; }
+  .cite-top a { font-weight: 650; font-size: 13px; }
+  .cite-title { font-size: 12.5px; color: var(--text-secondary); margin: 2px 0 6px; }
+  .ev-row { display: flex; gap: 6px 8px; align-items: baseline; flex-wrap: wrap; margin-top: 3px; }
+  .ev-path { font: 11.5px ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--text-muted); }
+  .ev-chip { font: 11.5px/1.35 ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--panel); border: 1px solid var(--border);
+             border-radius: 6px; padding: 1px 6px; color: var(--text-primary); word-break: break-word; }
+  .verify { display: inline-flex; gap: 6px; align-items: center; margin-top: 8px; font-size: 13px; font-weight: 600; }
+  .empty-hint { border: 1px dashed var(--border-strong); border-radius: 10px; padding: 14px; color: var(--text-secondary); font-size: 13px; }
+  ul.notes { margin: 0; padding-left: 18px; color: var(--text-secondary); font-size: 13px; }
+  ul.notes li + li { margin-top: 4px; }
+  details.fold { border-top: 1px solid var(--border); padding: 8px 0 2px; margin-top: 10px; }
+  details.fold > summary { cursor: pointer; font-size: 13px; color: var(--text-secondary); font-weight: 600; }
+  details.fold dl { margin: 8px 0 0; font-size: 12.5px; }
+  details.fold dt { font-weight: 600; margin-top: 6px; }
+  details.fold dd { margin: 2px 0 0; color: var(--text-secondary); }
+  .cov-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; }
+  .cov-wrap table { font-size: 12px; }
+  .cov-wrap td.params { white-space: normal; word-break: break-word; }
+  .timing { display: flex; height: 10px; border-radius: 5px; overflow: hidden; background: var(--grid); margin-top: 6px; gap: 2px; }
+  .timing span { display: block; height: 100%; min-width: 2px; }
+  .timing-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 6px; font-size: 12px; color: var(--text-secondary); }
+  .kv { display: grid; grid-template-columns: max-content 1fr; gap: 3px 10px; font-size: 12.5px; }
+  .kv dt { color: var(--text-muted); }
+  .kv dd { margin: 0; color: var(--text-secondary); word-break: break-word; }
+
+  /* Message views (clarification / unsupported / failed / welcome) */
+  .message { padding: 18px 20px 22px; }
+  .message h2 { font-size: 17px; margin: 0 0 8px; }
+  .message p { margin: 0 0 12px; color: var(--text-secondary); }
+  .options { display: flex; flex-wrap: wrap; gap: 8px; }
+  .opt { border: 1px solid var(--border-strong); background: var(--panel-2); border-radius: 10px; padding: 9px 12px; cursor: pointer; text-align: left; max-width: 100%; }
+  .opt:hover { border-color: var(--accent); background: var(--accent-soft); }
+  .refine { display: flex; gap: 8px; padding: 12px 18px 16px; border-top: 1px solid var(--border); flex-wrap: wrap; align-items: center; }
+  .refine label { font-size: 12.5px; color: var(--text-secondary); font-weight: 600; }
+  .refine input { flex: 1; min-width: 180px; border: 1px solid var(--border); border-radius: 8px; background: var(--panel-2); padding: 8px 10px; }
+  .welcome { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; padding: 18px; }
+  .step { border: 1px solid var(--border); border-radius: 12px; padding: 14px; background: var(--panel-2); }
+  .step b { display: block; margin-bottom: 4px; }
+  .step span { color: var(--text-secondary); font-size: 13px; }
+
+  /* Loading */
+  .loading { padding: 22px; display: grid; gap: 14px; }
+  .loading-row { display: flex; align-items: center; gap: 12px; }
+  .spinner { width: 22px; height: 22px; border-radius: 50%; border: 3px solid var(--grid); border-top-color: var(--accent); animation: spin .8s linear infinite; flex: none; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .skel { height: 260px; border-radius: 10px; background: linear-gradient(90deg, var(--panel-2), var(--grid), var(--panel-2)); background-size: 200% 100%; animation: shimmer 1.4s ease-in-out infinite; }
+  .skel.sm { height: 14px; width: 60%; }
+  @keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+  @media (prefers-reduced-motion: reduce) { .spinner, .skel { animation: none; } }
+
+  .alert { border: 1px solid var(--critical); background: color-mix(in srgb, var(--critical) 10%, transparent); border-radius: 10px; padding: 10px 12px; margin-top: 12px; font-size: 13px; }
+  .tip { position: fixed; pointer-events: none; background: var(--panel); color: var(--text-primary); border: 1px solid var(--border-strong);
+         border-radius: 8px; padding: 6px 9px; font-size: 12px; display: none; z-index: 30; box-shadow: var(--shadow); max-width: 280px; }
+  .tip b { font-weight: 650; }
+  dialog { border: 1px solid var(--border); border-radius: 14px; background: var(--panel); color: var(--text-primary); width: min(720px, calc(100vw - 32px)); padding: 18px; }
+  dialog::backdrop { background: rgba(0, 0, 0, .35); }
+  dialog textarea { width: 100%; min-height: 260px; border: 1px solid var(--border); border-radius: 10px; background: var(--panel-2); padding: 10px; }
+  .dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
+  footer { color: var(--text-muted); font-size: 12px; padding: 0 0 28px; }
+  .toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); background: var(--text-primary); color: var(--panel);
+           padding: 7px 14px; border-radius: 8px; font-size: 13px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 40; }
+  .toast.show { opacity: 1; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M5 19V11M12 19V5M19 19v-6"/></svg></div>
+      <div>
+        <h1>Trial Question Charts</h1>
+        <p>Ask about clinical trials. Every bar, point, node and edge links to the ClinicalTrials.gov records behind it.</p>
+      </div>
+    </div>
+    <nav class="links" aria-label="Links">
+      <a class="btn ghost sm" href="/docs" target="_blank" rel="noopener">API docs</a>
+      <a class="btn ghost sm" href="https://github.com/linboxin/Clinical-Agent#how-it-works" target="_blank" rel="noopener">How it works</a>
+      <button class="btn sm" id="themeBtn" type="button" aria-label="Toggle dark mode">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <span id="themeLabel">Dark</span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <form class="ask" id="ask" autocomplete="off">
+    <div class="ask-row">
+      <label class="sr-only" for="query">Question</label>
+      <textarea id="query" rows="2" required maxlength="2000" placeholder="Ask about clinical trials, e.g. Which countries have the most recruiting trials for breast cancer?"></textarea>
+      <div class="ask-actions">
+        <button class="btn primary" id="askBtn" type="submit">Ask</button>
+        <button class="btn sm" id="pasteBtn" type="button" title="Render a saved response or an examples/*.json file">Paste JSON…</button>
+      </div>
+    </div>
+    <div class="hint">Press Ctrl/⌘ + Enter to ask. Answers are computed by code from live registry data; the model only plans the analysis.</div>
+    <details class="adv ex" id="exDetails" open>
+      <summary><span class="caret">▸</span> Try an example</summary>
+      <div class="chips" id="chips" style="margin-top:10px"></div>
+    </details>
+    <details class="adv" id="adv">
+      <summary><span class="caret">▸</span> Advanced filters <span class="muted" id="advCount"></span></summary>
+      <div class="fields">
+        <label>drug_name<input id="f_drug_name" placeholder="e.g. Pembrolizumab"></label>
+        <label>condition<input id="f_condition" placeholder="e.g. melanoma"></label>
+        <label>sponsor<input id="f_sponsor" placeholder="lead sponsor"></label>
+        <label>country<input id="f_country" placeholder="e.g. Germany"></label>
+        <label>trial_phase<input id="f_trial_phase" placeholder="e.g. 3 or 2, 3"></label>
+        <label>overall_status<input id="f_overall_status" placeholder="e.g. RECRUITING"></label>
+        <label>study_type
+          <select id="f_study_type"><option value="">(any)</option><option>INTERVENTIONAL</option><option>OBSERVATIONAL</option><option>EXPANDED_ACCESS</option></select>
+        </label>
+        <label>start_year<input id="f_start_year" type="number" min="1900" max="2100" placeholder="e.g. 2015"></label>
+        <label>end_year<input id="f_end_year" type="number" min="1900" max="2100" placeholder="e.g. 2024"></label>
+        <label>preferred_visualization
+          <select id="f_preferred_visualization">
+            <option value="">(automatic)</option>
+            <option>bar_chart</option><option>grouped_bar_chart</option><option>stacked_bar_chart</option>
+            <option>pie_chart</option><option>time_series</option><option>histogram</option>
+            <option>scatter_plot</option><option>network_graph</option>
+          </select>
+        </label>
+        <label>follow-up of run (parent_run_id)<input id="f_parent_run_id" placeholder="run_id"></label>
+      </div>
+    </details>
+  </form>
+
+  <section class="results" id="results" aria-live="polite"></section>
+  <footer>Data: ClinicalTrials.gov API v2. This page renders the service's JSON spec as-is (Vega-Lite for cartesian and pie charts, a d3 force layout for networks) using only the documented response fields.</footer>
+</main>
+
+<dialog id="pasteDlg">
+  <form method="dialog">
+    <h2 style="margin:0 0 6px;font-size:16px">Render a saved response</h2>
+    <p class="sec" style="margin:0 0 10px;font-size:13px">Paste a response body, or an <code>examples/*.json</code> file (<code>{"request": …, "response": …}</code>).</p>
+    <textarea id="pasteText" aria-label="Response JSON"></textarea>
+    <div id="pasteErr" class="alert" hidden></div>
+    <div class="dialog-actions">
+      <button class="btn" value="cancel" formnovalidate>Cancel</button>
+      <button class="btn primary" id="pasteGo" type="button">Render</button>
+    </div>
+  </form>
+</dialog>
+<div class="tip" id="tip" role="tooltip"></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+"use strict";
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+const palette = () => [1, 2, 3, 4, 5, 6, 7, 8].map((i) => css(`--s${i}`));
+const fmt = (n) => (typeof n === "number" ? n.toLocaleString("en-US") : String(n ?? "—"));
+const FIELDS = ["drug_name", "condition", "sponsor", "country", "trial_phase", "overall_status", "study_type", "start_year", "end_year", "preferred_visualization", "parent_run_id"];
+
+const EXAMPLES = [
+  { tag: "bar", label: "Breast cancer trials by phase", body: { query: "How are breast cancer trials distributed across phases?" } },
+  { tag: "grouped", label: "Pembrolizumab vs nivolumab phases", body: { query: "Compare phases for trials involving pembrolizumab vs nivolumab in melanoma." } },
+  { tag: "trend", label: "Pembrolizumab trials over time", body: { query: "How has the number of trials for this drug changed over time?", drug_name: "Pembrolizumab" } },
+  { tag: "ranked", label: "Recruiting breast cancer trials by country", body: { query: "Which countries have the most recruiting trials for breast cancer?" } },
+  { tag: "histogram", label: "Enrollment of recruiting Alzheimer's trials", body: { query: "What is the enrollment size distribution of recruiting Alzheimer's trials?" } },
+  { tag: "scatter", label: "Psoriasis phase 3: enrollment vs start", body: { query: "Plot enrollment vs start date for phase 3 psoriasis trials, by sponsor type" } },
+  { tag: "network", label: "Sponsors ↔ drugs, phase 3 melanoma", body: { query: "Show a network of sponsors and drugs for phase 3 melanoma trials." } },
+  { tag: "network", label: "Drug co-occurrence in multiple myeloma", body: { query: "Which drugs frequently co-occur in combination studies for multiple myeloma?" } },
+  { tag: "trend", label: "Obesity phase mix since 2010", body: { query: "How has the phase mix of interventional obesity trials changed since 2010?" } },
+  { tag: "clarify", label: "“This drug” with no drug named", body: { query: "How many trials has this drug had per year?" } },
+  { tag: "unsupported", label: "Best overall survival", body: { query: "Which melanoma drug has the best overall survival?" } },
+];
+
+const state = { resp: null, request: null, view: "chart", selected: null, loading: null, lastWidth: 0 };
+const STATUS = {
+  ok: ["✓", "OK"], empty: ["∅", "Empty"], needs_clarification: ["?", "Needs clarification"],
+  unsupported: ["⊘", "Unsupported"], failed: ["✕", "Failed"],
+};
+
+/* ---------------- theme ---------------- */
+function effectiveTheme() {
+  const t = document.documentElement.dataset.theme;
+  if (t) return t;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+function syncThemeButton() { $("themeLabel").textContent = effectiveTheme() === "dark" ? "Light" : "Dark"; }
+function setTheme(t, persist) {
+  document.documentElement.dataset.theme = t;
+  if (persist) { try { localStorage.setItem("ctviz-theme", t); } catch (_) { /* storage unavailable */ } }
+  syncThemeButton();
+  rerenderChart();
+  if (state.resp && $("context")) renderContext(state.resp); // timing bar colours are theme-stepped
+}
+(function initTheme() {
+  const fromUrl = new URLSearchParams(location.search).get("theme");
+  let saved = null;
+  try { saved = localStorage.getItem("ctviz-theme"); } catch (_) { saved = null; }
+  const t = fromUrl === "dark" || fromUrl === "light" ? fromUrl : saved;
+  if (t === "dark" || t === "light") document.documentElement.dataset.theme = t;
+  syncThemeButton();
+})();
+$("themeBtn").addEventListener("click", () => setTheme(effectiveTheme() === "dark" ? "light" : "dark", true));
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+  if (!document.documentElement.dataset.theme) { syncThemeButton(); rerenderChart(); }
+});
+
+/* ---------------- form ---------------- */
+$("chips").innerHTML = EXAMPLES.map((e, i) =>
+  `<button type="button" class="chip" data-i="${i}" title="${esc(e.body.query)}"><span class="tag">${esc(e.tag)}</span><span class="q">${esc(e.label)}</span></button>`).join("");
+$("chips").addEventListener("click", (ev) => {
+  const b = ev.target.closest(".chip"); if (!b) return;
+  const ex = EXAMPLES[+b.dataset.i];
+  setForm(ex.body);
+  submit();
+});
+function setForm(body) {
+  $("query").value = body.query || "";
+  for (const f of FIELDS) $(`f_${f}`).value = body[f] != null ? (Array.isArray(body[f]) ? body[f].join(", ") : body[f]) : "";
+  updateAdvCount();
+}
+function updateAdvCount() {
+  const n = FIELDS.filter((f) => $(`f_${f}`).value.trim()).length;
+  $("advCount").textContent = n ? `(${n} set)` : "";
+}
+for (const f of FIELDS) $(`f_${f}`).addEventListener("input", updateAdvCount);
+function readForm() {
+  const body = { query: $("query").value.trim(), citations_per_datum: 5 };
+  for (const f of FIELDS) {
+    const raw = $(`f_${f}`).value.trim();
+    if (!raw) continue;
+    if (f === "start_year" || f === "end_year") body[f] = parseInt(raw, 10);
+    else if ((f === "trial_phase" || f === "overall_status") && raw.includes(",")) body[f] = raw.split(",").map((s) => s.trim()).filter(Boolean);
+    else body[f] = raw;
+  }
+  return body;
+}
+$("ask").addEventListener("submit", (ev) => { ev.preventDefault(); submit(); });
+$("query").addEventListener("keydown", (ev) => {
+  if (ev.key === "Enter" && (ev.metaKey || ev.ctrlKey)) { ev.preventDefault(); submit(); }
+});
+
+async function submit(override) {
+  const body = override || readForm();
+  if (!body.query) { $("query").focus(); return; }
+  if (state.loading) return;
+  state.request = body;
+  startLoading();
+  try {
+    const r = await fetch("/v1/visualizations", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+    const json = await r.json().catch(() => ({}));
+    stopLoading();
+    if (r.status === 422 || (!r.ok && !json.status)) { showRequestError(r.status, json); return; }
+    state.selected = null;
+    show(json);
+    if (json.run_id) history.replaceState(null, "", `?run=${json.run_id}${themeParam()}`);
+  } catch (err) {
+    stopLoading();
+    showRequestError(0, { detail: String(err.message || err) });
+  }
+}
+function themeParam() { const t = new URLSearchParams(location.search).get("theme"); return t ? `&theme=${t}` : ""; }
+
+/* ---------------- loading ---------------- */
+function startLoading() {
+  const t0 = performance.now();
+  $("askBtn").disabled = true;
+  $("askBtn").textContent = "Working…";
+  $("results").innerHTML = `
+    <div class="card"><div class="loading">
+      <div class="loading-row"><div class="spinner" aria-hidden="true"></div>
+        <div><b id="ldMsg">Planning the analysis…</b><div class="muted" id="ldTime">0 s</div></div></div>
+      <div class="skel sm"></div><div class="skel"></div>
+    </div></div>`;
+  state.loading = setInterval(() => {
+    const s = (performance.now() - t0) / 1000;
+    const msg = s < 3 ? "Planning the analysis…" : s < 6 ? "Checking names against ClinicalTrials.gov…" : "Fetching trials from ClinicalTrials.gov… (large cohorts can take up to ~25 s)";
+    if ($("ldMsg")) { $("ldMsg").textContent = msg; $("ldTime").textContent = `${Math.floor(s)} s`; }
+  }, 250);
+}
+function stopLoading() {
+  clearInterval(state.loading); state.loading = null;
+  $("askBtn").disabled = false; $("askBtn").textContent = "Ask";
+}
+function showRequestError(code, json) {
+  const detail = Array.isArray(json.detail)
+    ? json.detail.map((d) => `${(d.loc || []).slice(1).join(".") || "request"}: ${d.msg}`).join("; ")
+    : (json.detail || json.message || "Request failed");
+  $("results").innerHTML = `<div class="card"><div class="message">
+    <div class="res-head"><span class="pill failed"><span class="dot">✕</span>${code === 422 ? "Invalid request" : "Request failed"}</span></div>
+    <p>${esc(detail)}</p></div></div>`;
+}
+
+/* ---------------- result rendering ---------------- */
+function sum(xs) { return xs.reduce((a, b) => a + (Number(b) || 0), 0); }
+// meta.normalization: a list of {dimension, model, names_in, names_sent, names_unmapped, names_mapped, dropped[], merges[]}
+// (an older single-object shape is accepted too); empty or absent when no names were normalized.
+function normalizations(meta) { const n = meta?.normalization; if (!n) return []; return Array.isArray(n) ? n : [n]; }
+function show(resp) {
+  state.resp = resp;
+  $("exDetails").open = false;
+  const meta = resp.meta || {};
+  const viz = resp.visualization;
+  const [icon, label] = STATUS[resp.status] || ["•", resp.status];
+  const cohorts = meta.cohorts || [];
+  const timings = meta.timings_ms || {};
+  const usage = meta.llm_usage || {};
+  const badges = [];
+  if (meta.count_method === "server_count") badges.push(`<span class="badge" title="Counts come from ClinicalTrials.gov count queries; citations are a sample">Counted on ClinicalTrials.gov — citations are samples</span>`);
+  const norms = normalizations(meta);
+  if (norms.length) badges.push(`<span class="badge">Names normalized by ${esc([...new Set(norms.map((n) => n.model || "a model"))].join(", "))}</span>`);
+  if (meta.interpretation?.plan?.expansions?.length) badges.push(`<span class="badge">Drug class expanded</span>`);
+  if (meta.truncation) badges.push(`<span class="badge" title="${esc(meta.truncation.rule)}">Showing ${fmt(meta.truncation.shown)} of ${fmt(meta.truncation.total)}</span>`);
+  if (meta.interpretation?.parent_run_id) badges.push(`<span class="badge">Follow-up</span>`);
+
+  const kpis = [];
+  if (cohorts.length) {
+    kpis.push(kpi("Trials analyzed", fmt(sum(cohorts.map((c) => c.trials_analyzed))), cohorts.length > 1 ? `${cohorts.length} cohorts` : esc(cohorts[0].label)));
+    kpis.push(kpi("API matches", fmt(sum(cohorts.map((c) => c.total_matches))), "from ClinicalTrials.gov"));
+    const complete = cohorts.every((c) => c.complete);
+    kpis.push(kpi("Coverage", complete ? "Complete" : "Partial", complete ? "all pages retrieved" : "retrieval incomplete"));
+  }
+  const total = sum(Object.values(timings));
+  if (total) kpis.push(kpi("Latency", `${(total / 1000).toFixed(1)} s`, Object.keys(timings).length ? `planning ${((timings.plan || 0) / 1000).toFixed(1)} s` : ""));
+  if (usage.input_tokens != null) kpis.push(kpi("Planner", fmt((usage.input_tokens || 0) + (usage.output_tokens || 0)), `tokens · ${usage.calls || 0} call${usage.calls === 1 ? "" : "s"}`));
+
+  const hasChart = !!viz && (resp.status === "ok" || resp.status === "empty");
+  $("results").innerHTML = `
+    <div class="res-head">
+      <span class="pill ${esc(resp.status)}"><span class="dot" aria-hidden="true">${icon}</span>${esc(label)}</span>
+      ${resp.run_id ? `<button class="runid mono" id="runId" title="Copy run id">run ${esc(resp.run_id)}</button>` : ""}
+      ${meta.source?.data_timestamp ? `<span class="muted" style="font-size:12px">registry data ${esc(meta.source.data_timestamp)}</span>` : ""}
+    </div>
+    ${kpis.length ? `<div class="kpis${kpis.length < 4 ? " few" : ""}">${kpis.join("")}</div>` : ""}
+    <div class="grid">
+      <div class="card" id="mainCard">
+        ${hasChart ? chartCardHead(viz, meta, badges) : ""}
+        <div id="mainBody"></div>
+        ${resp.status === "ok" && resp.run_id ? `
+          <form class="refine" id="refine">
+            <label for="refineQ">Refine this</label>
+            <input id="refineQ" placeholder="e.g. same, but only phase 3 trials" maxlength="2000">
+            <button class="btn sm" type="submit">Refine</button>
+          </form>` : ""}
+      </div>
+      <div class="side">
+        ${hasChart ? `<div class="card"><div class="panel-body" id="evidence" style="padding-top:16px"></div></div>` : ""}
+        <div class="card"><div class="panel-body" id="context" style="padding-top:16px"></div></div>
+      </div>
+    </div>`;
+
+  if ($("runId")) $("runId").addEventListener("click", () => copy(resp.run_id));
+  if ($("refine")) $("refine").addEventListener("submit", (ev) => {
+    ev.preventDefault();
+    const q = $("refineQ").value.trim(); if (!q) return;
+    setForm({ query: q, parent_run_id: resp.run_id });
+    submit({ query: q, parent_run_id: resp.run_id, citations_per_datum: 5 });
+  });
+  if (hasChart) {
+    document.querySelectorAll("#viewSeg button").forEach((b) => b.addEventListener("click", () => {
+      state.view = b.dataset.view; document.querySelectorAll("#viewSeg button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      renderMain();
+    }));
+    $("dlBtn").addEventListener("click", downloadJson);
+    renderMain();
+    renderEvidence(null);
+  } else {
+    renderMessage(resp);
+  }
+  renderContext(resp);
+}
+function kpi(k, v, s) { return `<div class="kpi"><div class="k">${esc(k)}</div><div class="v">${v}</div>${s ? `<div class="s">${s}</div>` : ""}</div>`; }
+function chartCardHead(viz, meta, badges) {
+  const interp = meta.interpretation;
+  return `<div class="card-head">
+    <div style="min-width:0;flex:1 1 360px">
+      <h2>${esc(viz.title)}</h2>
+      ${interp?.summary ? `<p class="subtitle">${esc(interp.summary)}</p>` : ""}
+      ${meta.chart_selection ? `<p class="why"><b>Why this chart:</b> ${esc(meta.chart_selection)}</p>` : ""}
+      ${badges.length ? `<div class="badges">${badges.join("")}</div>` : ""}
+    </div>
+    <div class="toolbar">
+      <div class="seg" id="viewSeg" role="group" aria-label="View">
+        <button type="button" data-view="chart" aria-pressed="${state.view === "chart"}">Chart</button>
+        <button type="button" data-view="table" aria-pressed="${state.view === "table"}">Table</button>
+      </div>
+      <button class="btn sm" id="dlBtn" type="button" title="Download the response JSON">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 4v11m0 0l-4-4m4 4l4-4M5 20h14"/></svg>JSON</button>
+    </div>
+  </div>`;
+}
+function renderMain() {
+  const body = $("mainBody"); if (!body) return;
+  hideTip();
+  const viz = state.resp.visualization;
+  if (state.view === "table") {
+    body.innerHTML = `<div style="padding-top:4px">${tableHtml(viz)}</div>`;
+    body.querySelectorAll("tr[data-id]").forEach((tr) => tr.addEventListener("click", () => selectDatum(tr.dataset.id)));
+    return;
+  }
+  body.innerHTML = `<div class="chart" id="chart"></div><div class="chart-foot" id="chartFoot"></div>`;
+  state.lastWidth = $("chart").clientWidth;
+  if (viz.type === "network_graph") drawNetwork(viz, $("chart"), $("chartFoot"));
+  else drawVega(viz, $("chart"), $("chartFoot"));
+}
+function rerenderChart() {
+  if (state.resp && state.resp.visualization && $("mainBody") && state.view === "chart") renderMain();
+}
+let resizeTimer = null;
+window.addEventListener("resize", () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    const c = $("chart");
+    if (c && Math.abs(c.clientWidth - state.lastWidth) > 24) renderMain();
+  }, 200);
+});
+
+/* ---------------- datum helpers ---------------- */
+function allData(viz) { return viz.type === "network_graph" ? [...viz.data.nodes, ...viz.data.edges] : viz.data; }
+function findDatum(id) { const viz = state.resp?.visualization; return viz ? allData(viz).find((d) => d.datum_id === id) : null; }
+function nodeLabel(id) {
+  const viz = state.resp?.visualization;
+  const n = viz?.type === "network_graph" ? viz.data.nodes.find((x) => x.id === id) : null;
+  return n ? n.label : String(id);
+}
+function datumLabel(viz, d) {
+  if (viz.type === "network_graph") return d.source != null ? `${nodeLabel(d.source)} — ${nodeLabel(d.target)}` : d.label;
+  if (viz.type === "scatter_plot") return d.nct_id || d.datum_id;
+  const enc = viz.encoding;
+  const xField = viz.type === "pie_chart" ? enc.color.field : enc.x.field;
+  const parts = [d[xField]];
+  if (enc.series && d[enc.series.field] != null) parts.push(d[enc.series.field]);
+  return parts.join(" · ");
+}
+function selectDatum(id) {
+  const d = findDatum(id); if (!d) return;
+  renderEvidence(d);
+  document.querySelectorAll("tr.sel").forEach((tr) => tr.classList.remove("sel"));
+  document.querySelectorAll(`tr[data-id="${CSS.escape(id)}"]`).forEach((tr) => tr.classList.add("sel"));
+  if (window.innerWidth <= 1040) $("evidence")?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+/* ---------------- Vega-Lite renderers (spec → Vega-Lite, documented fields only) ---------------- */
+function axisTitle(ch) {
+  return ch.unit && !ch.title.toLowerCase().includes(ch.unit.toLowerCase()) ? `${ch.title} (${ch.unit})` : ch.title;
+}
+function vlConfig(width, legendOrient) {
+  const t2 = css("--text-secondary"), t1 = css("--text-primary");
+  return {
+    background: null,
+    font: 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
+    padding: { left: 4, right: 10, top: 6, bottom: 4 },
+    view: { stroke: null },
+    axis: { labelColor: t2, titleColor: t2, gridColor: css("--grid"), domainColor: css("--border-strong"), tickColor: css("--border-strong"),
+            labelFontSize: 11.5, titleFontSize: 12, titleFontWeight: 500, titlePadding: 10, labelPadding: 6, labelLimit: 200 },
+    legend: { labelColor: t2, titleColor: t1, labelFontSize: 12, titleFontSize: 12, titleFontWeight: 600, symbolType: "circle", symbolSize: 90,
+              orient: legendOrient || "top", direction: legendOrient === "right" ? "vertical" : "horizontal",
+              columns: legendOrient === "right" ? 1 : Math.max(1, Math.floor(width / 150)), labelLimit: 180, padding: 4, offset: 10 },
+    title: { color: t1 },
+  };
+}
+function tooltipFields(viz) {
+  const enc = viz.encoding;
+  const out = [];
+  const add = (field, title, type, format) => { if (field && !out.some((t) => t.field === field)) out.push({ field, title, type: type || "nominal", ...(format ? { format } : {}) }); };
+  if (viz.type === "pie_chart") { add(enc.color.field, enc.color.title); add("trial_count", "Trials", "quantitative", ","); add("_share", "Share", "quantitative", ".1%"); return out; }
+  if (viz.type === "scatter_plot") {
+    add("nct_id", "Trial");
+    add(enc.x.field, axisTitle(enc.x), enc.x.type === "temporal" ? "nominal" : "quantitative");
+    add(enc.y.field, axisTitle(enc.y), "quantitative", ",");
+    if (enc.series) add(enc.series.field, enc.series.title);
+    return out;
+  }
+  add(enc.x.field === "year" ? "year" : enc.x.field, axisTitle(enc.x), enc.x.field === "year" ? "ordinal" : "nominal");
+  if (enc.series) add(enc.series.field, enc.series.title);
+  add("trial_count", "Trials", "quantitative", ",");
+  const sample = viz.data[0] || {};
+  if ("estimated_date_count" in sample) add("estimated_date_count", "Anticipated dates", "quantitative", ",");
+  if ("bin_start" in sample) { add("bin_start", "Bin start (inclusive)", "quantitative", ","); add("bin_end", "Bin end (exclusive)", "quantitative", ","); }
+  return out;
+}
+function seriesScale(ch, colors) {
+  return { field: ch.field, type: "nominal", title: ch.title,
+           scale: Array.isArray(ch.sort) ? { domain: ch.sort, range: colors } : { range: colors },
+           sort: Array.isArray(ch.sort) ? ch.sort : undefined };
+}
+function partialYear(meta) {
+  for (const a of meta?.assumptions || []) { const m = /(\d{4}) is the current year/.exec(a); if (m) return +m[1]; }
+  return null;
+}
+function drawVega(viz, el, foot) {
+  const enc = viz.encoding;
+  const colors = palette();
+  const W = Math.max(260, el.clientWidth - 28);
+  const narrow = W < 520;
+  const hover = { name: "hover", select: { type: "point", on: "pointerover", clear: "pointerout", fields: ["datum_id"] } };
+  const fade = { condition: { param: "hover", empty: true, value: 1 }, value: 0.45 };
+  const surface = css("--panel");
+  let data = viz.data.map((d) => ({ ...d }));
+  let legendOrient = "top";
+  let height = 380;
+  let spec;
+  const series = enc.series ? seriesScale(enc.series, colors) : null;
+  const notes = [];
+
+  if (viz.type === "pie_chart") {
+    const total = sum(data.map((d) => d.trial_count)) || 1;
+    data = data.map((d) => ({ ...d, _share: d.trial_count / total }));
+    legendOrient = narrow ? "bottom" : "right";
+    const R = Math.min(narrow ? W / 2 - 10 : 170, 170);
+    height = narrow ? 2 * R + 80 : 360;
+    spec = { params: [hover],
+      mark: { type: "arc", innerRadius: R * 0.55, outerRadius: R, padAngle: 0.006, stroke: surface, strokeWidth: 2, cursor: "pointer" },
+      encoding: { theta: { field: "trial_count", type: "quantitative", stack: true },
+                  color: seriesScale({ ...enc.color, sort: enc.color.sort }, colors), opacity: fade,
+                  order: { field: "_order", type: "quantitative" }, tooltip: tooltipFields(viz) } };
+    const order = Array.isArray(enc.color.sort) ? enc.color.sort : [];
+    data = data.map((d) => ({ ...d, _order: Math.max(0, order.indexOf(d[enc.color.field])) }));
+    notes.push(`<span class="footnote">Slices are mutually exclusive; trials with no value are listed under Coverage → missing.</span>`);
+  } else if (viz.type === "time_series") {
+    const py = partialYear(state.resp.meta);
+    data = data.map((d) => ({ ...d, _date: `${d.year}-01-01`, _partial: py != null && d.year >= py }));
+    const nYears = new Set(data.map((d) => d.year)).size;
+    const x = { field: "_date", type: "temporal", timeUnit: "utcyear", title: enc.x.title,
+                axis: { format: "%Y", labelAngle: 0, grid: false, tickCount: { interval: "year", step: Math.max(1, Math.ceil(nYears / (narrow ? 5 : 12))) } } };
+    const y = { field: "trial_count", type: "quantitative", title: axisTitle(enc.y), axis: { tickCount: 6, format: ",d", tickMinStep: 1 } };
+    const color = series || { value: colors[0] };
+    const stroke = series ? seriesScale(enc.series, colors) : { value: colors[0] };
+    const fill = series
+      ? { condition: { test: "datum._partial", value: surface }, ...seriesScale(enc.series, colors) }
+      : { condition: { test: "datum._partial", value: surface }, value: colors[0] };
+    const layers = [];
+    if (py != null) {
+      layers.push({ transform: [{ filter: `datum.year <= ${py - 1}` }], mark: { type: "line", strokeWidth: 2, interpolate: "monotone" }, encoding: { color } });
+      layers.push({ transform: [{ filter: `datum.year >= ${py - 1}` }], mark: { type: "line", strokeWidth: 2, strokeDash: [4, 4], interpolate: "monotone" }, encoding: { color } });
+      notes.push(`<span class="footnote">Dashed line and hollow points: ${py} is still in progress, and later years contain only trials with anticipated start dates.</span>`);
+    } else {
+      layers.push({ mark: { type: "line", strokeWidth: 2, interpolate: "monotone" }, encoding: { color } });
+    }
+    layers.push({ params: [hover], mark: { type: "point", filled: true, size: 52, strokeWidth: 1.5, cursor: "pointer" },
+                  encoding: { stroke, fill, opacity: fade, size: { condition: { param: "hover", empty: false, value: 130 }, value: 52 }, tooltip: tooltipFields(viz) } });
+    spec = { encoding: { x, y }, layer: layers };
+  } else if (viz.type === "scatter_plot") {
+    const xt = enc.x.type === "temporal";
+    const x = { field: enc.x.field, type: xt ? "temporal" : "quantitative", title: axisTitle(enc.x),
+                ...(xt ? { scale: { type: "utc" }, axis: { format: "%Y", grid: false } } : { axis: { format: ",d" } }) };
+    const y = { field: enc.y.field, type: "quantitative", title: axisTitle(enc.y), scale: { type: "symlog" }, axis: { format: ",d", tickCount: 6 } };
+    spec = { params: [hover],
+      mark: { type: "point", filled: true, stroke: surface, strokeWidth: 1, cursor: "pointer" },
+      encoding: { x, y, color: series || { value: colors[0] },
+                  size: { condition: { param: "hover", empty: false, value: 150 }, value: 46 },
+                  opacity: { condition: { param: "hover", empty: true, value: 0.8 }, value: 0.35 },
+                  tooltip: tooltipFields(viz) } };
+    notes.push(`<span class="footnote">One point per trial. The y axis uses a symmetric log scale (enrollment is heavy-tailed).</span>`);
+  } else {
+    // bar_chart, grouped_bar_chart, stacked_bar_chart, histogram
+    const horizontal = viz.orientation === "horizontal";
+    const cats = Array.isArray(enc.x.sort) ? enc.x.sort : [...new Set(data.map((d) => d[enc.x.field]))];
+    const perCat = W / Math.max(1, cats.length);
+    const longest = Math.max(...cats.map((c) => String(c).length));
+    const angle = !horizontal && (perCat < longest * 7.5 + 10 || perCat < 46) ? -35 : 0;
+    const cat = { field: enc.x.field, type: enc.x.type === "ordinal" ? "ordinal" : "nominal", sort: Array.isArray(enc.x.sort) ? enc.x.sort : null,
+                  title: axisTitle(enc.x), axis: { labelAngle: angle, labelLimit: horizontal ? (narrow ? 110 : 220) : 140, grid: false, ticks: false } };
+    const val = { field: "trial_count", type: "quantitative", title: axisTitle(enc.y), axis: { tickCount: 6, format: ",d", tickMinStep: 1 } };
+    const stacked = viz.type === "stacked_bar_chart";
+    if (stacked && series) {
+      const order = enc.series.sort || [];
+      data = data.map((d) => ({ ...d, _order: Math.max(0, order.indexOf(d[enc.series.field])) }));
+    }
+    const encoding = horizontal ? { y: cat, x: val } : { x: cat, y: val };
+    encoding.color = series || { value: colors[0] };
+    encoding.opacity = fade;
+    encoding.tooltip = tooltipFields(viz);
+    if (series && !stacked) encoding[horizontal ? "yOffset" : "xOffset"] = { field: enc.series.field, sort: enc.series.sort };
+    if (stacked) encoding.order = { field: "_order", type: "quantitative" };
+    const rows = cats.length * (series && !stacked ? Math.min(4, (enc.series.sort || []).length || 2) : 1);
+    height = horizontal ? Math.max(240, Math.min(1400, rows * (series && !stacked ? 14 : 24) + 60)) : 380;
+    spec = { params: [hover],
+      mark: { type: "bar", cornerRadiusEnd: stacked ? 0 : 3, stroke: stacked ? surface : null, strokeWidth: stacked ? 1 : 0, cursor: "pointer" },
+      encoding };
+    if (viz.type === "histogram") notes.push(`<span class="footnote">Bins have declared, unequal widths ([start, end)); bars are drawn equal-width and labelled by bin.</span>`);
+  }
+
+  const full = {
+    $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+    width: W, height, autosize: { type: "fit-x", contains: "padding" },
+    data: { values: data }, ...spec,
+    config: vlConfig(W, legendOrient),
+  };
+  const theme = effectiveTheme();
+  vegaEmbed(el, full, { actions: false, renderer: "svg", tooltip: { theme: theme === "dark" ? "dark" : "light" } })
+    .then(({ view }) => {
+      view.addEventListener("click", (_e, item) => {
+        if (!item || !item.datum || !item.datum.datum_id || (item.mark && item.mark.marktype === "line")) return;
+        selectDatum(item.datum.datum_id);
+      });
+    })
+    .catch((err) => { el.innerHTML = `<div class="alert">Could not render this chart: ${esc(err.message)}</div>`; });
+  foot.innerHTML = notes.join("");
+}
+
+/* ---------------- Network (d3 force layout) ---------------- */
+function drawNetwork(viz, el, foot) {
+  const colors = palette();
+  const W = Math.max(300, el.clientWidth - 28);
+  const H = Math.max(380, Math.min(620, Math.round(W * 0.68)));
+  const nodes = viz.data.nodes.map((n) => ({ ...n }));
+  const links = viz.data.edges.map((e) => ({ ...e }));
+  const groupField = viz.encoding.nodes.group || "entity_type";
+  const groups = [...new Set(nodes.map((n) => n[groupField]))];
+  const color = (g) => colors[groups.indexOf(g) % colors.length];
+  const maxN = d3.max(nodes, (n) => n.trial_count) || 1;
+  const maxE = d3.max(links, (e) => e.trial_count) || 1;
+  const radius = (n) => 4.5 + 15 * Math.sqrt(n.trial_count / maxN);
+  const pad = 16;
+  const clamp = () => nodes.forEach((n) => {
+    const r = radius(n) + 2;
+    n.x = Math.max(pad + r, Math.min(W - pad - r, n.x)); n.y = Math.max(pad + r, Math.min(H - pad - r, n.y));
+  });
+  const sim = d3.forceSimulation(nodes)
+    .force("link", d3.forceLink(links).id((n) => n.id).distance((l) => 70 + 30 * (1 - l.trial_count / maxE)).strength(0.35))
+    .force("charge", d3.forceManyBody().strength(-280))
+    .force("collide", d3.forceCollide().radius((n) => radius(n) + 3))
+    .force("x", d3.forceX(W / 2).strength(0.07)).force("y", d3.forceY(H / 2).strength(0.09))
+    .stop();
+  for (let i = 0; i < 320; i++) { sim.tick(); clamp(); }
+
+  const neighbors = new Map(nodes.map((n) => [n.id, new Set([n.id])]));
+  links.forEach((l) => { neighbors.get(l.source.id).add(l.target.id); neighbors.get(l.target.id).add(l.source.id); });
+
+  el.innerHTML = `<button class="btn sm net-reset" type="button" id="netReset">Reset view</button>`;
+  const svg = d3.select(el).append("svg").attr("viewBox", [0, 0, W, H]).attr("width", W).attr("height", H)
+    .attr("role", "img").attr("aria-label", `${viz.title}: ${nodes.length} nodes, ${links.length} edges`);
+  const g = svg.append("g");
+  const zoom = d3.zoom().scaleExtent([0.5, 5]).on("zoom", (e) => g.attr("transform", e.transform));
+  svg.call(zoom).on("dblclick.zoom", null);
+  $("netReset").addEventListener("click", () => svg.transition().duration(300).call(zoom.transform, d3.zoomIdentity));
+
+  const muted = css("--text-muted");
+  const link = g.append("g").attr("stroke", muted).attr("stroke-linecap", "round").selectAll("line").data(links).join("line")
+    .attr("stroke-opacity", 0.35).attr("stroke-width", (e) => 1 + 5 * (e.trial_count / maxE)).style("cursor", "pointer")
+    .on("click", (_e, d) => selectDatum(d.datum_id))
+    .on("mousemove", (ev, d) => showTip(ev, `<b>${esc(d.source.label)} — ${esc(d.target.label)}</b><br>${fmt(d.trial_count)} shared trial${d.trial_count === 1 ? "" : "s"}`))
+    .on("mouseleave", () => { hideTip(); });
+  const node = g.append("g").selectAll("circle").data(nodes).join("circle")
+    .attr("r", radius).attr("fill", (n) => color(n[groupField])).attr("stroke", css("--panel")).attr("stroke-width", 1.5).style("cursor", "pointer")
+    .on("click", (_e, d) => selectDatum(d.datum_id))
+    .on("mouseenter", (_e, d) => highlight(d))
+    .on("mousemove", (ev, d) => showTip(ev, `<b>${esc(d.label)}</b><br>${esc(d[groupField])} · ${fmt(d.trial_count)} trial${d.trial_count === 1 ? "" : "s"}`))
+    .on("mouseleave", () => { hideTip(); highlight(null); })
+    .call(d3.drag()
+      .on("start", (ev, d) => { if (!ev.active) sim.alphaTarget(0.25).restart(); d.fx = d.x; d.fy = d.y; })
+      .on("drag", (ev, d) => { d.fx = ev.x; d.fy = ev.y; })
+      .on("end", (ev, d) => { if (!ev.active) sim.alphaTarget(0); d.fx = null; d.fy = null; }));
+  const top = new Set([...nodes].sort((a, b) => b.trial_count - a.trial_count).slice(0, 10).map((n) => n.id));
+  const labels = g.append("g").selectAll("text").data(nodes.filter((n) => top.has(n.id)).sort((a, b) => b.trial_count - a.trial_count)).join("text")
+    .attr("class", "net-label").attr("dy", "0.32em")
+    .text((n) => (n.label.length > 30 ? `${n.label.slice(0, 29)}…` : n.label));
+
+  // Selective direct labels: largest nodes first; a label that would collide with one already
+  // placed (right side, then left side) is hidden; hover and the table still name every node.
+  function placeLabels() {
+    const boxes = [];
+    const fits = (b) => b.x0 >= 2 && b.x1 <= W - 2 && !boxes.some((o) => b.x0 < o.x1 && b.x1 > o.x0 && b.y0 < o.y1 && b.y1 > o.y0);
+    labels.each(function (n) {
+      const text = this.textContent; const w = text.length * 6.3; const h = 14; const r = radius(n) + 4;
+      const right = { x0: n.x + r, x1: n.x + r + w, y0: n.y - h / 2, y1: n.y + h / 2, anchor: "start", x: n.x + r };
+      const left = { x0: n.x - r - w, x1: n.x - r, y0: n.y - h / 2, y1: n.y + h / 2, anchor: "end", x: n.x - r };
+      const pick = fits(right) ? right : fits(left) ? left : null;
+      d3.select(this).attr("display", pick ? null : "none");
+      if (pick) { boxes.push(pick); d3.select(this).attr("x", pick.x).attr("y", n.y).attr("text-anchor", pick.anchor); }
+    });
+  }
+  function place() {
+    link.attr("x1", (e) => e.source.x).attr("y1", (e) => e.source.y).attr("x2", (e) => e.target.x).attr("y2", (e) => e.target.y);
+    node.attr("cx", (n) => n.x).attr("cy", (n) => n.y);
+    placeLabels();
+  }
+  function highlight(d) {
+    if (!d) { node.attr("opacity", 1); link.attr("stroke-opacity", 0.35).attr("stroke", muted); labels.attr("opacity", 1); return; }
+    const nb = neighbors.get(d.id);
+    node.attr("opacity", (n) => (nb.has(n.id) ? 1 : 0.15));
+    labels.attr("opacity", (n) => (nb.has(n.id) ? 1 : 0.2));
+    link.attr("stroke-opacity", (e) => (e.source.id === d.id || e.target.id === d.id ? 0.85 : 0.06))
+      .attr("stroke", (e) => (e.source.id === d.id || e.target.id === d.id ? css("--text-secondary") : muted));
+  }
+  place();
+  sim.on("tick", () => { clamp(); place(); });
+
+  const relation = links[0]?.relation ? ` (${esc(links[0].relation)})` : "";
+  foot.innerHTML = groups.map((gname) => `<span class="legend-item"><span class="swatch" style="background:${color(gname)}"></span>${esc(gname)}</span>`).join("")
+    + `<span class="footnote">Node size = trials · edge width = shared trials${relation} · drag, scroll to zoom, click for evidence</span>`;
+}
+function showTip(ev, html) {
+  const t = $("tip"); t.innerHTML = html; t.style.display = "block";
+  const x = Math.min(window.innerWidth - t.offsetWidth - 8, ev.clientX + 14);
+  const y = Math.min(window.innerHeight - t.offsetHeight - 8, ev.clientY + 14);
+  t.style.left = `${x}px`; t.style.top = `${y}px`;
+}
+function hideTip() { $("tip").style.display = "none"; }
+
+/* ---------------- Table view ---------------- */
+function tableHtml(viz) {
+  if (viz.type === "network_graph") {
+    const nodeRows = viz.data.nodes.map((n) => `<tr class="clickable" data-id="${esc(n.datum_id)}"><td>${esc(n.label)}</td><td>${esc(n.entity_type)}</td><td class="num">${fmt(n.trial_count)}</td></tr>`).join("");
+    const edgeRows = viz.data.edges.map((e) => `<tr class="clickable" data-id="${esc(e.datum_id)}"><td>${esc(nodeLabel(e.source))}</td><td>${esc(nodeLabel(e.target))}</td><td class="num">${fmt(e.trial_count)}</td></tr>`).join("");
+    return `<div class="table-wrap"><table><caption>Nodes (${viz.data.nodes.length})</caption><thead><tr><th scope="col">Label</th><th scope="col">Type</th><th scope="col" class="num">Trials</th></tr></thead><tbody>${nodeRows}</tbody></table></div>
+            <div class="table-wrap"><table><caption>Edges (${viz.data.edges.length})</caption><thead><tr><th scope="col">Source</th><th scope="col">Target</th><th scope="col" class="num">Shared trials</th></tr></thead><tbody>${edgeRows}</tbody></table></div>`;
+  }
+  const enc = viz.encoding;
+  const first = viz.type === "pie_chart" ? [enc.color] : viz.type === "scatter_plot" ? [enc.x, enc.y] : [enc.x];
+  const cols = [];
+  const add = (field, title, num) => { if (field && !cols.some((c) => c.field === field)) cols.push({ field, title, num }); };
+  if (viz.type === "scatter_plot") add("nct_id", "Trial");
+  first.forEach((ch) => add(ch.field, axisTitle(ch), ch.type === "quantitative"));
+  if (enc.series) add(enc.series.field, enc.series.title);
+  if (viz.type !== "scatter_plot") add("trial_count", "Trials", true);
+  const skip = new Set(["datum_id", "citations", "citations_truncated", "citation_count", "trial_count", "source_query", "nct_id"]);
+  Object.keys(viz.data[0] || {}).forEach((k) => { if (!skip.has(k)) add(k, k.replace(/_/g, " "), typeof viz.data[0][k] === "number"); });
+  const limit = 1000;
+  const rows = viz.data.slice(0, limit).map((d) => `<tr class="clickable" data-id="${esc(d.datum_id)}">${cols.map((c) => `<td class="${c.num ? "num" : ""}">${esc(typeof d[c.field] === "number" ? fmt(d[c.field]) : d[c.field] ?? "—")}</td>`).join("")}</tr>`).join("");
+  return `<div class="table-wrap"><table><caption>${esc(viz.title)} — ${fmt(viz.data.length)} row${viz.data.length === 1 ? "" : "s"}${viz.data.length > limit ? ` (first ${limit} shown)` : ""}; click a row for its evidence</caption>
+    <thead><tr>${cols.map((c) => `<th scope="col" class="${c.num ? "num" : ""}">${esc(c.title)}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+/* ---------------- Evidence panel ---------------- */
+function shortPath(p) { const parts = String(p).split("."); return parts.slice(-2).join("."); }
+function citeHtml(c) {
+  const rows = (c.evidence || []).map((e) => `<div class="ev-row"><span class="ev-path" title="${esc(e.field_path)}">${esc(shortPath(e.field_path))}</span><span class="ev-chip">${esc(typeof e.excerpt === "string" ? e.excerpt : JSON.stringify(e.excerpt))}</span></div>`).join("");
+  return `<article class="cite"><div class="cite-top"><a href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.nct_id)}</a></div>
+    ${c.brief_title ? `<div class="cite-title">${esc(c.brief_title)}</div>` : ""}${rows}</article>`;
+}
+function renderEvidence(d) {
+  const box = $("evidence"); if (!box) return;
+  const resp = state.resp; const viz = resp.visualization;
+  if (!d) {
+    box.innerHTML = `<div class="panel-title">Evidence</div>
+      <div class="empty-hint">Click any ${viz.type === "network_graph" ? "node or edge" : viz.type === "scatter_plot" ? "point" : "bar, slice or point"} (or a table row) to see the trials behind it, with the exact registry values that put each trial there.</div>`;
+    return;
+  }
+  state.selected = d.datum_id;
+  const shown = d.citations || [];
+  box.innerHTML = `<div class="ev-head"><div class="eyebrow">Evidence · ${esc(d.datum_id)}</div>
+      <h3>${esc(datumLabel(viz, d))}</h3>
+      <div class="sec">${fmt(d.trial_count)} trial${d.trial_count === 1 ? "" : "s"}${d.citations_truncated ? ` · showing ${shown.length} of ${fmt(d.citation_count)}` : ""}</div>
+      ${d.source_query ? `<a class="verify" href="${esc(d.source_query)}" target="_blank" rel="noopener">Verify this count on ClinicalTrials.gov ↗</a>` : ""}
+    </div>
+    <div class="ev-list" id="evList">${shown.length ? shown.map(citeHtml).join("") : `<div class="empty-hint">No inline citations${d.trial_count === 0 ? ": this bucket has no trials." : "."}</div>`}</div>
+    ${d.citations_truncated && resp.run_id && (resp.meta || {}).count_method !== "server_count" ? `<button class="btn sm" id="loadAll" type="button" style="margin-top:10px">Load all ${fmt(d.citation_count)} citations</button>` : ""}
+    ${(resp.meta || {}).count_method === "server_count" ? `<p class="sec" style="margin:10px 0 0;font-size:12px">Counted by ClinicalTrials.gov: these are sample trials; the link above reproduces the full count.</p>` : ""}`;
+  const more = $("loadAll");
+  if (more) more.addEventListener("click", async () => {
+    more.disabled = true; more.textContent = "Loading…";
+    try {
+      const r = await fetch(`/v1/runs/${encodeURIComponent(resp.run_id)}/evidence?datum_id=${encodeURIComponent(d.datum_id)}&limit=1000`);
+      if (!r.ok) throw new Error(r.status === 404 ? "Full evidence is only stored for runs made on this server." : `HTTP ${r.status}`);
+      const ev = await r.json();
+      $("evList").innerHTML = ev.citations.map(citeHtml).join("");
+      more.outerHTML = `<div class="muted" style="margin-top:8px;font-size:12px">Showing ${fmt(ev.citations.length)} of ${fmt(ev.total)} citations.</div>`;
+    } catch (err) {
+      more.outerHTML = `<div class="alert">${esc(err.message)}</div>`;
+    }
+  });
+}
+
+/* ---------------- Message views (non-chart statuses) ---------------- */
+function renderMessage(resp) {
+  const body = $("mainBody");
+  if (resp.status === "needs_clarification" && resp.clarification) {
+    const c = resp.clarification;
+    body.innerHTML = `<div class="message"><div class="eyebrow">The question needs one more detail</div><h2>${esc(c.question)}</h2>
+      <p>Pick an answer to re-run the question with it, or edit the question above.</p>
+      <div class="options">${(c.options || []).map((o, i) => `<button class="opt" type="button" data-i="${i}">${esc(o)}</button>`).join("")}</div></div>`;
+    body.querySelectorAll(".opt").forEach((b) => b.addEventListener("click", () => {
+      const option = c.options[+b.dataset.i];
+      const original = state.request?.query;
+      if (original) {
+        const next = { ...state.request, query: `${original}\nClarification: ${option}` };
+        setForm(next); submit(next);
+      } else {
+        $("query").value = `Clarification: ${option}`; $("query").focus();
+      }
+    }));
+    return;
+  }
+  const err = resp.error || {};
+  if (resp.status === "unsupported") {
+    body.innerHTML = `<div class="message"><div class="eyebrow">Outside what registry data can answer</div><h2>${esc(err.message || "Unsupported question")}</h2>
+      ${err.details?.length ? `<p>Questions this service can answer — click one to start from it:</p><div class="options">${err.details.map((dt, i) => `<button class="opt" type="button" data-i="${i}">${esc(dt)}</button>`).join("")}</div>` : ""}</div>`;
+    body.querySelectorAll(".opt").forEach((b) => b.addEventListener("click", () => {
+      $("query").value = err.details[+b.dataset.i]; $("query").focus(); window.scrollTo({ top: 0, behavior: "smooth" });
+    }));
+    return;
+  }
+  body.innerHTML = `<div class="message"><div class="eyebrow">${esc(err.code || resp.status)}</div><h2>${esc(err.message || "The run did not produce a chart.")}</h2>
+    ${err.details?.length ? `<ul class="notes">${err.details.slice(0, 20).map((x) => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}</div>`;
+}
+
+/* ---------------- Context panel ---------------- */
+// Cohort filters: lists such as drug_names, plus exclude_* lists; rendered generically.
+function filtersText(f) {
+  return Object.entries(f || {}).filter(([, v]) => v != null && !(Array.isArray(v) && !v.length))
+    .map(([k, v]) => `${k.startsWith("exclude_") ? "excluding " + k.slice(8).replace(/_/g, " ") : k.replace(/_/g, " ")}: ${Array.isArray(v) ? v.join(", ") : v}`)
+    .join(" · ");
+}
+function dictText(o) { const e = Object.entries(o || {}); return e.length ? e.map(([k, v]) => `${k.replace(/_/g, " ")}: ${fmt(v)}`).join(", ") : "—"; }
+function renderContext(resp) {
+  const meta = resp.meta || {};
+  const interp = meta.interpretation;
+  const parts = [];
+  const proposed = resp.status !== "ok" && resp.status !== "empty";
+  if (interp) {
+    parts.push(`<div class="panel-title">${proposed ? "Proposed plan (not run)" : "Interpretation"}</div>`);
+    if (proposed) parts.push(`<p class="sec" style="margin:0 0 6px;font-size:13px">${esc(interp.summary.replace(/^Computed /, "Would compute "))}</p>`);
+    parts.push(`<dl class="kv"><dt>Planner</dt><dd>${esc(interp.planner_model)} · ${interp.planner_attempts} call${interp.planner_attempts === 1 ? "" : "s"}</dd>
+      ${interp.parent_run_id ? `<dt>Follow-up of</dt><dd class="mono">${esc(interp.parent_run_id)}</dd>` : ""}</dl>`);
+    for (const e of interp.plan?.expansions || []) {
+      parts.push(`<div class="cohort" style="margin-top:8px"><div class="eyebrow">Class expanded (${esc((e.field || "").replace(/_/g, " "))})</div>
+        <div style="font-size:13px;margin-top:2px"><b>${esc(e.term)}</b> → ${esc((e.members || []).join(", "))}</div></div>`);
+    }
+    if (interp.repair_feedback?.length) parts.push(`<details class="fold" open><summary>Planner corrected its first plan</summary><ul class="notes" style="margin-top:6px">${interp.repair_feedback.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></details>`);
+    if (interp.plan_diff && Object.keys(interp.plan_diff).length) {
+      parts.push(`<details class="fold" open><summary>Changes from the previous run</summary><dl>${Object.entries(interp.plan_diff).map(([k, v]) =>
+        `<dt class="mono">${esc(k)}</dt><dd>${esc(JSON.stringify(v.before))} → ${esc(JSON.stringify(v.after))}</dd>`).join("")}</dl></details>`);
+    }
+  }
+  if (meta.assumptions?.length) parts.push(`<div class="panel-title">Assumptions</div><ul class="notes">${meta.assumptions.map((a) => `<li>${esc(a)}</li>`).join("")}</ul>`);
+  const norms = normalizations(meta);
+  if (norms.length) {
+    parts.push(`<div class="panel-title">Name normalization</div>`);
+    for (const n of norms) {
+      const merges = n.merges || [];
+      const dropped = n.dropped || [];
+      parts.push(`<div class="cohort">
+        <p class="sec" style="margin:0;font-size:13px"><b>${esc(n.dimension || "names")}</b> normalized by <b>${esc(n.model || "a model")}</b>${n.names_in != null ? `: ${fmt(n.names_in)} distinct raw names; the ${fmt(n.names_sent ?? n.names_in)} most frequent were sent, ${fmt(n.names_mapped)} changed${n.names_unmapped ? `, ${fmt(n.names_unmapped)} left raw (answer failed validation)` : ""}` : ""}${dropped.length ? `; ${fmt(dropped.length)} dropped as not a ${esc(n.dimension || "match")}` : ""}.</p>
+        ${merges.length ? `<details><summary>${fmt(merges.length)} merge${merges.length === 1 ? "" : "s"}</summary><dl class="kv" style="margin-top:6px">${merges.slice(0, 200).map((m) =>
+          `<dt>${esc(m.canonical)}</dt><dd>${esc((m.variants || []).join(" · "))}</dd>`).join("")}</dl></details>` : ""}
+        ${dropped.length ? `<details><summary>${fmt(dropped.length)} dropped</summary><code>${dropped.slice(0, 200).map(esc).join("<br>")}</code></details>` : ""}
+      </div>`);
+    }
+  }
+  if (meta.cohorts?.length) {
+    const cards = meta.cohorts.map((c) => `<div class="cohort">
+        <div class="cohort-head"><b>${esc(c.label)}</b><span class="badge">${c.complete ? "✓ complete" : "! incomplete"}</span></div>
+        ${filtersText(c.filters) ? `<div class="sec" style="font-size:12.5px;margin:-2px 0 6px">${esc(filtersText(c.filters))}</div>` : ""}
+        <dl class="kv"><dt>API matches</dt><dd>${fmt(c.total_matches)}</dd><dt>Analyzed</dt><dd>${fmt(c.trials_analyzed)}</dd>
+          <dt>Excluded</dt><dd>${esc(dictText(c.excluded))}</dd><dt>No value</dt><dd>${esc(dictText(c.missing))}</dd>
+          <dt>Synonym-only</dt><dd title="Trials the registry matched through synonym expansion, with no literal mention to cite">${esc(dictText(c.synonym_matches))}</dd></dl>
+        <details><summary>API query</summary><code>${Object.entries(c.api_params || {}).map(([k, v]) => `${esc(k)}=${esc(v)}`).join("<br>")}</code></details>
+      </div>`).join("");
+    parts.push(`<div class="panel-title">Coverage</div>${cards}`);
+    if (meta.cohort_overlap) parts.push(`<p class="sec" style="font-size:12.5px;margin:6px 0 0">Overlap: ${esc(dictText(meta.cohort_overlap))}</p>`);
+  }
+  if (meta.truncation) parts.push(`<p class="sec" style="font-size:12.5px;margin:8px 0 0"><b>Display cap:</b> showing ${fmt(meta.truncation.shown)} of ${fmt(meta.truncation.total)} — ${esc(meta.truncation.rule)}.</p>`);
+  if (meta.policies && Object.keys(meta.policies).length) {
+    parts.push(`<details class="fold"><summary>Counting policies (${Object.keys(meta.policies).length})</summary><dl>${Object.entries(meta.policies).map(([k, v]) =>
+      `<dt>${esc(k.replace(/_/g, " "))}</dt><dd>${esc(v)}</dd>`).join("")}</dl></details>`);
+  }
+  const timings = Object.entries(meta.timings_ms || {});
+  if (timings.length) {
+    const total = sum(timings.map(([, v]) => v)) || 1;
+    const colors = palette();
+    parts.push(`<div class="panel-title">Run timing · ${(total / 1000).toFixed(1)} s</div>
+      <div class="timing" role="img" aria-label="Stage timings">${timings.map(([k, v], i) => `<span title="${esc(k)} ${fmt(v)} ms" style="flex:${Math.max(v, total * 0.01)};background:${colors[i % 8]}"></span>`).join("")}</div>
+      <div class="timing-legend">${timings.map(([k, v], i) => `<span class="legend-item"><span class="swatch" style="background:${colors[i % 8]}"></span>${esc(k)} ${v >= 1000 ? `${(v / 1000).toFixed(1)} s` : `${fmt(v)} ms`}</span>`).join("")}</div>
+      ${resp.run_id ? `<a href="/v1/runs/${encodeURIComponent(resp.run_id)}/trace" target="_blank" rel="noopener" style="font-size:12.5px;display:inline-block;margin-top:6px">Full trace (spans, model calls, API requests) ↗</a>` : ""}`);
+  }
+  if (meta.source) {
+    const s = meta.source;
+    parts.push(`<div class="panel-title">Source</div><dl class="kv"><dt>API</dt><dd>${esc(s.name)}${s.api_version ? ` ${esc(s.api_version)}` : ""}</dd>
+      ${s.data_timestamp ? `<dt>Registry data</dt><dd>${esc(s.data_timestamp)}</dd>` : ""}<dt>Retrieved</dt><dd>${esc(s.retrieved_at)}</dd></dl>`);
+  }
+  parts.push(`<details class="fold"><summary>Raw response JSON</summary><pre class="mono" style="white-space:pre-wrap;word-break:break-word;max-height:320px;overflow:auto;margin:8px 0 0">${esc(JSON.stringify(resp, null, 2).slice(0, 30000))}</pre></details>`);
+  $("context").innerHTML = parts.join("");
+}
+
+/* ---------------- utilities ---------------- */
+function downloadJson() {
+  const resp = state.resp; if (!resp) return;
+  const blob = new Blob([JSON.stringify(resp, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = `run-${resp.run_id || "response"}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 1400); }
+function copy(text) {
+  try { navigator.clipboard.writeText(text).then(() => toast("Run id copied"), () => toast(text)); } catch (_) { toast(text); }
+}
+function welcome() {
+  $("results").innerHTML = `<div class="card"><div class="welcome">
+    <div class="step"><b>1 · Ask</b><span>Type a question or pick an example. Optional filters (drug, condition, phase…) override the wording.</span></div>
+    <div class="step"><b>2 · Plan &amp; check</b><span>A model writes a structured plan; code validates it and checks every name against live ClinicalTrials.gov counts.</span></div>
+    <div class="step"><b>3 · Compute &amp; cite</b><span>Code fetches the trials, counts them and picks the chart. Click any mark to see the exact registry values behind it.</span></div>
+  </div></div>`;
+}
+
+/* ---------------- paste dialog ---------------- */
+$("pasteBtn").addEventListener("click", () => { $("pasteErr").hidden = true; $("pasteDlg").showModal(); $("pasteText").focus(); });
+$("pasteGo").addEventListener("click", () => {
+  try {
+    renderSaved(JSON.parse($("pasteText").value));
+    $("pasteDlg").close();
+  } catch (err) {
+    $("pasteErr").hidden = false; $("pasteErr").textContent = `Invalid JSON: ${err.message}`;
+  }
+});
+
+/* ---------------- boot ---------------- */
+// Deep links: ?view=table opens the table; ?datum=<datum_id> opens that datum's evidence.
+function applyDeepLink() {
+  const params = new URLSearchParams(location.search);
+  const view = params.get("view"); const datum = params.get("datum");
+  if (view === "table" && $("viewSeg")) { $("viewSeg").querySelector('[data-view="table"]').click(); }
+  if (datum && findDatum(datum)) selectDatum(datum);
+}
+function renderSaved(parsed) {
+  const resp = parsed.response ?? parsed;
+  if (!resp || !resp.status) throw new Error("This does not look like a response body (no status field).");
+  state.request = parsed.request ?? null;
+  if (parsed.request) setForm(parsed.request);
+  state.selected = null;
+  show(resp);
+  applyDeepLink();
+}
+(function boot() {
+  const params = new URLSearchParams(location.search);
+  const src = params.get("src"); // a saved response or examples/*.json file, e.g. ?src=/examples/01_….json
+  if (src) {
+    fetch(src).then((r) => (r.ok ? r.json() : Promise.reject(new Error(`Could not load ${src} (HTTP ${r.status})`))))
+      .then(renderSaved)
+      .catch((err) => { welcome(); $("results").insertAdjacentHTML("afterbegin", `<div class="alert" style="margin-bottom:12px">${esc(err.message)}</div>`); });
+    return;
+  }
+  const run = params.get("run");
+  if (!run) { welcome(); return; }
+  $("results").innerHTML = `<div class="card"><div class="loading"><div class="loading-row"><div class="spinner"></div><b>Loading run ${esc(run)}…</b></div></div></div>`;
+  fetch(`/v1/runs/${encodeURIComponent(run)}`)
+    .then((r) => (r.ok ? r.json() : Promise.reject(new Error(r.status === 404 ? "Run not found on this server." : `HTTP ${r.status}`))))
+    .then((resp) => { state.request = null; show(resp); applyDeepLink(); })
+    .catch((err) => { welcome(); $("results").insertAdjacentHTML("afterbegin", `<div class="alert" style="margin-bottom:12px">${esc(err.message)}</div>`); });
+})();
+</script>
+</body>
+</html>

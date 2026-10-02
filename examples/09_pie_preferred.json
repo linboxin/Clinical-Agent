@@ -1,0 +1,358 @@
+{
+  "request": {
+    "query": "What share of COVID-19 vaccine trials are randomized?",
+    "preferred_visualization": "pie_chart",
+    "citations_per_datum": 3
+  },
+  "response": {
+    "schema_version": "1.1",
+    "run_id": "fb2b648f-7c35-46b4-b8a6-93c3928aa72b",
+    "status": "ok",
+    "visualization": {
+      "type": "pie_chart",
+      "title": "Trials by allocation — vaccine · COVID-19",
+      "encoding": {
+        "theta": {
+          "field": "trial_count",
+          "type": "quantitative",
+          "title": "Trials",
+          "unit": "trials",
+          "sort": null
+        },
+        "color": {
+          "field": "allocation",
+          "type": "nominal",
+          "title": "Allocation",
+          "unit": null,
+          "sort": [
+            "Randomized",
+            "Not applicable",
+            "Non randomized"
+          ]
+        }
+      },
+      "data": [
+        {
+          "datum_id": "d1",
+          "trial_count": 367,
+          "citation_count": 367,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07838038",
+              "url": "https://clinicaltrials.gov/study/NCT07838038",
+              "brief_title": "Effect of Messaging on Pragmatic Outcomes Within an Integrated Healthcare System",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "Vaccine choice message"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Covid-19 Vaccination"
+                },
+                {
+                  "field_path": "protocolSection.designModule.designInfo.allocation",
+                  "excerpt": "RANDOMIZED"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07730450",
+              "url": "https://clinicaltrials.gov/study/NCT07730450",
+              "brief_title": "A Study to Learn About a COVID-19 Vaccine in Healthy Adults 18 Through 64 Years of Age",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "BNT162b2 Vaccine"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "COVID-19 Vaccines"
+                },
+                {
+                  "field_path": "protocolSection.designModule.designInfo.allocation",
+                  "excerpt": "RANDOMIZED"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07655180",
+              "url": "https://clinicaltrials.gov/study/NCT07655180",
+              "brief_title": "Safety and Serum Virus Neutralizing Antibody Responses of VYD2311, a COVID-19 Vaccine, and Coadministered VYD2311 With a COVID-19 Vaccine",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "COVID-19 mRNA vaccine"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "COVID-19"
+                },
+                {
+                  "field_path": "protocolSection.designModule.designInfo.allocation",
+                  "excerpt": "RANDOMIZED"
+                }
+              ]
+            }
+          ],
+          "allocation": "Randomized"
+        },
+        {
+          "datum_id": "d2",
+          "trial_count": 62,
+          "citation_count": 62,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07079670",
+              "url": "https://clinicaltrials.gov/study/NCT07079670",
+              "brief_title": "Safety and Immunogenicity of NVX-CoV2705",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].otherNames[0]",
+                  "excerpt": "Omicron JN.1 Subvariant SARS-CoV-2 rS Vaccine Adjuvanted with Matrix-M"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "COVID-19"
+                },
+                {
+                  "field_path": "protocolSection.designModule.designInfo.allocation",
+                  "excerpt": "NA"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT06409663",
+              "url": "https://clinicaltrials.gov/study/NCT06409663",
+              "brief_title": "A Strain Change Study for SARS-CoV-2 rS Vaccines",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "NVX-CoV2705 Vaccine"
+                },
+                {
+                  "field_path": "protocolSection.designModule.designInfo.allocation",
+                  "excerpt": "NA"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT06068569",
+              "url": "https://clinicaltrials.gov/study/NCT06068569",
+              "brief_title": "Study of the Vector Vaccine GamCovidVac for the Prevention of COVID-19 With Altered Antigenic Profile With Participation of Adult Volunteers",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "GamCovidVac vector vaccine for the prevention of COVID-19 (with altered antigenic profile)"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "COVID-19"
+                },
+                {
+                  "field_path": "protocolSection.designModule.designInfo.allocation",
+                  "excerpt": "NA"
+                }
+              ]
+            }
+          ],
+          "allocation": "Not applicable"
+        },
+        {
+          "datum_id": "d3",
+          "trial_count": 60,
+          "citation_count": 60,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT06633835",
+              "url": "https://clinicaltrials.gov/study/NCT06633835",
+              "brief_title": "Impact of Reactogenicity of the 2024-2025 COVID-19 Vaccines on Health Care Workers and First Responders in the United States",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "protein subunit: Novavax COVID-19 vaccine"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "COVID-19"
+                },
+                {
+                  "field_path": "protocolSection.designModule.designInfo.allocation",
+                  "excerpt": "NON_RANDOMIZED"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT06300853",
+              "url": "https://clinicaltrials.gov/study/NCT06300853",
+              "brief_title": "Understanding Adaptive Immune Response After COVID-19 Vaccination Boosters to Improve Vaccination Strategies in Vulnerable Groups.",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "Analisys of cellular response and humoral response to SARS-CoV-2 vaccine booster doses"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "COVID-19"
+                },
+                {
+                  "field_path": "protocolSection.designModule.designInfo.allocation",
+                  "excerpt": "NON_RANDOMIZED"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT06168032",
+              "url": "https://clinicaltrials.gov/study/NCT06168032",
+              "brief_title": "COVID-19 Vaccine Effectiveness Against Recurrent Infection Among Lung Cancer Patients and Biomarker Research",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "Any Chinese government-recommended COVID-19 booster vaccine"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "COVID-19 Recurrent"
+                },
+                {
+                  "field_path": "protocolSection.designModule.designInfo.allocation",
+                  "excerpt": "NON_RANDOMIZED"
+                }
+              ]
+            }
+          ],
+          "allocation": "Non randomized"
+        }
+      ]
+    },
+    "meta": {
+      "interpretation": {
+        "summary": "Computed distinct trials by allocation for 1 cohort(s): 'vaccine · COVID-19' (drug_names=['vaccine'], conditions=['COVID-19']).",
+        "plan": {
+          "cohorts": [
+            {
+              "label": "vaccine · COVID-19",
+              "filters": {
+                "drug_names": [
+                  "vaccine"
+                ],
+                "conditions": [
+                  "COVID-19"
+                ],
+                "sponsors": null,
+                "countries": null,
+                "trial_phase": null,
+                "overall_status": null,
+                "study_type": null,
+                "exclude_drug_names": null,
+                "exclude_conditions": null,
+                "exclude_sponsors": null,
+                "exclude_countries": null
+              }
+            }
+          ],
+          "operation": {
+            "kind": "count_by",
+            "dimension": "allocation",
+            "second_dimension": null,
+            "measure": null,
+            "x_measure": null,
+            "only_listed_values": false
+          },
+          "time": {
+            "date_basis": "start_date",
+            "year_from": null,
+            "year_to": null
+          },
+          "phase_policy": "combined",
+          "top_n": null,
+          "expansions": [],
+          "unhandled_constraints": [],
+          "clarification": null,
+          "unsupported_reason": null
+        },
+        "planner_model": "gpt-5.4",
+        "planner_attempts": 1,
+        "repair_feedback": [],
+        "parent_run_id": null,
+        "plan_diff": null
+      },
+      "chart_selection": "preferred_visualization=pie_chart honored (compatible)",
+      "cohorts": [
+        {
+          "label": "vaccine · COVID-19",
+          "filters": {
+            "drug_names": [
+              "vaccine"
+            ],
+            "conditions": [
+              "COVID-19"
+            ]
+          },
+          "api_params": {
+            "query.cond": "\"COVID-19\"",
+            "query.term": "(AREA[InterventionName]\"vaccine\" OR AREA[InterventionOtherName]\"vaccine\")"
+          },
+          "total_matches": 627,
+          "records_fetched": 627,
+          "trials_analyzed": 627,
+          "excluded": {},
+          "missing": {
+            "allocation": 138
+          },
+          "synonym_matches": {
+            "conditions": 240
+          },
+          "complete": true
+        }
+      ],
+      "time": {
+        "date_basis": "start_date",
+        "year_from": null,
+        "year_to": null
+      },
+      "measure": "Distinct trials (NCT IDs) per datum",
+      "count_method": "fetched",
+      "units": {
+        "trial_count": "trials"
+      },
+      "sort": "Trial count, descending",
+      "time_granularity": null,
+      "policies": {
+        "counting": "Every value is a count of distinct trials (NCT IDs); a trial counts at most once per datum.",
+        "missing_values": "Trials with no value for the analysed field are not charted; see meta.cohorts[].missing.",
+        "drug_matching": "drug_names match InterventionName or InterventionOtherName (field-scoped search, with ClinicalTrials.gov synonym expansion). Trials that only mention the drug elsewhere, e.g. as prior therapy, are not included.",
+        "condition_matching": "condition uses ClinicalTrials.gov condition search (query.cond, phrase), which includes synonyms and narrower terms."
+      },
+      "assumptions": [],
+      "cohort_overlap": null,
+      "truncation": null,
+      "source": {
+        "name": "ClinicalTrials.gov API v2",
+        "api_version": "2.0.5",
+        "data_timestamp": "2026-10-01T09:00:05",
+        "retrieved_at": "2026-10-01T23:04:28+00:00"
+      },
+      "timings_ms": {
+        "plan": 2464,
+        "retrieve": 13,
+        "prepare": 20,
+        "normalize": 0,
+        "analyze": 3,
+        "build": 1,
+        "verify": 0
+      },
+      "llm_usage": {
+        "calls": 1,
+        "input_tokens": 4632,
+        "output_tokens": 166
+      },
+      "normalization": []
+    },
+    "clarification": null,
+    "error": null
+  }
+}

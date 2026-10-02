@@ -1,0 +1,830 @@
+{
+  "request": {
+    "query": "Excluding Keytruda, which PD-1 inhibitors have the most Phase 3 trials?",
+    "citations_per_datum": 3
+  },
+  "response": {
+    "schema_version": "1.1",
+    "run_id": "951c625d-76fc-4f72-97c8-d6dd19db8697",
+    "status": "ok",
+    "visualization": {
+      "type": "bar_chart",
+      "title": "Trials by drug — PD-1 inhibitors · Phase 3 · excluding Keytruda",
+      "orientation": "horizontal",
+      "encoding": {
+        "x": {
+          "field": "drug",
+          "type": "nominal",
+          "title": "Drug",
+          "unit": null,
+          "sort": [
+            "nivolumab",
+            "tislelizumab",
+            "toripalimab",
+            "camrelizumab",
+            "sintilimab",
+            "serplulimab",
+            "cemiplimab",
+            "dostarlimab",
+            "penpulimab",
+            "balstilimab"
+          ]
+        },
+        "y": {
+          "field": "trial_count",
+          "type": "quantitative",
+          "title": "Trials",
+          "unit": "trials",
+          "sort": null
+        },
+        "series": null
+      },
+      "data": [
+        {
+          "datum_id": "d1",
+          "trial_count": 149,
+          "citation_count": 149,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07818070",
+              "url": "https://clinicaltrials.gov/study/NCT07818070",
+              "brief_title": "A Trial of ONO-4578 Versus Placebo in Combination With Nivolumab and Chemotherapy in Participants With Gastric Cancer, Esophagogastric Junction Cancer, or Esophageal Adenocarcinoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[2].name",
+                  "excerpt": "Nivolumab"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07815574",
+              "url": "https://clinicaltrials.gov/study/NCT07815574",
+              "brief_title": "iSCIB1+ in Combination With Ipilimumab and Nivolumab as First-Line Treatment for Advanced Unresectable Melanoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[1].name",
+                  "excerpt": "Nivolumab & Ipilimumab"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07700979",
+              "url": "https://clinicaltrials.gov/study/NCT07700979",
+              "brief_title": "Phase 3 Study of Cadonilimab Combined With Chemotherapy vs Chemotherapy in Combination With or Without Nivolumab for the 1L Treatment of Participants With HER2-negative, Previously Untreated, Unresectable or Metastatic Gastric/GEJ Adenocarcinoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[2].name",
+                  "excerpt": "Nivolumab"
+                }
+              ]
+            }
+          ],
+          "drug": "nivolumab"
+        },
+        {
+          "datum_id": "d2",
+          "trial_count": 81,
+          "citation_count": 81,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07833202",
+              "url": "https://clinicaltrials.gov/study/NCT07833202",
+              "brief_title": "A Phase 3 Study of Sosimerasib in Combination With IN10018 Versus Standard Therapy for First Line Non-squamous Non-small Cell Lung Cancer With KRAS G12C Mutation",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[1].name",
+                  "excerpt": "Tislelizumab + Carboplatin + Pemetrexed"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07829549",
+              "url": "https://clinicaltrials.gov/study/NCT07829549",
+              "brief_title": "Phase III Study of RC148 Plus Chemotherapy Versus Tislelizumab Plus Chemotherapy as First-Line Treatment for Non-Squamous Non-Small Cell Lung Cancer Without Actionable Genomic Alterations",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[1].name",
+                  "excerpt": "Tislelizumab Injection plus Pemetrexed Disodium for Injection and Carboplatin Injection"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07822542",
+              "url": "https://clinicaltrials.gov/study/NCT07822542",
+              "brief_title": "A Study Evaluating HS-10370 Plus Platinum-based Doublet Chemotherapy With or Without Adebrelimab vs. Tislelizumab Plus Chemotherapy as First-Line Therapy in Patients With Advanced KRAS G12C-Mutant Non-small Cell Lung Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[5].name",
+                  "excerpt": "Tislelizumab"
+                }
+              ]
+            }
+          ],
+          "drug": "tislelizumab"
+        },
+        {
+          "datum_id": "d3",
+          "trial_count": 64,
+          "citation_count": 64,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07823348",
+              "url": "https://clinicaltrials.gov/study/NCT07823348",
+              "brief_title": "JS207 Plus JS007 Versus Toripalimab Plus Bevacizumab as First-Line Treatment for Advanced Liver Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[2].name",
+                  "excerpt": "Toripalimab"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07756008",
+              "url": "https://clinicaltrials.gov/study/NCT07756008",
+              "brief_title": "Bladder-Sparing Treatment With Disitamab Vedotin and Toripalimab With or Without Pelvic Lymph Node Dissection in Bladder Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2",
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[1].name",
+                  "excerpt": "Toripalimab"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07706985",
+              "url": "https://clinicaltrials.gov/study/NCT07706985",
+              "brief_title": "Efficacy and Safety of TPC Induction Chemotherapy Combined With Nimotuzumab and Toripalimab \"Immune Sandwich\" Regimen Versus Full-Course Immunotherapy for Locally Advanced Nasopharyngeal Carcinoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "Toripalimab combined with Nimotuzumab"
+                }
+              ]
+            }
+          ],
+          "drug": "toripalimab"
+        },
+        {
+          "datum_id": "d4",
+          "trial_count": 63,
+          "citation_count": 63,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07653451",
+              "url": "https://clinicaltrials.gov/study/NCT07653451",
+              "brief_title": "Precision Medicine for Immunotherapy-Resistant Advanced Esophageal Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2",
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "Afatinib + Toripalimab"
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[2].name",
+                  "excerpt": "Camrelizumab + Apatinib"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07589244",
+              "url": "https://clinicaltrials.gov/study/NCT07589244",
+              "brief_title": "A Study of VRT106, Combined With Camrelizumab, and Apatinib for Advanced HCC",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2",
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[1].name",
+                  "excerpt": "VRT106 in combination with camrelizumab and apatinib"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07432087",
+              "url": "https://clinicaltrials.gov/study/NCT07432087",
+              "brief_title": "Camrelizumab Combined With EGFR Monoclonal Antibody or Chemotherapy for Perioperative Treatment of Locally Advanced Head and Neck Squamous Cell Carcinoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "Camrelizumab and Cetuximab"
+                }
+              ]
+            }
+          ],
+          "drug": "camrelizumab"
+        },
+        {
+          "datum_id": "d5",
+          "trial_count": 63,
+          "citation_count": 63,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07827872",
+              "url": "https://clinicaltrials.gov/study/NCT07827872",
+              "brief_title": "Neoadjuvant Sintilimab Plus Chemotherapy for cT2N0M0 Oral Squamous Cell Carcinoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "Sintilimab"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07813572",
+              "url": "https://clinicaltrials.gov/study/NCT07813572",
+              "brief_title": "ZG005 Plus Bevacizumab vs Sintilimab Plus Bevacizumab as First-Line Therapy for Advanced Hepatocellular",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[2].name",
+                  "excerpt": "Sintilimab"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07716449",
+              "url": "https://clinicaltrials.gov/study/NCT07716449",
+              "brief_title": "QLS31905 in Combination With CAPOX Versus Sintilimab in Combination With CAPOX as First-line Treatment in Patients With GC/GEJ",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[1].name",
+                  "excerpt": "Sintilimab"
+                }
+              ]
+            }
+          ],
+          "drug": "sintilimab"
+        },
+        {
+          "datum_id": "d6",
+          "trial_count": 13,
+          "citation_count": 13,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07739758",
+              "url": "https://clinicaltrials.gov/study/NCT07739758",
+              "brief_title": "A Study of YL201 in Combination With Serplulimab in Participants With Treatment-naïve Extensive-stage Small Cell Lung Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[1].name",
+                  "excerpt": "Serplulimab"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07336953",
+              "url": "https://clinicaltrials.gov/study/NCT07336953",
+              "brief_title": "A Phase III, Randomized, Clinical Trial of GnP Combined With SBRT and Serplulimab Versus GnP as First-Line Treatment for Patients With Recurrent or Metastatic Pancreatic Cancer (WGOG-PAN 006/ICSBR-2)",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[2].name",
+                  "excerpt": "Serplulimab"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07277842",
+              "url": "https://clinicaltrials.gov/study/NCT07277842",
+              "brief_title": "PD-1 + FOLFOXIRI vs CAPOX as Total Neoadjuvant Therapy for pMMR Low Rectal Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "Serplulimab"
+                }
+              ]
+            }
+          ],
+          "drug": "serplulimab"
+        },
+        {
+          "datum_id": "d7",
+          "trial_count": 12,
+          "citation_count": 12,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT06931717",
+              "url": "https://clinicaltrials.gov/study/NCT06931717",
+              "brief_title": "A Clinical Study to Assess the Efficacy of Adjuvant Immunotherapy With Cemiplimab in Patients With Surgically Removed Non-small Cell Lung Cancer Who Have Not Received Prior Chemotherapy",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "Cemiplimab"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT06908304",
+              "url": "https://clinicaltrials.gov/study/NCT06908304",
+              "brief_title": "A Phase III Study With THIO + Cemiplimab vs Chemotherapy as 3rd Line Treatment in Advanced/Metastatic NSCLC",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[1].name",
+                  "excerpt": "Cemiplimab"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT06616584",
+              "url": "https://clinicaltrials.gov/study/NCT06616584",
+              "brief_title": "Adding the Immunotherapy Drug Cemiplimab to Usual Treatment for People With Advanced Non-Small Cell Lung Cancer Who Had Previous Treatment With Platinum Chemotherapy and Immunotherapy (An Expanded Lung-MAP Treatment Trial)",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2",
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[1].name",
+                  "excerpt": "Cemiplimab"
+                }
+              ]
+            }
+          ],
+          "drug": "cemiplimab"
+        },
+        {
+          "datum_id": "d8",
+          "trial_count": 10,
+          "citation_count": 10,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07740720",
+              "url": "https://clinicaltrials.gov/study/NCT07740720",
+              "brief_title": "A Study of the Duration of Dostarlimab in Untreated Mismatch Repair Deficient (dMMR)/ Microsatellite Instability-high (MSI-H) Locally Advanced Rectal Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "Dostarlimab"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT06762405",
+              "url": "https://clinicaltrials.gov/study/NCT06762405",
+              "brief_title": "PRODIGE 90 - (FFCD 2204) Neoadjuvant Dostarlimab with Short Course Radiotherapy in a Watch-and-wait Strategy for Microsatellite Unstable or Mismatch Repair-deficient Locally Advanced Rectal Cancer Patients",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[1].name",
+                  "excerpt": "Dostarlimab"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT06256588",
+              "url": "https://clinicaltrials.gov/study/NCT06256588",
+              "brief_title": "A Study of Dostarlimab vs Placebo After Chemoradiation in Adult Participants With Locally Advanced Unresected Head and Neck Squamous Cell Carcinoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "Dostarlimab"
+                }
+              ]
+            }
+          ],
+          "drug": "dostarlimab"
+        },
+        {
+          "datum_id": "d9",
+          "trial_count": 5,
+          "citation_count": 5,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT06048315",
+              "url": "https://clinicaltrials.gov/study/NCT06048315",
+              "brief_title": "A Single Center, Single Arm Clinical Study on the Treatment of Advanced Non-small Cell Lung Cancer With Positive EGFR Sensitive Mutations and Failed EGFR TKIs With the Combination of Enrotinib and Paclitaxel Monoclonal Antibody",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[1].name",
+                  "excerpt": "Penpulimab"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT05862337",
+              "url": "https://clinicaltrials.gov/study/NCT05862337",
+              "brief_title": "Anlotinib Hydrochloride Capsules Combined With Penpulimab Injection for the Treatment of Hepatocellular Carcinoma at High Risk of Recurrence.",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "Anlotinib hydrochloride capsules, Penpulimab injection"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT05344924",
+              "url": "https://clinicaltrials.gov/study/NCT05344924",
+              "brief_title": "TACE Combined With Penpulimab and Anlotinib for Advanced HCC",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2",
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "TACE+penpulimab+anlotinib vs. penpulimab+anlotinib"
+                }
+              ]
+            }
+          ],
+          "drug": "penpulimab"
+        },
+        {
+          "datum_id": "d10",
+          "trial_count": 4,
+          "citation_count": 4,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07152821",
+              "url": "https://clinicaltrials.gov/study/NCT07152821",
+              "brief_title": "Botensilimab + Balstilimab vs Best Supportive Care as Therapy in Chemo-refractory, Unresectable, Colorectal Adenocarcinoma",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[1].name",
+                  "excerpt": "Balstilimab"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT06346197",
+              "url": "https://clinicaltrials.gov/study/NCT06346197",
+              "brief_title": "Combination of Immune Checkpoint in Locally Advanced or Metastatic MSI/dMMR Esogastric Adenocarcinomas",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[4].name",
+                  "excerpt": "Nivolumab"
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[0].name",
+                  "excerpt": "Balstilimab"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT06279130",
+              "url": "https://clinicaltrials.gov/study/NCT06279130",
+              "brief_title": "Pan-tumor Neoadjuvant Basket Study of Immune Check-point Inhibition and Novel Immuno-oncology Combinations",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.designModule.phases",
+                  "excerpt": [
+                    "PHASE2",
+                    "PHASE3"
+                  ]
+                },
+                {
+                  "field_path": "protocolSection.armsInterventionsModule.interventions[1].name",
+                  "excerpt": "balstilimab"
+                }
+              ]
+            }
+          ],
+          "drug": "balstilimab"
+        }
+      ]
+    },
+    "meta": {
+      "interpretation": {
+        "summary": "Computed distinct trials by drug, counting only the values listed in each cohort's filter for 1 cohort(s): 'PD-1 inhibitors · Phase 3 · excluding Keytruda' (drug_names=['nivolumab', 'cemiplimab', 'dostarlimab', 'toripalimab', 'sintilimab', 'tislelizumab', 'camrelizumab', 'penpulimab', 'serplulimab', 'balstilimab'], trial_phase=['PHASE3'], exclude_drug_names=['Keytruda']).",
+        "plan": {
+          "cohorts": [
+            {
+              "label": "PD-1 inhibitors · Phase 3 · excluding Keytruda",
+              "filters": {
+                "drug_names": [
+                  "nivolumab",
+                  "cemiplimab",
+                  "dostarlimab",
+                  "toripalimab",
+                  "sintilimab",
+                  "tislelizumab",
+                  "camrelizumab",
+                  "penpulimab",
+                  "serplulimab",
+                  "balstilimab"
+                ],
+                "conditions": null,
+                "sponsors": null,
+                "countries": null,
+                "trial_phase": [
+                  "PHASE3"
+                ],
+                "overall_status": null,
+                "study_type": null,
+                "exclude_drug_names": [
+                  "Keytruda"
+                ],
+                "exclude_conditions": null,
+                "exclude_sponsors": null,
+                "exclude_countries": null
+              }
+            }
+          ],
+          "operation": {
+            "kind": "count_by",
+            "dimension": "drug",
+            "second_dimension": null,
+            "measure": null,
+            "x_measure": null,
+            "only_listed_values": true
+          },
+          "time": {
+            "date_basis": "start_date",
+            "year_from": null,
+            "year_to": null
+          },
+          "phase_policy": "combined",
+          "top_n": null,
+          "expansions": [
+            {
+              "term": "PD-1 inhibitors",
+              "field": "drug_names",
+              "members": [
+                "nivolumab",
+                "cemiplimab",
+                "dostarlimab",
+                "toripalimab",
+                "sintilimab",
+                "tislelizumab",
+                "camrelizumab",
+                "penpulimab",
+                "serplulimab",
+                "balstilimab"
+              ]
+            }
+          ],
+          "unhandled_constraints": [],
+          "clarification": null,
+          "unsupported_reason": null
+        },
+        "planner_model": "gpt-5.4",
+        "planner_attempts": 1,
+        "repair_feedback": [],
+        "parent_run_id": null,
+        "plan_diff": null
+      },
+      "chart_selection": "counts per category → bar_chart",
+      "cohorts": [
+        {
+          "label": "PD-1 inhibitors · Phase 3 · excluding Keytruda",
+          "filters": {
+            "drug_names": [
+              "nivolumab",
+              "cemiplimab",
+              "dostarlimab",
+              "toripalimab",
+              "sintilimab",
+              "tislelizumab",
+              "camrelizumab",
+              "penpulimab",
+              "serplulimab",
+              "balstilimab"
+            ],
+            "trial_phase": [
+              "PHASE3"
+            ],
+            "exclude_drug_names": [
+              "Keytruda"
+            ]
+          },
+          "api_params": {
+            "query.term": "(AREA[InterventionName]\"nivolumab\" OR AREA[InterventionOtherName]\"nivolumab\" OR AREA[InterventionName]\"cemiplimab\" OR AREA[InterventionOtherName]\"cemiplimab\" OR AREA[InterventionName]\"dostarlimab\" OR AREA[InterventionOtherName]\"dostarlimab\" OR AREA[InterventionName]\"toripalimab\" OR AREA[InterventionOtherName]\"toripalimab\" OR AREA[InterventionName]\"sintilimab\" OR AREA[InterventionOtherName]\"sintilimab\" OR AREA[InterventionName]\"tislelizumab\" OR AREA[InterventionOtherName]\"tislelizumab\" OR AREA[InterventionName]\"camrelizumab\" OR AREA[InterventionOtherName]\"camrelizumab\" OR AREA[InterventionName]\"penpulimab\" OR AREA[InterventionOtherName]\"penpulimab\" OR AREA[InterventionName]\"serplulimab\" OR AREA[InterventionOtherName]\"serplulimab\" OR AREA[InterventionName]\"balstilimab\" OR AREA[InterventionOtherName]\"balstilimab\") AND AREA[Phase](PHASE3) AND NOT (AREA[InterventionName]\"Keytruda\" OR AREA[InterventionOtherName]\"Keytruda\")"
+          },
+          "total_matches": 463,
+          "records_fetched": 463,
+          "trials_analyzed": 463,
+          "excluded": {},
+          "missing": {
+            "drug": 5
+          },
+          "synonym_matches": {
+            "drug_names": 2
+          },
+          "complete": true
+        }
+      ],
+      "time": {
+        "date_basis": "start_date",
+        "year_from": null,
+        "year_to": null
+      },
+      "measure": "Distinct trials (NCT IDs) per datum",
+      "count_method": "fetched",
+      "units": {
+        "trial_count": "trials"
+      },
+      "sort": "Trial count, descending",
+      "time_granularity": null,
+      "policies": {
+        "counting": "Every value is a count of distinct trials (NCT IDs); a trial counts at most once per datum.",
+        "missing_values": "Trials with no value for the analysed field are not charted; see meta.cohorts[].missing.",
+        "drug_matching": "drug_names match InterventionName or InterventionOtherName (field-scoped search, with ClinicalTrials.gov synonym expansion). Trials that only mention the drug elsewhere, e.g. as prior therapy, are not included.",
+        "drug_dimension": "Drugs are interventions of type DRUG, BIOLOGICAL or COMBINATION_PRODUCT, excluding placebos. Names are grouped case-insensitively with dose and salt suffixes removed (e.g. 'Erlotinib Hydrochloride' = 'erlotinib'); brand and generic names are not merged.",
+        "exclusions": "Excluded values are removed with NOT clauses in the registry search (which honour synonyms) and re-checked on every record; see meta.cohorts[].excluded.",
+        "value_lists": "A list of values in one filter matches trials with ANY of them.",
+        "only_listed_values": "Only values matching the cohort's own list are counted (e.g. the listed drugs, not co-listed chemotherapy); each bar is named after the listed value it matched. An intervention registered under a code matches through the otherNames its own record lists (REGN2810 -> cemiplimab), and the citation quotes that otherName."
+      },
+      "assumptions": [
+        "'PD-1 inhibitors' was interpreted as: nivolumab, cemiplimab, dostarlimab, toripalimab, sintilimab, tislelizumab, camrelizumab, penpulimab, serplulimab, balstilimab (class membership comes from the planner model's knowledge; each member was checked against the live registry)."
+      ],
+      "cohort_overlap": null,
+      "truncation": null,
+      "source": {
+        "name": "ClinicalTrials.gov API v2",
+        "api_version": "2.0.5",
+        "data_timestamp": "2026-10-01T09:00:05",
+        "retrieved_at": "2026-10-01T23:51:17+00:00"
+      },
+      "timings_ms": {
+        "plan": 5700,
+        "retrieve": 1890,
+        "prepare": 34,
+        "normalize": 0,
+        "analyze": 94,
+        "build": 0,
+        "verify": 0
+      },
+      "llm_usage": {
+        "calls": 1,
+        "input_tokens": 4668,
+        "output_tokens": 282
+      },
+      "normalization": []
+    },
+    "clarification": null,
+    "error": null
+  }
+}

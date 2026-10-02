@@ -1,0 +1,103 @@
+{
+  "request": {
+    "query": "How many trials has this drug had per year?",
+    "citations_per_datum": 3
+  },
+  "response": {
+    "schema_version": "1.1",
+    "run_id": "2c8598c5-2bda-44e5-b6fb-a4c7a5d16afe",
+    "status": "needs_clarification",
+    "visualization": null,
+    "meta": {
+      "interpretation": {
+        "summary": "Computed distinct trials per year of study start date for 1 cohort(s): 'all trials' (no filters).",
+        "plan": {
+          "cohorts": [
+            {
+              "label": "all trials",
+              "filters": {
+                "drug_names": null,
+                "conditions": null,
+                "sponsors": null,
+                "countries": null,
+                "trial_phase": null,
+                "overall_status": null,
+                "study_type": null,
+                "exclude_drug_names": null,
+                "exclude_conditions": null,
+                "exclude_sponsors": null,
+                "exclude_countries": null
+              }
+            }
+          ],
+          "operation": {
+            "kind": "time_trend",
+            "dimension": null,
+            "second_dimension": null,
+            "measure": null,
+            "x_measure": null,
+            "only_listed_values": false
+          },
+          "time": {
+            "date_basis": "start_date",
+            "year_from": null,
+            "year_to": null
+          },
+          "phase_policy": "combined",
+          "top_n": null,
+          "expansions": [],
+          "unhandled_constraints": [],
+          "clarification": {
+            "question": "Which drug do you want to analyze per year?",
+            "options": [
+              "Provide a specific drug name",
+              "Use the drug from a structured field if one was supplied",
+              "Compare two named drugs instead",
+              "Cancel this request"
+            ]
+          },
+          "unsupported_reason": null
+        },
+        "planner_model": "gpt-5.4",
+        "planner_attempts": 1,
+        "repair_feedback": [],
+        "parent_run_id": null,
+        "plan_diff": null
+      },
+      "chart_selection": null,
+      "cohorts": [],
+      "time": null,
+      "measure": "Distinct trials (NCT IDs) per datum",
+      "count_method": "fetched",
+      "units": {
+        "trial_count": "trials"
+      },
+      "sort": null,
+      "time_granularity": null,
+      "policies": {},
+      "assumptions": [],
+      "cohort_overlap": null,
+      "truncation": null,
+      "source": null,
+      "timings_ms": {
+        "plan": 3418
+      },
+      "llm_usage": {
+        "calls": 1,
+        "input_tokens": 4623,
+        "output_tokens": 202
+      },
+      "normalization": []
+    },
+    "clarification": {
+      "question": "Which drug do you want to analyze per year?",
+      "options": [
+        "Provide a specific drug name",
+        "Use the drug from a structured field if one was supplied",
+        "Compare two named drugs instead",
+        "Cancel this request"
+      ]
+    },
+    "error": null
+  }
+}

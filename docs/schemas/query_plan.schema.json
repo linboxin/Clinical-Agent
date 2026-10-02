@@ -1,0 +1,553 @@
+{
+  "$defs": {
+    "Clarification": {
+      "additionalProperties": false,
+      "properties": {
+        "question": {
+          "description": "One question that resolves the ambiguity.",
+          "title": "Question",
+          "type": "string"
+        },
+        "options": {
+          "description": "2-4 concrete answers the user could pick.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Options",
+          "type": "array"
+        }
+      },
+      "required": [
+        "question",
+        "options"
+      ],
+      "title": "Clarification",
+      "type": "object"
+    },
+    "Cohort": {
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "description": "Short working label. The backend replaces it with a name generated from the filters.",
+          "title": "Label",
+          "type": "string"
+        },
+        "filters": {
+          "$ref": "#/$defs/CohortFilters"
+        }
+      },
+      "required": [
+        "label",
+        "filters"
+      ],
+      "title": "Cohort",
+      "type": "object"
+    },
+    "CohortFilters": {
+      "additionalProperties": false,
+      "properties": {
+        "drug_names": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Trials listing ANY of these drugs/interventions, as the user named them (generic, brand or code; the registry search expands synonyms). For a drug class ('PD-1 inhibitors') list its member drugs and record the class in plan.expansions. Null if unconstrained.",
+          "title": "Drug Names"
+        },
+        "conditions": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Trials for ANY of these conditions/diseases, or null.",
+          "title": "Conditions"
+        },
+        "sponsors": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Lead sponsor is ANY of these, or null.",
+          "title": "Sponsors"
+        },
+        "countries": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "At least one trial location in ANY of these countries (English names), or null.",
+          "title": "Countries"
+        },
+        "trial_phase": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Phase"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Keep trials in any of these phases, or null for all phases.",
+          "title": "Trial Phase"
+        },
+        "overall_status": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/OverallStatus"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Keep trials with any of these statuses, or null for all statuses.",
+          "title": "Overall Status"
+        },
+        "study_type": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/StudyType"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Restrict study type, or null."
+        },
+        "exclude_drug_names": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Drop trials listing any of these drugs ('excluding Keytruda'), or null.",
+          "title": "Exclude Drug Names"
+        },
+        "exclude_conditions": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Drop trials for any of these conditions, or null.",
+          "title": "Exclude Conditions"
+        },
+        "exclude_sponsors": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Drop trials whose lead sponsor is any of these, or null.",
+          "title": "Exclude Sponsors"
+        },
+        "exclude_countries": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Drop trials with a location in any of these countries ('outside the US'), or null.",
+          "title": "Exclude Countries"
+        }
+      },
+      "required": [
+        "drug_names",
+        "conditions",
+        "sponsors",
+        "countries",
+        "trial_phase",
+        "overall_status",
+        "study_type",
+        "exclude_drug_names",
+        "exclude_conditions",
+        "exclude_sponsors",
+        "exclude_countries"
+      ],
+      "title": "CohortFilters",
+      "type": "object"
+    },
+    "DateBasis": {
+      "enum": [
+        "start_date",
+        "first_posted",
+        "completion_date"
+      ],
+      "title": "DateBasis",
+      "type": "string"
+    },
+    "Dimension": {
+      "description": "Fields a chart can group by. Each one has an entry in app.registry.",
+      "enum": [
+        "phase",
+        "overall_status",
+        "study_type",
+        "lead_sponsor",
+        "sponsor_class",
+        "drug",
+        "intervention_type",
+        "condition",
+        "country",
+        "primary_purpose",
+        "allocation",
+        "site",
+        "investigator"
+      ],
+      "title": "Dimension",
+      "type": "string"
+    },
+    "Expansion": {
+      "additionalProperties": false,
+      "properties": {
+        "term": {
+          "description": "The class or group as the user wrote it, e.g. 'PD-1 inhibitors'.",
+          "title": "Term",
+          "type": "string"
+        },
+        "field": {
+          "description": "Filter list it expands into.",
+          "enum": [
+            "drug_names",
+            "conditions"
+          ],
+          "title": "Field",
+          "type": "string"
+        },
+        "members": {
+          "description": "The explicit members used, e.g. generic drug names.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Members",
+          "type": "array"
+        }
+      },
+      "required": [
+        "term",
+        "field",
+        "members"
+      ],
+      "title": "Expansion",
+      "type": "object"
+    },
+    "Measure": {
+      "description": "Per-trial numeric or date values: histogram bins and scatter axes.",
+      "enum": [
+        "enrollment",
+        "duration_months",
+        "start_date"
+      ],
+      "title": "Measure",
+      "type": "string"
+    },
+    "Operation": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/OperationKind"
+        },
+        "dimension": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Dimension"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "count_by: the grouping dimension. network: the first node type. scatter: optional colour category. time_trend, histogram: null."
+        },
+        "second_dimension": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Dimension"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "network: the second node type (same as dimension for a co-occurrence network). count_by, time_trend: optional series split, only with a single cohort. Otherwise null."
+        },
+        "measure": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Measure"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "histogram: the value to bin. scatter: the y axis. Otherwise null."
+        },
+        "x_measure": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Measure"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "scatter: the x axis. Otherwise null."
+        },
+        "only_listed_values": {
+          "description": "True when grouping by drug, condition, lead_sponsor or country should count only the values in the cohort's own list for that field (e.g. rank the listed PD-1 inhibitors and ignore co-listed chemotherapy). Otherwise false.",
+          "title": "Only Listed Values",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "kind",
+        "dimension",
+        "second_dimension",
+        "measure",
+        "x_measure",
+        "only_listed_values"
+      ],
+      "title": "Operation",
+      "type": "object"
+    },
+    "OperationKind": {
+      "enum": [
+        "count_by",
+        "time_trend",
+        "histogram",
+        "scatter",
+        "network"
+      ],
+      "title": "OperationKind",
+      "type": "string"
+    },
+    "OverallStatus": {
+      "enum": [
+        "NOT_YET_RECRUITING",
+        "RECRUITING",
+        "ENROLLING_BY_INVITATION",
+        "ACTIVE_NOT_RECRUITING",
+        "SUSPENDED",
+        "TERMINATED",
+        "COMPLETED",
+        "WITHDRAWN",
+        "UNKNOWN",
+        "AVAILABLE",
+        "NO_LONGER_AVAILABLE",
+        "TEMPORARILY_NOT_AVAILABLE",
+        "APPROVED_FOR_MARKETING",
+        "WITHHELD"
+      ],
+      "title": "OverallStatus",
+      "type": "string"
+    },
+    "Phase": {
+      "enum": [
+        "EARLY_PHASE1",
+        "PHASE1",
+        "PHASE2",
+        "PHASE3",
+        "PHASE4",
+        "NA"
+      ],
+      "title": "Phase",
+      "type": "string"
+    },
+    "PhasePolicy": {
+      "enum": [
+        "combined",
+        "split"
+      ],
+      "title": "PhasePolicy",
+      "type": "string"
+    },
+    "StudyType": {
+      "enum": [
+        "INTERVENTIONAL",
+        "OBSERVATIONAL",
+        "EXPANDED_ACCESS"
+      ],
+      "title": "StudyType",
+      "type": "string"
+    },
+    "TimeScope": {
+      "additionalProperties": false,
+      "properties": {
+        "date_basis": {
+          "$ref": "#/$defs/DateBasis",
+          "description": "Which trial date defines 'year'. start_date unless the user asks about registration/posting (first_posted) or completion (completion_date)."
+        },
+        "year_from": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Inclusive first year, or null.",
+          "title": "Year From"
+        },
+        "year_to": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Inclusive last year, or null.",
+          "title": "Year To"
+        }
+      },
+      "required": [
+        "date_basis",
+        "year_from",
+        "year_to"
+      ],
+      "title": "TimeScope",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "cohorts": {
+      "description": "One cohort per compared group (1-4). Shared filters repeat in each cohort.",
+      "items": {
+        "$ref": "#/$defs/Cohort"
+      },
+      "title": "Cohorts",
+      "type": "array"
+    },
+    "operation": {
+      "$ref": "#/$defs/Operation"
+    },
+    "time": {
+      "$ref": "#/$defs/TimeScope"
+    },
+    "phase_policy": {
+      "$ref": "#/$defs/PhasePolicy",
+      "description": "combined unless the user asks to count each phase of multi-phase trials."
+    },
+    "top_n": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Show only the N largest categories/nodes (1-100), or null for the default.",
+      "title": "Top N"
+    },
+    "expansions": {
+      "description": "Every class or group name you replaced by explicit members. Empty if none.",
+      "items": {
+        "$ref": "#/$defs/Expansion"
+      },
+      "title": "Expansions",
+      "type": "array"
+    },
+    "unhandled_constraints": {
+      "description": "Parts of the question this plan does NOT apply (e.g. 'only placebo-controlled trials'). Never drop a constraint silently. Empty if everything is applied.",
+      "items": {
+        "type": "string"
+      },
+      "title": "Unhandled Constraints",
+      "type": "array"
+    },
+    "clarification": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Clarification"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Set ONLY when a missing detail would materially change the answer and no sensible default exists. Otherwise null."
+    },
+    "unsupported_reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Set when the question needs data or analysis this system does not support (e.g. efficacy, adverse events, patient eligibility). Otherwise null.",
+      "title": "Unsupported Reason"
+    }
+  },
+  "required": [
+    "cohorts",
+    "operation",
+    "time",
+    "phase_policy",
+    "top_n",
+    "expansions",
+    "unhandled_constraints",
+    "clarification",
+    "unsupported_reason"
+  ],
+  "title": "QueryPlan",
+  "type": "object"
+}

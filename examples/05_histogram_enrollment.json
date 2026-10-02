@@ -1,0 +1,1045 @@
+{
+  "request": {
+    "query": "What is the enrollment size distribution of recruiting Alzheimer's trials?",
+    "citations_per_datum": 3
+  },
+  "response": {
+    "schema_version": "1.1",
+    "run_id": "2eecf3a4-fdd5-4399-badf-875a9940017f",
+    "status": "ok",
+    "visualization": {
+      "type": "histogram",
+      "title": "Distribution of trials by enrollment — Alzheimer's disease · recruiting",
+      "encoding": {
+        "x": {
+          "field": "bin",
+          "type": "ordinal",
+          "title": "Enrollment (participants)",
+          "unit": "participants",
+          "sort": [
+            "0–9",
+            "10–24",
+            "25–49",
+            "50–99",
+            "100–249",
+            "250–499",
+            "500–999",
+            "1,000–2,499",
+            "2,500–4,999",
+            "5,000–9,999",
+            "≥10,000"
+          ]
+        },
+        "y": {
+          "field": "trial_count",
+          "type": "quantitative",
+          "title": "Trials",
+          "unit": "trials",
+          "sort": null
+        },
+        "series": null
+      },
+      "bin_edges": [
+        0.0,
+        10.0,
+        25.0,
+        50.0,
+        100.0,
+        250.0,
+        500.0,
+        1000.0,
+        2500.0,
+        5000.0,
+        10000.0
+      ],
+      "data": [
+        {
+          "datum_id": "d1",
+          "trial_count": 5,
+          "citation_count": 5,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07367815",
+              "url": "https://clinicaltrials.gov/study/NCT07367815",
+              "brief_title": "Allogeneic Adipose Tissue Derived-stem Cells in Alzheimer Disease",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Alzheimer Disease"
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.count",
+                  "excerpt": 9
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.type",
+                  "excerpt": "ESTIMATED"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07265323",
+              "url": "https://clinicaltrials.gov/study/NCT07265323",
+              "brief_title": "Effect of Physiologic Insulin Administration on Insulin Sensitivity and Cognition",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Alzheimer s Disease"
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.count",
+                  "excerpt": 8
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.type",
+                  "excerpt": "ESTIMATED"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT06936124",
+              "url": "https://clinicaltrials.gov/study/NCT06936124",
+              "brief_title": "Deep Brain Stimulation of the Pedunculopontine Nucleus for Alzheimer's Disease",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Alzheimer Disease"
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.count",
+                  "excerpt": 6
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.type",
+                  "excerpt": "ESTIMATED"
+                }
+              ]
+            }
+          ],
+          "bin": "0–9",
+          "bin_start": 0,
+          "bin_end": 10
+        },
+        {
+          "datum_id": "d2",
+          "trial_count": 42,
+          "citation_count": 42,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07835399",
+              "url": "https://clinicaltrials.gov/study/NCT07835399",
+              "brief_title": "Efficacy and Safety of Photobiomodulation Therapy in Patients With Mild Cognitive Impairment and Mild Alzheimer's Disease",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[1]",
+                  "excerpt": "Mild Alzheimer Disease"
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.count",
+                  "excerpt": 20
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.type",
+                  "excerpt": "ESTIMATED"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07764146",
+              "url": "https://clinicaltrials.gov/study/NCT07764146",
+              "brief_title": "An Open Label Dose Escalation Study of VY1706 in Participants With Early Alzheimer's Disease",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Alzheimer s Disease"
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.count",
+                  "excerpt": 18
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.type",
+                  "excerpt": "ESTIMATED"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07752784",
+              "url": "https://clinicaltrials.gov/study/NCT07752784",
+              "brief_title": "Evaluate the Concordance Between PET Imaging of [18F]-APN-1607 Injection and Postmortem Brain Tissue Tau Pathology in Individuals With HV and MCI or AD.",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Alzheimer's Disease"
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.count",
+                  "excerpt": 12
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.type",
+                  "excerpt": "ESTIMATED"
+                }
+              ]
+            }
+          ],
+          "bin": "10–24",
+          "bin_start": 10,
+          "bin_end": 25
+        },
+        {
+          "datum_id": "d3",
+          "trial_count": 79,
+          "citation_count": 79,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07839650",
+              "url": "https://clinicaltrials.gov/study/NCT07839650",
+              "brief_title": "Transcranial Alternating Current Stimulation (tACS) Combined With Cognitive Training in Alzheimer's Disease",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[1]",
+                  "excerpt": "Alzheimer Disease (AD)"
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.count",
+                  "excerpt": 30
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.type",
+                  "excerpt": "ESTIMATED"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07827196",
+              "url": "https://clinicaltrials.gov/study/NCT07827196",
+              "brief_title": "Transcranial Random Noise (tRNS) for BPSD in Alzheimer's Disease: A Double-blind Randomized Controlled Trial",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[2]",
+                  "excerpt": "Alzheimer Disease"
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.count",
+                  "excerpt": 40
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.type",
+                  "excerpt": "ESTIMATED"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07803055",
+              "url": "https://clinicaltrials.gov/study/NCT07803055",
+              "brief_title": "Longitudinal Profiling of Plasma-Derived Glial Extracellular Vesicles in Alzheimer's Disease",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[1]",
+                  "excerpt": "Mild Cognitive Impairment (MCI) Due to Alzheimer's Disease"
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.count",
+                  "excerpt": 48
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.type",
+                  "excerpt": "ESTIMATED"
+                }
+              ]
+            }
+          ],
+          "bin": "25–49",
+          "bin_start": 25,
+          "bin_end": 50
+        },
+        {
+          "datum_id": "d4",
+          "trial_count": 100,
+          "citation_count": 100,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07780383",
+              "url": "https://clinicaltrials.gov/study/NCT07780383",
+              "brief_title": "A Study to Evaluate the Drug Levels, Absolute Bioavailability, Safety, Tolerability, and Immunogenicity of Single-Dose of BMS-986446 in Healthy Adults After Single-dose Administration, and Participants With Early Alzheimer's Disease After Multiple Dose Administration",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Alzheimer's Disease"
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.count",
+                  "excerpt": 84
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.type",
+                  "excerpt": "ESTIMATED"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07766174",
+              "url": "https://clinicaltrials.gov/study/NCT07766174",
+              "brief_title": "Transforming Maternal Mental Health Care",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.count",
+                  "excerpt": 50
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.type",
+                  "excerpt": "ESTIMATED"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07757178",
+              "url": "https://clinicaltrials.gov/study/NCT07757178",
+              "brief_title": "Lived Experience Narratives in Dementia",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[2]",
+                  "excerpt": "Alzheimer Disease"
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.count",
+                  "excerpt": 60
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.type",
+                  "excerpt": "ESTIMATED"
+                }
+              ]
+            }
+          ],
+          "bin": "50–99",
+          "bin_start": 50,
+          "bin_end": 100
+        },
+        {
+          "datum_id": "d5",
+          "trial_count": 162,
+          "citation_count": 162,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07786116",
+              "url": "https://clinicaltrials.gov/study/NCT07786116",
+              "brief_title": "The Role of METhanogens in the PROgression Of Parkinson's Disease and Related Neurological Conditions",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[12]",
+                  "excerpt": "Mild Cognitive Impairment (MCI) Due to Alzheimer's Disease"
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.count",
+                  "excerpt": 215
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.type",
+                  "excerpt": "ESTIMATED"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07764185",
+              "url": "https://clinicaltrials.gov/study/NCT07764185",
+              "brief_title": "Caring Recharge Project for Caregivers of Individuals With Alzheimer's Disease",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.count",
+                  "excerpt": 150
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.type",
+                  "excerpt": "ESTIMATED"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07758595",
+              "url": "https://clinicaltrials.gov/study/NCT07758595",
+              "brief_title": "A Study to Evaluate the Safety, Pharmacokinetics, and Pharmacodynamics of DNL921 in Healthy Participants and Participants With Alzheimer's Disease",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Alzheimer's Disease"
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.count",
+                  "excerpt": 178
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.type",
+                  "excerpt": "ESTIMATED"
+                }
+              ]
+            }
+          ],
+          "bin": "100–249",
+          "bin_start": 100,
+          "bin_end": 250
+        },
+        {
+          "datum_id": "d6",
+          "trial_count": 70,
+          "citation_count": 70,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07794670",
+              "url": "https://clinicaltrials.gov/study/NCT07794670",
+              "brief_title": "Randomized Study to Evaluate the Effect of Obicetrapib in Participants With Preclinical Alzheimer's Disease",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Preclinical Alzheimer's Disease"
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.count",
+                  "excerpt": 400
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.type",
+                  "excerpt": "ESTIMATED"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07762092",
+              "url": "https://clinicaltrials.gov/study/NCT07762092",
+              "brief_title": "A Post Authorization Registry Study of Participants Treated With LEQEMBI",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Alzheimers Disease"
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.count",
+                  "excerpt": 400
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.type",
+                  "excerpt": "ESTIMATED"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07741071",
+              "url": "https://clinicaltrials.gov/study/NCT07741071",
+              "brief_title": "N-AD: Orally Administered Nicotinamide Riboside Over Two Years as a Potential Disease Modifying Treatment for Alzheimer's Disease",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Alzheimer Disease (AD)"
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.count",
+                  "excerpt": 270
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.type",
+                  "excerpt": "ESTIMATED"
+                }
+              ]
+            }
+          ],
+          "bin": "250–499",
+          "bin_start": 250,
+          "bin_end": 500
+        },
+        {
+          "datum_id": "d7",
+          "trial_count": 54,
+          "citation_count": 54,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07799402",
+              "url": "https://clinicaltrials.gov/study/NCT07799402",
+              "brief_title": "Microbiome in Aging of Gut and Brain",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[1]",
+                  "excerpt": "Alzheimer Disease (AD)"
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.count",
+                  "excerpt": 700
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.type",
+                  "excerpt": "ESTIMATED"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07768579",
+              "url": "https://clinicaltrials.gov/study/NCT07768579",
+              "brief_title": "The Effect of Sequential Therapy on Alzheimer's Disease",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Mild Cognitive Impairment Due to Alzheimer Disease"
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.count",
+                  "excerpt": 600
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.type",
+                  "excerpt": "ESTIMATED"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07680335",
+              "url": "https://clinicaltrials.gov/study/NCT07680335",
+              "brief_title": "The BRidge Towards Implementation of Blood-based Biomarkers to Enable Early and Accurate Diagnosis of Alzheimer's Disease",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[1]",
+                  "excerpt": "Alzheimer's Disease (AD)"
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.count",
+                  "excerpt": 550
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.type",
+                  "excerpt": "ESTIMATED"
+                }
+              ]
+            }
+          ],
+          "bin": "500–999",
+          "bin_start": 500,
+          "bin_end": 1000
+        },
+        {
+          "datum_id": "d8",
+          "trial_count": 42,
+          "citation_count": 42,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07798700",
+              "url": "https://clinicaltrials.gov/study/NCT07798700",
+              "brief_title": "Biofluid Research on Age-Related or Inherited Neurodegeneration",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[7]",
+                  "excerpt": "Alzheimer's Disease (AD)"
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.count",
+                  "excerpt": 1000
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.type",
+                  "excerpt": "ESTIMATED"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07763392",
+              "url": "https://clinicaltrials.gov/study/NCT07763392",
+              "brief_title": "Establishing Normal Cognitive Test Scores for Adults Using a Voice-Enabled Digital Testing Platform Across the Lifespan",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[4]",
+                  "excerpt": "Alzheimer Disease"
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.count",
+                  "excerpt": 1000
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.type",
+                  "excerpt": "ESTIMATED"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07724132",
+              "url": "https://clinicaltrials.gov/study/NCT07724132",
+              "brief_title": "An Evaluation of Treatments for Sustained Clinical Response (18 Months) in Symptomatic Alzheimer's Disease",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Alzheimer&#39;s Disease (AD)"
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.count",
+                  "excerpt": 1200
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.type",
+                  "excerpt": "ESTIMATED"
+                }
+              ]
+            }
+          ],
+          "bin": "1,000–2,499",
+          "bin_start": 1000,
+          "bin_end": 2500
+        },
+        {
+          "datum_id": "d9",
+          "trial_count": 13,
+          "citation_count": 13,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07570719",
+              "url": "https://clinicaltrials.gov/study/NCT07570719",
+              "brief_title": "Community-based Screening for Alzheimer's Disease",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Alzheimer's Disease(AD)"
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.count",
+                  "excerpt": 3000
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.type",
+                  "excerpt": "ESTIMATED"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07347574",
+              "url": "https://clinicaltrials.gov/study/NCT07347574",
+              "brief_title": "NeuroCare Community Project: A Community Based Prospective Observational Study for Early Alzheimer's Detection in HK",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "AD - Alzheimer's Disease"
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.count",
+                  "excerpt": 2500
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.type",
+                  "excerpt": "ESTIMATED"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07142954",
+              "url": "https://clinicaltrials.gov/study/NCT07142954",
+              "brief_title": "Epidemiology and Biomarker Study in Alzheimer's Disease",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Alzheimer Disease"
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.count",
+                  "excerpt": 3400
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.type",
+                  "excerpt": "ESTIMATED"
+                }
+              ]
+            }
+          ],
+          "bin": "2,500–4,999",
+          "bin_start": 2500,
+          "bin_end": 5000
+        },
+        {
+          "datum_id": "d10",
+          "trial_count": 12,
+          "citation_count": 12,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07821658",
+              "url": "https://clinicaltrials.gov/study/NCT07821658",
+              "brief_title": "A Postmarketing Study of Lecanemab for the Treatment of Participants With Alzheimer's Disease",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Alzheimer's Disease"
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.count",
+                  "excerpt": 6700
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.type",
+                  "excerpt": "ESTIMATED"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07721701",
+              "url": "https://clinicaltrials.gov/study/NCT07721701",
+              "brief_title": "Digital Dementia Registry Bavaria (digiDEM Bayern): a Multicentre, Prospective, Longitudinal Register Study Including People With Mild Cognitive Impairment and Dementia as Well as Their Family Caregivers",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[1]",
+                  "excerpt": "Alzheimer Disease"
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.count",
+                  "excerpt": 5000
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.type",
+                  "excerpt": "ESTIMATED"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07433010",
+              "url": "https://clinicaltrials.gov/study/NCT07433010",
+              "brief_title": "German Dementia Registry",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.count",
+                  "excerpt": 5000
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.type",
+                  "excerpt": "ESTIMATED"
+                }
+              ]
+            }
+          ],
+          "bin": "5,000–9,999",
+          "bin_start": 5000,
+          "bin_end": 10000
+        },
+        {
+          "datum_id": "d11",
+          "trial_count": 22,
+          "citation_count": 22,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07679906",
+              "url": "https://clinicaltrials.gov/study/NCT07679906",
+              "brief_title": "ALZEVIT: Nationwide Digital APOE ε4 Cohort for Early Alzheimer's Disease Prevention and Trial Readiness",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.count",
+                  "excerpt": 50000
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.type",
+                  "excerpt": "ESTIMATED"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07502560",
+              "url": "https://clinicaltrials.gov/study/NCT07502560",
+              "brief_title": "A Study to Evaluate the Effect of Recombinant Zoster Vaccine on New Diagnosis of Dementia in an Older Adult Population Aged 76 Years or Older in Finland",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.count",
+                  "excerpt": 33609
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.type",
+                  "excerpt": "ESTIMATED"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07213700",
+              "url": "https://clinicaltrials.gov/study/NCT07213700",
+              "brief_title": "InRAD Observational Study",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Alzheimer's Disease(AD)"
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.count",
+                  "excerpt": 50000
+                },
+                {
+                  "field_path": "protocolSection.designModule.enrollmentInfo.type",
+                  "excerpt": "ESTIMATED"
+                }
+              ]
+            }
+          ],
+          "bin": "≥10,000",
+          "bin_start": 10000,
+          "bin_end": null
+        }
+      ]
+    },
+    "meta": {
+      "interpretation": {
+        "summary": "Computed distinct trials per enrollment bin for 1 cohort(s): 'Alzheimer's disease · recruiting' (conditions=[\"Alzheimer's disease\"], overall_status=['RECRUITING']).",
+        "plan": {
+          "cohorts": [
+            {
+              "label": "Alzheimer's disease · recruiting",
+              "filters": {
+                "drug_names": null,
+                "conditions": [
+                  "Alzheimer's disease"
+                ],
+                "sponsors": null,
+                "countries": null,
+                "trial_phase": null,
+                "overall_status": [
+                  "RECRUITING"
+                ],
+                "study_type": null,
+                "exclude_drug_names": null,
+                "exclude_conditions": null,
+                "exclude_sponsors": null,
+                "exclude_countries": null
+              }
+            }
+          ],
+          "operation": {
+            "kind": "histogram",
+            "dimension": null,
+            "second_dimension": null,
+            "measure": "enrollment",
+            "x_measure": null,
+            "only_listed_values": false
+          },
+          "time": {
+            "date_basis": "start_date",
+            "year_from": null,
+            "year_to": null
+          },
+          "phase_policy": "combined",
+          "top_n": null,
+          "expansions": [],
+          "unhandled_constraints": [],
+          "clarification": null,
+          "unsupported_reason": null
+        },
+        "planner_model": "gpt-5.4",
+        "planner_attempts": 1,
+        "repair_feedback": [],
+        "parent_run_id": null,
+        "plan_diff": null
+      },
+      "chart_selection": "binned per-trial measure → histogram",
+      "cohorts": [
+        {
+          "label": "Alzheimer's disease · recruiting",
+          "filters": {
+            "conditions": [
+              "Alzheimer's disease"
+            ],
+            "overall_status": [
+              "RECRUITING"
+            ]
+          },
+          "api_params": {
+            "query.cond": "\"Alzheimer's disease\"",
+            "filter.overallStatus": "RECRUITING"
+          },
+          "total_matches": 601,
+          "records_fetched": 601,
+          "trials_analyzed": 601,
+          "excluded": {},
+          "missing": {},
+          "synonym_matches": {
+            "conditions": 130
+          },
+          "complete": true
+        }
+      ],
+      "time": {
+        "date_basis": "start_date",
+        "year_from": null,
+        "year_to": null
+      },
+      "measure": "Distinct trials (NCT IDs) per datum",
+      "count_method": "fetched",
+      "units": {
+        "trial_count": "trials",
+        "bin": "participants"
+      },
+      "sort": "Bins in ascending order",
+      "time_granularity": null,
+      "policies": {
+        "counting": "Every value is a count of distinct trials (NCT IDs); a trial counts at most once per datum.",
+        "missing_values": "Trials with no value for the analysed field are not charted; see meta.cohorts[].missing.",
+        "condition_matching": "condition uses ClinicalTrials.gov condition search (query.cond, phrase), which includes synonyms and narrower terms.",
+        "enrollment": "Enrollment is the registered count: ACTUAL for finished trials, ESTIMATED (planned) otherwise; both are included and each citation shows which.",
+        "bins": "Bins are declared in advance with unequal widths (heavy-tailed values); each bin is [bin_start, bin_end) and the last bin is open-ended."
+      },
+      "assumptions": [],
+      "cohort_overlap": null,
+      "truncation": null,
+      "source": {
+        "name": "ClinicalTrials.gov API v2",
+        "api_version": "2.0.5",
+        "data_timestamp": "2026-10-01T09:00:05",
+        "retrieved_at": "2026-10-01T23:04:09+00:00"
+      },
+      "timings_ms": {
+        "plan": 3864,
+        "retrieve": 18,
+        "prepare": 11,
+        "normalize": 0,
+        "analyze": 5,
+        "build": 4,
+        "verify": 0
+      },
+      "llm_usage": {
+        "calls": 1,
+        "input_tokens": 4624,
+        "output_tokens": 170
+      },
+      "normalization": []
+    },
+    "clarification": null,
+    "error": null
+  }
+}

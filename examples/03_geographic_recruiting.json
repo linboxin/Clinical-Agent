@@ -1,0 +1,1771 @@
+{
+  "request": {
+    "query": "Which countries have the most recruiting trials for breast cancer?",
+    "citations_per_datum": 3
+  },
+  "response": {
+    "schema_version": "1.1",
+    "run_id": "99c8f37f-153f-425d-8e25-928aa7094639",
+    "status": "ok",
+    "visualization": {
+      "type": "bar_chart",
+      "title": "Trials by country — breast cancer · recruiting",
+      "orientation": "horizontal",
+      "encoding": {
+        "x": {
+          "field": "country",
+          "type": "nominal",
+          "title": "Country",
+          "unit": null,
+          "sort": [
+            "United States",
+            "China",
+            "Italy",
+            "France",
+            "Spain",
+            "Canada",
+            "South Korea",
+            "Germany",
+            "United Kingdom",
+            "Australia",
+            "Belgium",
+            "Netherlands",
+            "Japan",
+            "Taiwan",
+            "Turkey (Türkiye)",
+            "Brazil",
+            "Sweden",
+            "Israel",
+            "Poland",
+            "Switzerland",
+            "Denmark",
+            "Singapore",
+            "Greece",
+            "Portugal",
+            "Ireland"
+          ]
+        },
+        "y": {
+          "field": "trial_count",
+          "type": "quantitative",
+          "title": "Trials",
+          "unit": "trials",
+          "sort": null
+        },
+        "series": null
+      },
+      "data": [
+        {
+          "datum_id": "d1",
+          "trial_count": 915,
+          "citation_count": 915,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07833566",
+              "url": "https://clinicaltrials.gov/study/NCT07833566",
+              "brief_title": "Biopsy-site-marker in Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "United States"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07779967",
+              "url": "https://clinicaltrials.gov/study/NCT07779967",
+              "brief_title": "Alcohol, Breast Cancer, and Metabolism",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "United States"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07776613",
+              "url": "https://clinicaltrials.gov/study/NCT07776613",
+              "brief_title": "A Study of Romosozumab in People With Breast Cancer and Osteoporosis",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "United States"
+                }
+              ]
+            }
+          ],
+          "country": "United States"
+        },
+        {
+          "datum_id": "d2",
+          "trial_count": 647,
+          "citation_count": 647,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07850869",
+              "url": "https://clinicaltrials.gov/study/NCT07850869",
+              "brief_title": "A Real-World Observational Study of Intratumoral H101 Oncolytic Adenovirus Combined With Immune Checkpoint Inhibitors for Advanced Metastatic Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer (Locally Advanced or Metastatic)"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "China"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07848243",
+              "url": "https://clinicaltrials.gov/study/NCT07848243",
+              "brief_title": "Clinical Investigator-Initiated Trial (IIT) of PD-L1-Targeted Radionuclide Probes",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[3]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "China"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07844941",
+              "url": "https://clinicaltrials.gov/study/NCT07844941",
+              "brief_title": "Artificial Intelligence (AI)-Based Personalized Exercise Coaching for Patients With Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "China"
+                }
+              ]
+            }
+          ],
+          "country": "China"
+        },
+        {
+          "datum_id": "d3",
+          "trial_count": 195,
+          "citation_count": 195,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07821593",
+              "url": "https://clinicaltrials.gov/study/NCT07821593",
+              "brief_title": "Patient Experiences After Risk-Reducing Mastectomy Among Women Carrying BRCA1/2 Pathogenic Variants Without a Diagnosis of Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Italy"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07808086",
+              "url": "https://clinicaltrials.gov/study/NCT07808086",
+              "brief_title": "Role of Tumor Microbiota in the Response to Neoadjuvant Therapy in Patients Affected by Triple Negative Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Italy"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07806266",
+              "url": "https://clinicaltrials.gov/study/NCT07806266",
+              "brief_title": "EORTC Metastatic Breast Cancer Module Development",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[9].country",
+                  "excerpt": "Italy"
+                }
+              ]
+            }
+          ],
+          "country": "Italy"
+        },
+        {
+          "datum_id": "d4",
+          "trial_count": 194,
+          "citation_count": 194,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07806266",
+              "url": "https://clinicaltrials.gov/study/NCT07806266",
+              "brief_title": "EORTC Metastatic Breast Cancer Module Development",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[3].country",
+                  "excerpt": "France"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07779135",
+              "url": "https://clinicaltrials.gov/study/NCT07779135",
+              "brief_title": "Effect of Aromatherapy on the Management of Chemotherapy-Induced Neuropathy (CIN)",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "France"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07739121",
+              "url": "https://clinicaltrials.gov/study/NCT07739121",
+              "brief_title": "Benchmarking Large Language Models Against Tumour Boards for Oncology Treatment Recommendations",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "France"
+                }
+              ]
+            }
+          ],
+          "country": "France"
+        },
+        {
+          "datum_id": "d5",
+          "trial_count": 155,
+          "citation_count": 155,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07806266",
+              "url": "https://clinicaltrials.gov/study/NCT07806266",
+              "brief_title": "EORTC Metastatic Breast Cancer Module Development",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[19].country",
+                  "excerpt": "Spain"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07701941",
+              "url": "https://clinicaltrials.gov/study/NCT07701941",
+              "brief_title": "A Study of Patritumab Deruxtecan (HER3-DXd) in Combination With Trastuzumab Deruxtecan (T-DXd) in Participants With HR-Positive, HER2-Low or HER2-Ultralow Unresectable or Metastatic Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[2]",
+                  "excerpt": "Unresectable or Metastatic Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[50].country",
+                  "excerpt": "Spain"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07647328",
+              "url": "https://clinicaltrials.gov/study/NCT07647328",
+              "brief_title": "A Phase IIIb Study to Evaluate Camizestrant Plus Ribociclib in ER-positive, HER2-negative Advanced Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "ER-Positive HER2-Negative Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[64].country",
+                  "excerpt": "Spain"
+                }
+              ]
+            }
+          ],
+          "country": "Spain"
+        },
+        {
+          "datum_id": "d6",
+          "trial_count": 138,
+          "citation_count": 138,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07806266",
+              "url": "https://clinicaltrials.gov/study/NCT07806266",
+              "brief_title": "EORTC Metastatic Breast Cancer Module Development",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[1].country",
+                  "excerpt": "Canada"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07696637",
+              "url": "https://clinicaltrials.gov/study/NCT07696637",
+              "brief_title": "Access My Breast Cancer Care App",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[1]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Canada"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07660055",
+              "url": "https://clinicaltrials.gov/study/NCT07660055",
+              "brief_title": "Study of [177Lu]Lu-DWJ155 and [68Ga]Ga-DWJ155 in Patients With Solid Tumors",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[2].country",
+                  "excerpt": "Canada"
+                }
+              ]
+            }
+          ],
+          "country": "Canada"
+        },
+        {
+          "datum_id": "d7",
+          "trial_count": 129,
+          "citation_count": 129,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07803081",
+              "url": "https://clinicaltrials.gov/study/NCT07803081",
+              "brief_title": "Radiotherapy and Long-term Outcomes in Early Breast Cancer With SLNB Omission",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "South Korea"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07789717",
+              "url": "https://clinicaltrials.gov/study/NCT07789717",
+              "brief_title": "Pharmacopuncture for Aromatase Inhibitor Induced Arthralgia (AIA)",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "South Korea"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07701941",
+              "url": "https://clinicaltrials.gov/study/NCT07701941",
+              "brief_title": "A Study of Patritumab Deruxtecan (HER3-DXd) in Combination With Trastuzumab Deruxtecan (T-DXd) in Participants With HR-Positive, HER2-Low or HER2-Ultralow Unresectable or Metastatic Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[2]",
+                  "excerpt": "Unresectable or Metastatic Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[45].country",
+                  "excerpt": "South Korea"
+                }
+              ]
+            }
+          ],
+          "country": "South Korea"
+        },
+        {
+          "datum_id": "d8",
+          "trial_count": 124,
+          "citation_count": 124,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07806266",
+              "url": "https://clinicaltrials.gov/study/NCT07806266",
+              "brief_title": "EORTC Metastatic Breast Cancer Module Development",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[6].country",
+                  "excerpt": "Germany"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07708571",
+              "url": "https://clinicaltrials.gov/study/NCT07708571",
+              "brief_title": "Evaluating the Effectiveness of Typology-based Coaching on Patients' Therapy Management",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HR+/HER2- Early Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Germany"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07703033",
+              "url": "https://clinicaltrials.gov/study/NCT07703033",
+              "brief_title": "Multicenter Cardiac Decision Impact Study in People With Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[1].country",
+                  "excerpt": "Germany"
+                }
+              ]
+            }
+          ],
+          "country": "Germany"
+        },
+        {
+          "datum_id": "d9",
+          "trial_count": 103,
+          "citation_count": 103,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07806266",
+              "url": "https://clinicaltrials.gov/study/NCT07806266",
+              "brief_title": "EORTC Metastatic Breast Cancer Module Development",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[20].country",
+                  "excerpt": "United Kingdom"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07782814",
+              "url": "https://clinicaltrials.gov/study/NCT07782814",
+              "brief_title": "An Investigation Into Dielectric Testing for the Evaluation and Characterisation of Breast Tissue Using a Novel Time-Domain Bioimpedance Tool",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "United Kingdom"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07748598",
+              "url": "https://clinicaltrials.gov/study/NCT07748598",
+              "brief_title": "HER2+ CNS Surveillance",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Her 2 Positive Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "United Kingdom"
+                }
+              ]
+            }
+          ],
+          "country": "United Kingdom"
+        },
+        {
+          "datum_id": "d10",
+          "trial_count": 99,
+          "citation_count": 99,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07671092",
+              "url": "https://clinicaltrials.gov/study/NCT07671092",
+              "brief_title": "Imaging Study in Metastatic UC, HR+ and HER2- Breast Cancer, TNBC, and NSCLC",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[1]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Australia"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07661641",
+              "url": "https://clinicaltrials.gov/study/NCT07661641",
+              "brief_title": "A Study of [177Lu]Lu-A9-0631 and [225Ac]Ac-A9-0642 With [68Ga]Ga-A9-6217 or [177Lu]Lu-A9-0631 Imaging in GRPR+ Solid Tumors",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Australia"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07660055",
+              "url": "https://clinicaltrials.gov/study/NCT07660055",
+              "brief_title": "Study of [177Lu]Lu-DWJ155 and [68Ga]Ga-DWJ155 in Patients With Solid Tumors",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[1].country",
+                  "excerpt": "Australia"
+                }
+              ]
+            }
+          ],
+          "country": "Australia"
+        },
+        {
+          "datum_id": "d11",
+          "trial_count": 78,
+          "citation_count": 78,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07806266",
+              "url": "https://clinicaltrials.gov/study/NCT07806266",
+              "brief_title": "EORTC Metastatic Breast Cancer Module Development",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Belgium"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07781306",
+              "url": "https://clinicaltrials.gov/study/NCT07781306",
+              "brief_title": "PrOspEctive Metastases Imaging (POEM)",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[2]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Belgium"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07701941",
+              "url": "https://clinicaltrials.gov/study/NCT07701941",
+              "brief_title": "A Study of Patritumab Deruxtecan (HER3-DXd) in Combination With Trastuzumab Deruxtecan (T-DXd) in Participants With HR-Positive, HER2-Low or HER2-Ultralow Unresectable or Metastatic Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[2]",
+                  "excerpt": "Unresectable or Metastatic Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[12].country",
+                  "excerpt": "Belgium"
+                }
+              ]
+            }
+          ],
+          "country": "Belgium"
+        },
+        {
+          "datum_id": "d12",
+          "trial_count": 73,
+          "citation_count": 73,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07806266",
+              "url": "https://clinicaltrials.gov/study/NCT07806266",
+              "brief_title": "EORTC Metastatic Breast Cancer Module Development",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[15].country",
+                  "excerpt": "Netherlands"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07703033",
+              "url": "https://clinicaltrials.gov/study/NCT07703033",
+              "brief_title": "Multicenter Cardiac Decision Impact Study in People With Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[2].country",
+                  "excerpt": "Netherlands"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07702292",
+              "url": "https://clinicaltrials.gov/study/NCT07702292",
+              "brief_title": "[68Ga]BED003 PET Imaging of Fibroblast Activation Protein in Selected Oncology Indications",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[4].country",
+                  "excerpt": "Netherlands"
+                }
+              ]
+            }
+          ],
+          "country": "Netherlands"
+        },
+        {
+          "datum_id": "d13",
+          "trial_count": 67,
+          "citation_count": 67,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07806266",
+              "url": "https://clinicaltrials.gov/study/NCT07806266",
+              "brief_title": "EORTC Metastatic Breast Cancer Module Development",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[11].country",
+                  "excerpt": "Japan"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07801508",
+              "url": "https://clinicaltrials.gov/study/NCT07801508",
+              "brief_title": "A Study of [68Ga]Ga-DWJ155 in Adult Patients With Solid Tumors",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[1]",
+                  "excerpt": "Advanced Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Japan"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07766018",
+              "url": "https://clinicaltrials.gov/study/NCT07766018",
+              "brief_title": "A Phase 2 Bridging Study of Elacestrant Monotherapy in Advanced or Metastatic Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Japan"
+                }
+              ]
+            }
+          ],
+          "country": "Japan"
+        },
+        {
+          "datum_id": "d14",
+          "trial_count": 62,
+          "citation_count": 62,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07757763",
+              "url": "https://clinicaltrials.gov/study/NCT07757763",
+              "brief_title": "Slow Jogging for Breast Cancer Survivors",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Taiwan"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07751783",
+              "url": "https://clinicaltrials.gov/study/NCT07751783",
+              "brief_title": "Development and Dissemination of Exercise Prescription and Intervention for Cancer Populations",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[1]",
+                  "excerpt": "Cancer (Colon Cancer, Breast Cancer, Lymphoma, Chronic Lymphoma Leukemia, Multiple Myeloma)"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Taiwan"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07743294",
+              "url": "https://clinicaltrials.gov/study/NCT07743294",
+              "brief_title": "Effect of Preoperative Rehabilitation Exercise on Improving Postoperative Lymphedema, Quality of Life and Care Needs in Patients With Breast Cancer Surgery",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer and Rehabilitation"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Taiwan"
+                }
+              ]
+            }
+          ],
+          "country": "Taiwan"
+        },
+        {
+          "datum_id": "d15",
+          "trial_count": 57,
+          "citation_count": 57,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07843212",
+              "url": "https://clinicaltrials.gov/study/NCT07843212",
+              "brief_title": "EFFECTS OF SPSIP BLOCK ON PERIOPERATİVE INFLAMMATION AND TLR4 IN BREAST CANCER SURGERY",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[1]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Turkey (Türkiye)"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07826338",
+              "url": "https://clinicaltrials.gov/study/NCT07826338",
+              "brief_title": "Artificial Intelligence-supported Mobile Application for Patients With Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Turkey (Türkiye)"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07780240",
+              "url": "https://clinicaltrials.gov/study/NCT07780240",
+              "brief_title": "Axillary Web Syndrome After Breast Cancer Surgery: Incidence, Risk Factors, and Functional Outcomes",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[1]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Turkey (Türkiye)"
+                }
+              ]
+            }
+          ],
+          "country": "Turkey (Türkiye)"
+        },
+        {
+          "datum_id": "d16",
+          "trial_count": 51,
+          "citation_count": 51,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07823660",
+              "url": "https://clinicaltrials.gov/study/NCT07823660",
+              "brief_title": "Cardio-Oncology Rehabilitation in Breast Cancer Patients Undergoing Chemotherapy",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Brazil"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07492641",
+              "url": "https://clinicaltrials.gov/study/NCT07492641",
+              "brief_title": "BGB-43395 Plus Letrozole Versus CDK4/6i Plus Letrozole for Patients With Advanced or Metastatic HR+/HER2- Breast Cancer Who Have Not Received Prior Treatment for Advanced or Metastatic Disease",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HR+/HER2- Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[71].country",
+                  "excerpt": "Brazil"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07413939",
+              "url": "https://clinicaltrials.gov/study/NCT07413939",
+              "brief_title": "RO7771950 Versus Tucatinib in Combination With Trastuzumab and Capecitabine in People With Locally Advanced or Metastatic Breast Cancer That is Human Epidermal Growth Factor Receptor 2 (HER2)-Positive",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HER2-positive Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[25].country",
+                  "excerpt": "Brazil"
+                }
+              ]
+            }
+          ],
+          "country": "Brazil"
+        },
+        {
+          "datum_id": "d17",
+          "trial_count": 48,
+          "citation_count": 48,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07754500",
+              "url": "https://clinicaltrials.gov/study/NCT07754500",
+              "brief_title": "Deep Optical Imaging of Tissue (DOIT)",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Sweden"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07607366",
+              "url": "https://clinicaltrials.gov/study/NCT07607366",
+              "brief_title": "Effects of Negative Pressure Wound Bandaging After Mastectomy",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer - Female"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Sweden"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07502820",
+              "url": "https://clinicaltrials.gov/study/NCT07502820",
+              "brief_title": "The POWER Trial: Personalised Dose Optimisation With Adjuvant Tamoxifen Therapy in Breast cancER",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Sweden"
+                }
+              ]
+            }
+          ],
+          "country": "Sweden"
+        },
+        {
+          "datum_id": "d18",
+          "trial_count": 39,
+          "citation_count": 39,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07646171",
+              "url": "https://clinicaltrials.gov/study/NCT07646171",
+              "brief_title": "EVERST- Everolimus After Alpelisib in Women With Hormone Receptor-positive (HR+) Metastatic Breast Cancer (MBC)",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Hormone Receptor Positive Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Israel"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07591857",
+              "url": "https://clinicaltrials.gov/study/NCT07591857",
+              "brief_title": "The Computerized Retraining and Functional Treatment - Group Intervention",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[1]",
+                  "excerpt": "Breast Cancer Survivor"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Israel"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07413939",
+              "url": "https://clinicaltrials.gov/study/NCT07413939",
+              "brief_title": "RO7771950 Versus Tucatinib in Combination With Trastuzumab and Capecitabine in People With Locally Advanced or Metastatic Breast Cancer That is Human Epidermal Growth Factor Receptor 2 (HER2)-Positive",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HER2-positive Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[91].country",
+                  "excerpt": "Israel"
+                }
+              ]
+            }
+          ],
+          "country": "Israel"
+        },
+        {
+          "datum_id": "d19",
+          "trial_count": 39,
+          "citation_count": 39,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07806266",
+              "url": "https://clinicaltrials.gov/study/NCT07806266",
+              "brief_title": "EORTC Metastatic Breast Cancer Module Development",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[16].country",
+                  "excerpt": "Poland"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07647328",
+              "url": "https://clinicaltrials.gov/study/NCT07647328",
+              "brief_title": "A Phase IIIb Study to Evaluate Camizestrant Plus Ribociclib in ER-positive, HER2-negative Advanced Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "ER-Positive HER2-Negative Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[40].country",
+                  "excerpt": "Poland"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07492641",
+              "url": "https://clinicaltrials.gov/study/NCT07492641",
+              "brief_title": "BGB-43395 Plus Letrozole Versus CDK4/6i Plus Letrozole for Patients With Advanced or Metastatic HR+/HER2- Breast Cancer Who Have Not Received Prior Treatment for Advanced or Metastatic Disease",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HR+/HER2- Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[144].country",
+                  "excerpt": "Poland"
+                }
+              ]
+            }
+          ],
+          "country": "Poland"
+        },
+        {
+          "datum_id": "d20",
+          "trial_count": 38,
+          "citation_count": 38,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07647328",
+              "url": "https://clinicaltrials.gov/study/NCT07647328",
+              "brief_title": "A Phase IIIb Study to Evaluate Camizestrant Plus Ribociclib in ER-positive, HER2-negative Advanced Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "ER-Positive HER2-Negative Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[82].country",
+                  "excerpt": "Switzerland"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07546695",
+              "url": "https://clinicaltrials.gov/study/NCT07546695",
+              "brief_title": "Role of Axillary Lymph Node Dissection for Residual MACROMETASTASES After NEOADJUVANT Chemotherapy in Patients With HER2+ and Triple Negative Breast Cancer: The OPBC-11/MACRONAC Study",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Switzerland"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07398079",
+              "url": "https://clinicaltrials.gov/study/NCT07398079",
+              "brief_title": "Pilot Observational Study of an Integrative Cure Stay Program",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Switzerland"
+                }
+              ]
+            }
+          ],
+          "country": "Switzerland"
+        },
+        {
+          "datum_id": "d21",
+          "trial_count": 33,
+          "citation_count": 33,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07703033",
+              "url": "https://clinicaltrials.gov/study/NCT07703033",
+              "brief_title": "Multicenter Cardiac Decision Impact Study in People With Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Denmark"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07630961",
+              "url": "https://clinicaltrials.gov/study/NCT07630961",
+              "brief_title": "Phase I Study of JFI447 [68Ga]Ga-DFC413 and Comparison to FFG233 [68Ga]Ga-NNS309 in Patients With Solid Tumors",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[2]",
+                  "excerpt": "HR+/HER2- Ductal Breast Cancer (BC)"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Denmark"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07288359",
+              "url": "https://clinicaltrials.gov/study/NCT07288359",
+              "brief_title": "Study of GVV858 as a Single Agent or in Combination With Endocrine Therapy in Patients With HR+/HER2- Breast Cancer and Other Advanced Solid Tumors",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Advanced HR+/HER2- Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[4].country",
+                  "excerpt": "Denmark"
+                }
+              ]
+            }
+          ],
+          "country": "Denmark"
+        },
+        {
+          "datum_id": "d22",
+          "trial_count": 32,
+          "citation_count": 32,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07729423",
+              "url": "https://clinicaltrials.gov/study/NCT07729423",
+              "brief_title": "Mepitel Film Breast",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Singapore"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07604571",
+              "url": "https://clinicaltrials.gov/study/NCT07604571",
+              "brief_title": "Study of IEV407 as Single Agent or in Combination in Patients With Advanced HR+/HER2- Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Advanced HR+/HER2- Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[4].country",
+                  "excerpt": "Singapore"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07288359",
+              "url": "https://clinicaltrials.gov/study/NCT07288359",
+              "brief_title": "Study of GVV858 as a Single Agent or in Combination With Endocrine Therapy in Patients With HR+/HER2- Breast Cancer and Other Advanced Solid Tumors",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Advanced HR+/HER2- Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[11].country",
+                  "excerpt": "Singapore"
+                }
+              ]
+            }
+          ],
+          "country": "Singapore"
+        },
+        {
+          "datum_id": "d23",
+          "trial_count": 30,
+          "citation_count": 30,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07389408",
+              "url": "https://clinicaltrials.gov/study/NCT07389408",
+              "brief_title": "A Prospective, Multicenter Registry to Observe the Treatment Patterns, Clinical Outcomes, and Decision-Making in Patients With Early Breast Cancer Eligible for EndoPredict® Testing",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Greece"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07292246",
+              "url": "https://clinicaltrials.gov/study/NCT07292246",
+              "brief_title": "A Prospective CohorT Study of HandX - Assisted ENdoscopic MAstectomy: Feasibility and Safety (ATHENA I Study)",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Greece"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07200427",
+              "url": "https://clinicaltrials.gov/study/NCT07200427",
+              "brief_title": "MELIORA Virtual Coach Intervention for Breast Cancer Prevention",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer Prevention"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Greece"
+                }
+              ]
+            }
+          ],
+          "country": "Greece"
+        },
+        {
+          "datum_id": "d24",
+          "trial_count": 30,
+          "citation_count": 30,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07806266",
+              "url": "https://clinicaltrials.gov/study/NCT07806266",
+              "brief_title": "EORTC Metastatic Breast Cancer Module Development",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[17].country",
+                  "excerpt": "Portugal"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07703033",
+              "url": "https://clinicaltrials.gov/study/NCT07703033",
+              "brief_title": "Multicenter Cardiac Decision Impact Study in People With Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[4].country",
+                  "excerpt": "Portugal"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07413939",
+              "url": "https://clinicaltrials.gov/study/NCT07413939",
+              "brief_title": "RO7771950 Versus Tucatinib in Combination With Trastuzumab and Capecitabine in People With Locally Advanced or Metastatic Breast Cancer That is Human Epidermal Growth Factor Receptor 2 (HER2)-Positive",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "HER2-positive Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[123].country",
+                  "excerpt": "Portugal"
+                }
+              ]
+            }
+          ],
+          "country": "Portugal"
+        },
+        {
+          "datum_id": "d25",
+          "trial_count": 28,
+          "citation_count": 28,
+          "citations_truncated": true,
+          "citations": [
+            {
+              "nct_id": "NCT07672392",
+              "url": "https://clinicaltrials.gov/study/NCT07672392",
+              "brief_title": "The Effect of a Post-operative Exercise Programme Versus Standard Care on Physical Fitness of Patients With Breast Cancer Undergoing Deep Inferior Epigastric Perforator (DIEP) Flap Reconstruction Surgery",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Ireland"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07616258",
+              "url": "https://clinicaltrials.gov/study/NCT07616258",
+              "brief_title": "Evaluating the De-Escalation of Surveillance for Patients Who Have Undergone Curative Treatment for Primary Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Ireland"
+                }
+              ]
+            },
+            {
+              "nct_id": "NCT07572370",
+              "url": "https://clinicaltrials.gov/study/NCT07572370",
+              "brief_title": "Evaluating the De-Escalation of Surveillance for Patients Who Have Undergone Curative Treatment for Breast Cancer",
+              "evidence": [
+                {
+                  "field_path": "protocolSection.statusModule.overallStatus",
+                  "excerpt": "RECRUITING"
+                },
+                {
+                  "field_path": "protocolSection.conditionsModule.conditions[0]",
+                  "excerpt": "Breast Cancer"
+                },
+                {
+                  "field_path": "protocolSection.contactsLocationsModule.locations[0].country",
+                  "excerpt": "Ireland"
+                }
+              ]
+            }
+          ],
+          "country": "Ireland"
+        }
+      ]
+    },
+    "meta": {
+      "interpretation": {
+        "summary": "Computed distinct trials by country for 1 cohort(s): 'breast cancer · recruiting' (conditions=['breast cancer'], overall_status=['RECRUITING']).",
+        "plan": {
+          "cohorts": [
+            {
+              "label": "breast cancer · recruiting",
+              "filters": {
+                "drug_names": null,
+                "conditions": [
+                  "breast cancer"
+                ],
+                "sponsors": null,
+                "countries": null,
+                "trial_phase": null,
+                "overall_status": [
+                  "RECRUITING"
+                ],
+                "study_type": null,
+                "exclude_drug_names": null,
+                "exclude_conditions": null,
+                "exclude_sponsors": null,
+                "exclude_countries": null
+              }
+            }
+          ],
+          "operation": {
+            "kind": "count_by",
+            "dimension": "country",
+            "second_dimension": null,
+            "measure": null,
+            "x_measure": null,
+            "only_listed_values": false
+          },
+          "time": {
+            "date_basis": "start_date",
+            "year_from": null,
+            "year_to": null
+          },
+          "phase_policy": "combined",
+          "top_n": null,
+          "expansions": [],
+          "unhandled_constraints": [],
+          "clarification": null,
+          "unsupported_reason": null
+        },
+        "planner_model": "gpt-5.4",
+        "planner_attempts": 1,
+        "repair_feedback": [],
+        "parent_run_id": null,
+        "plan_diff": null
+      },
+      "chart_selection": "counts per category → bar_chart",
+      "cohorts": [
+        {
+          "label": "breast cancer · recruiting",
+          "filters": {
+            "conditions": [
+              "breast cancer"
+            ],
+            "overall_status": [
+              "RECRUITING"
+            ]
+          },
+          "api_params": {
+            "query.cond": "\"breast cancer\"",
+            "filter.overallStatus": "RECRUITING"
+          },
+          "total_matches": 2425,
+          "records_fetched": 2425,
+          "trials_analyzed": 2425,
+          "excluded": {},
+          "missing": {},
+          "synonym_matches": {
+            "conditions": 347
+          },
+          "complete": true
+        }
+      ],
+      "time": {
+        "date_basis": "start_date",
+        "year_from": null,
+        "year_to": null
+      },
+      "measure": "Distinct trials (NCT IDs) per datum",
+      "count_method": "fetched",
+      "units": {
+        "trial_count": "trials"
+      },
+      "sort": "Trial count, descending",
+      "time_granularity": null,
+      "policies": {
+        "counting": "Every value is a count of distinct trials (NCT IDs); a trial counts at most once per datum.",
+        "missing_values": "Trials with no value for the analysed field are not charted; see meta.cohorts[].missing.",
+        "condition_matching": "condition uses ClinicalTrials.gov condition search (query.cond, phrase), which includes synonyms and narrower terms.",
+        "country": "A multi-country trial counts once in each listed country. Counts are trials, not sites or patients."
+      },
+      "assumptions": [],
+      "cohort_overlap": null,
+      "truncation": {
+        "shown": 25,
+        "total": 81,
+        "rule": "Top 25 country categories by trial count"
+      },
+      "source": {
+        "name": "ClinicalTrials.gov API v2",
+        "api_version": "2.0.5",
+        "data_timestamp": "2026-10-01T09:00:05",
+        "retrieved_at": "2026-10-01T23:03:55+00:00"
+      },
+      "timings_ms": {
+        "plan": 3144,
+        "retrieve": 59,
+        "prepare": 34,
+        "normalize": 0,
+        "analyze": 28,
+        "build": 3,
+        "verify": 0
+      },
+      "llm_usage": {
+        "calls": 1,
+        "input_tokens": 4624,
+        "output_tokens": 168
+      },
+      "normalization": []
+    },
+    "clarification": null,
+    "error": null
+  }
+}

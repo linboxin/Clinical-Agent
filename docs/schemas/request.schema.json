@@ -1,0 +1,251 @@
+{
+  "$defs": {
+    "ChartType": {
+      "enum": [
+        "bar_chart",
+        "grouped_bar_chart",
+        "stacked_bar_chart",
+        "pie_chart",
+        "time_series",
+        "histogram",
+        "scatter_plot",
+        "network_graph"
+      ],
+      "title": "ChartType",
+      "type": "string"
+    },
+    "OverallStatus": {
+      "enum": [
+        "NOT_YET_RECRUITING",
+        "RECRUITING",
+        "ENROLLING_BY_INVITATION",
+        "ACTIVE_NOT_RECRUITING",
+        "SUSPENDED",
+        "TERMINATED",
+        "COMPLETED",
+        "WITHDRAWN",
+        "UNKNOWN",
+        "AVAILABLE",
+        "NO_LONGER_AVAILABLE",
+        "TEMPORARILY_NOT_AVAILABLE",
+        "APPROVED_FOR_MARKETING",
+        "WITHHELD"
+      ],
+      "title": "OverallStatus",
+      "type": "string"
+    },
+    "Phase": {
+      "enum": [
+        "EARLY_PHASE1",
+        "PHASE1",
+        "PHASE2",
+        "PHASE3",
+        "PHASE4",
+        "NA"
+      ],
+      "title": "Phase",
+      "type": "string"
+    },
+    "StudyType": {
+      "enum": [
+        "INTERVENTIONAL",
+        "OBSERVATIONAL",
+        "EXPANDED_ACCESS"
+      ],
+      "title": "StudyType",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "drug_name": "Pembrolizumab",
+      "query": "How has the number of trials for this drug changed over time?"
+    },
+    {
+      "condition": "lung cancer",
+      "query": "Compare phases for trials involving pembrolizumab vs nivolumab"
+    }
+  ],
+  "properties": {
+    "query": {
+      "description": "Natural-language question about clinical trials.",
+      "maxLength": 2000,
+      "minLength": 1,
+      "title": "Query",
+      "type": "string"
+    },
+    "drug_name": {
+      "anyOf": [
+        {
+          "maxLength": 200,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Drug/intervention; matched against intervention names and other names (ClinicalTrials.gov expands synonyms, e.g. Keytruda / MK-3475).",
+      "title": "Drug Name"
+    },
+    "condition": {
+      "anyOf": [
+        {
+          "maxLength": 200,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Condition or disease, matched with ClinicalTrials.gov condition search.",
+      "title": "Condition"
+    },
+    "sponsor": {
+      "anyOf": [
+        {
+          "maxLength": 200,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Lead sponsor name (phrase match).",
+      "title": "Sponsor"
+    },
+    "country": {
+      "anyOf": [
+        {
+          "maxLength": 200,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Country of at least one listed trial location.",
+      "title": "Country"
+    },
+    "trial_phase": {
+      "anyOf": [
+        {
+          "items": {
+            "$ref": "#/$defs/Phase"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Keep trials in any of these phases. Accepts \"PHASE3\", \"Phase 3\", \"3\", \"Phase 1/2\" (= Phase 1 or Phase 2), a single value or a list.",
+      "title": "Trial Phase"
+    },
+    "overall_status": {
+      "anyOf": [
+        {
+          "items": {
+            "$ref": "#/$defs/OverallStatus"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Keep trials with any of these statuses, e.g. \"RECRUITING\". Single value or list.",
+      "title": "Overall Status"
+    },
+    "study_type": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/StudyType"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "start_year": {
+      "anyOf": [
+        {
+          "maximum": 2100,
+          "minimum": 1900,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Inclusive lower bound on the year of the plan's date basis (study start date unless the question says otherwise).",
+      "title": "Start Year"
+    },
+    "end_year": {
+      "anyOf": [
+        {
+          "maximum": 2100,
+          "minimum": 1900,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Inclusive upper bound (see start_year).",
+      "title": "End Year"
+    },
+    "preferred_visualization": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ChartType"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Honored only when compatible with the computed analysis."
+    },
+    "citations_per_datum": {
+      "default": 5,
+      "description": "Max inline citations per datum. citation_count always reports the total; GET /v1/runs/{run_id}/evidence?datum_id=\u2026 returns the full set.",
+      "maximum": 100,
+      "minimum": 0,
+      "title": "Citations Per Datum",
+      "type": "integer"
+    },
+    "parent_run_id": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Follow-up: refine the plan of this earlier run (e.g. 'now only recruiting').",
+      "title": "Parent Run Id"
+    }
+  },
+  "required": [
+    "query"
+  ],
+  "title": "VisualizationRequest",
+  "type": "object"
+}

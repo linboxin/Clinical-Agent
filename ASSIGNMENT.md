@@ -1,88 +1,58 @@
 # Assignment Brief: ClinicalTrials.gov Query-to-Visualization Agent (Backend)
 
-> This is the problem statement, transcribed and organized from the take-home PDF.
-> It covers **what** we have to build. **How** we build it goes in a separate design doc.
+> The take-home problem statement, transcribed from the original PDF (7 pages) and checked line by line against the page images.
+> **§1–§8 and the Appendix reproduce the source faithfully.** Anything under *"Our notes"* is our own interpretation, not part of the brief.
 > `README.md` is kept free for the final submission README (see §6).
 
-| | |
-|---|---|
-| **Time expectation** | ~24 hours |
-| **Tools allowed** | Any language, libraries, AI tools, and internet access |
-| **Primary goal** | A backend service that turns clinical-trial questions into **structured visualization outputs** backed by **ClinicalTrials.gov API** data |
-
-> ⚠️ **Source gap:** The screenshots skip from the end of page 2 to the citation bullets on page 3. Pages 3 and 4 were the same image. That means we're missing the **illustrative example response for §3.2**, all of **§4**, and the **heading and opening of §5** (the citation bullets below look like its end). See [Open questions](#open-questions--gaps).
+**Time expectation:** ~24 hours
+**Tools allowed:** Any programming language, libraries, AI tools, and internet access
+**Primary goal:** Build a backend service that converts clinical-trial questions into **structured visualization outputs** backed by **ClinicalTrials.gov API** data.
 
 ---
 
-## The end goal in one paragraph
+## 1) Problem Overview
 
-A user sends a natural-language question about clinical trials, such as *"How has the number of Pembrolizumab trials changed since 2015?"*, optionally with structured filters. The service works out what's being asked, pulls the relevant trial records from the ClinicalTrials.gov Data API, decides whether a chart helps and which kind, and returns a **JSON visualization spec**. The spec has to be clear enough that a frontend can render it without guessing. Every number in it (every bar, time bucket, node, and edge) must **trace back to the specific trials behind it**, each with its NCT ID and an exact excerpt from the API response. A frontend is optional. The graded deliverable is the backend and its structured output.
+You will build an AI-enabled backend that answers questions about clinical trials using the **ClinicalTrials.gov API**. The user will provide a natural-language query, along with optional structured fields (which you may define). Your system must:
 
-```
- ┌──────────────────────┐
- │ Request              │  query (required) + optional structured fields
- └──────────┬───────────┘
-            ▼
- 1. Interpret the question
-            ▼
- 2. Retrieve relevant data from ClinicalTrials.gov (authoritative source)
-            ▼
- 3. Decide IF a visualization is needed, and WHICH type fits
-            ▼
- 4. Produce a visualization specification that answers the question
-            ▼
- ┌──────────────────────────────────────────────────────────────┐
- │ Response                                                     │
- │  • visualization: type, title, encoding, data                │
- │  • metadata: render hints + assumptions/filters/interpretation│
- │  • per-datum citations: nct_id + exact excerpt               │
- └──────────────────────────────────────────────────────────────┘
-```
+1. Interpret the user's question.
+2. Retrieve relevant data from [ClinicalTrials.gov](https://clinicaltrials.gov).
+3. Identify if a visualization is needed and what type of visualization is suitable for the given question.
+4. Produce a **visualization specification** that answers the question.
 
----
+A frontend is **not required**, but your output must be clear and structured so that a frontend can render the visualization reliably.
 
-## 1) Problem overview
+## 2) Data Source
 
-Build an AI-enabled backend that answers clinical-trial questions using the **ClinicalTrials.gov API**. Each request carries a natural-language query plus optional structured fields, which we get to define. The system must:
+Use the **ClinicalTrials.gov Data API** as the authoritative data source.
 
-1. **Interpret** the user's question.
-2. **Retrieve** relevant data from [ClinicalTrials.gov](https://clinicaltrials.gov).
-3. **Identify** whether a visualization is needed, and which type suits the question.
-4. **Produce** a visualization specification that answers the question.
-
-A frontend is **not required**. The output must still be clear and structured enough for a frontend to render the visualization reliably.
-
-## 2) Data source
-
-- The **ClinicalTrials.gov Data API** is the authoritative data source.
 - API documentation: <https://clinicaltrials.gov/data-api/api>
-- Any endpoints and fields may be used.
+- You may use any endpoints/fields needed.
 
-## 3) Functional requirements
+## 3) Functional Requirements
 
 ### 3.1 Inputs
 
+Your service must accept a request containing:
+
 **Required**
 
-| Field | Type | Description |
-|---|---|---|
-| `query` | string | A natural-language question about clinical trials |
+- `query` (string): a natural language question about clinical trials.
 
-**Optional structured fields (we define these)**
+**Optional structured fields (candidate-defined)**
 
-The brief lists these as examples, none of them required:
+You may define an input schema that includes additional parameters. Examples (not required):
 
 - `drug_name`
-- `condition` / `disease`
+- `condition/disease`
 - `trial_phase`
 - `sponsor`
-- `country` / `location`
+- `country/location`
 - `start_year`, `end_year`
-- any other fields we find useful
+- any other fields you find useful
 
-**Must document the request schema:** field names, types, optional/required, and validation rules.
+**You must document your request schema** (field names, types, optional/required, validation).
 
-Example request (from the brief):
+An example request may look like:
 
 ```json
 {
@@ -91,37 +61,70 @@ Example request (from the brief):
 }
 ```
 
-Note that the query says *"this drug"* and only the structured field names the drug. The system has to **combine the free text with the structured fields** to work out what's being asked.
-
 ### 3.2 Outputs
 
-The service must return a **structured response** describing a visualization.
+Your service must return a **structured response** describing a visualization.
 
 **Required output components**
 
 1. **Visualization specification**
-   - `type`: the visualization type, e.g. `bar_chart`, `time_series`, `network_graph`
+   - `type`: the visualization type (e.g., `bar_chart`, `time_series`, `network_graph`, etc.)
    - `title`: a human-readable title
-   - `encoding`: a clear mapping from fields to visual channels (x-axis, y-axis, series, nodes/edges)
-   - `data`: the data points needed to render the visualization
+   - `encoding`: a clear mapping from fields to visual channels (e.g., x-axis, y-axis, series, nodes/edges)
+   - `data`: the data points required to render the visualization
 2. **Response metadata**
-   - any extra fields the frontend needs to render properly (units, sorting, time granularity, grouping choices, etc.)
-   - optional notes on assumptions, filters applied, or how the query was interpreted
+   - any additional fields needed for the frontend to render appropriately (units, sorting, time granularity, grouping choices, etc.)
+   - optional notes about assumptions, filters applied, or query interpretation
 
-**Must document the response schema** well enough that a frontend engineer can build a renderer without guessing. A simple frontend demo earns a bonus, but **backend + structured outputs** are the focus.
+**You must document your response schema** so that a frontend engineer can implement a renderer without guessing. If you build a simple frontend demo, that's a bonus, but **backend + structured outputs** are the focus.
 
-> *The brief's "Example response (illustrative only)" for this section was on the missing page.*
+Example response (illustrative only):
 
-### §5 (heading not visible): Citations / traceability
+```json
+{
+  "visualization": {
+    "type": "bar_chart",
+    "title": "Trials by Phase for Pembrolizumab",
+    "encoding": {
+      "x": {"field": "phase"},
+      "y": {"field": "trial_count"}
+    },
+    "data": [
+      {"phase": "Phase 1", "trial_count": 32},
+      {"phase": "Phase 2", "trial_count": 78}
+    ]
+  },
+  "meta": {
+    "filters": {"drug_name": "Pembrolizumab"},
+    "source": "clinicaltrials.gov"
+  }
+}
+```
 
-> These bullets come right before §6 in the source. Their section heading wasn't in the screenshots.
+## 4) Visualization Requirements
 
-- Each visualized datum (a bar, a time bucket, a node or edge weight) includes **references to the underlying trial records** that contributed to it.
+- The answer to the query must be a **visualization** (via structured specification).
+- You may support any visualization types, but your system should aim to support **multiple** types, such as:
+  - bar chart / grouped bar chart
+  - timeline/time series
+  - scatter plot
+  - histogram
+  - network graph (entities like drugs, sponsors, conditions, investigators, sites)
+
+**Design goal:** Cover as many query types as possible with a **single coherent approach** and support **multiple visualization types**. Submissions that implement richer visualizations (e.g., meaningful network graphs) and broader query coverage will be scored higher than those that only support one chart type.
+
+## 5) Bonus: Deep Citations (Source Traceability)
+
+As a bonus, include **deep citations** from ClinicalTrials.gov to support the values shown in the visualization.
+
+What "deep citations" mean here:
+
+- Each visualized datum (e.g., a bar, time bucket, node/edge weight) includes references to the underlying trial records that contributed to it.
 - Each reference includes:
   - `nct_id`
   - an **exact text excerpt** from the API response (or a specific field/value) that supports the datum
 
-Example from the brief (illustrative only):
+Example (illustrative only):
 
 ```json
 {
@@ -136,109 +139,136 @@ Example from the brief (illustrative only):
 }
 ```
 
-> *"This is intentionally challenging, implement as much as is reasonable in the time box."*
+This is intentionally challenging, implement as much as is reasonable in the time box.
 
-## 4) and 5): not provided
+## 6) Submission Requirements
 
-The screenshots don't include these sections. The citation requirement above appears to be the end of §5.
+Submit a zip file containing:
 
-## 6) Submission requirements
-
-Submit a **zip file** containing:
-
-1. **Code**: all source code needed to run the service.
-2. **README** that must include:
-   - how to run it (install, configure, start)
+1. **Code:** All source code required to run the service.
+2. **README:** must include
+   - how to run (install, configure, start)
    - request/response schema documentation (inputs/outputs)
    - key design decisions and tradeoffs
-   - limitations and what we'd improve with more time
-   - *(from §8)* which AI tools were used, how correctness was validated, and which parts were designed/implemented deliberately vs. generated and adapted
-3. **Example runs**: **3–5 example queries** with the **actual JSON outputs** the system produced.
-4. **(Optional) Demo**, any of:
+   - limitations and what you would improve with more time
+3. **Example Runs:** Provide **3–5 example queries** with the **actual JSON outputs** produced by your system.
+4. **(Optional) Demo**
    - a small UI
    - a deployed endpoint
    - a short demo video
 
-## 7) Evaluation criteria
+## 7) Evaluation Criteria
 
-| Weight | Area | What they look at |
-|---:|---|---|
-| **35%** | **System design** | Clear, rational design decisions. Maintainable structure and extensibility. Sensible handling of real-world API data. |
-| **20%** | **AI / agent design** | Avoid hallucination-prone steps. Include validation or constraints. Sensible planning and reasoning steps, with appropriate tools. |
-| **20%** | **Code quality** | Readability, organization, documentation. Correctness and robustness. |
-| **15%** | **Query & visualization coverage** | Breadth of supported query types. Handling multiple question classes **without one-off hacks**. Richer visualizations (e.g. meaningful network graphs) score higher than simple single-chart systems. |
-| **10%** | **Input/output design** | Well-structured, unambiguous schemas. Frontend-friendly visualization spec. |
-| Bonus | **Traceability** | Deep citations/traceability to source records. |
+We will evaluate submissions on:
 
-## 8) Integrity note (AI tools are allowed)
+1. **System Design (35%)**
+   - clear, rational design decisions
+   - maintainable structure and extensibility
+   - sensible handling of real-world API data
+2. **AI / Agent Design (20%)**
+   - avoid hallucination-prone steps
+   - include validation or constraints
+   - Sensible planning and reasoning steps, along with appropriate tools
+3. **Code Quality (20%)**
+   - readability, organization, documentation
+   - correctness and robustness
+4. **Query and Visualization Coverage (15%)**
+   - breadth of supported query types
+   - ability to handle multiple question classes without one-off hacks
+   - richer visualizations (e.g., meaningful network graphs) score higher than simple single-chart systems
+5. **Input/Output Design (10%)**
+   - well-structured, unambiguous schemas
+   - frontend-friendly visualization specification
 
-AI tools and online resources are fine. They care about **engineering judgment** and **design reasoning**. The README must briefly describe:
+**Bonus consideration:** Deep citations/traceability to source records.
 
-- which tools were used (if any)
-- how correctness was validated
-- which parts were designed/implemented deliberately vs. generated and adapted
+## 8) Integrity Note (Use AI Tools Freely)
 
-> *"We reward submissions that show evidence of thoughtful construction, testing, and iteration."*
+You may use AI tools and online resources. We care about your **engineering judgment** and **design reasoning**.
+
+In your README, briefly describe:
+
+- which tools you used (if any)
+- how you validated correctness
+- what parts you designed/implemented deliberately vs generated and adapted
+
+We reward submissions that show evidence of thoughtful construction, testing, and iteration.
 
 ---
 
-## Appendix: Example query types (non-exhaustive)
+## Appendix: Example Query Types (Non-Exhaustive)
 
-We don't have to support all of these. They show the range of questions the graders care about, and we aren't limited to them.
+You do not need to support all of these, but they illustrate the breadth we care about:
 
-| Category | Example queries | Shape of the answer |
-|---|---|---|
-| **Time trends** | "How has the number of trials for *[drug]* changed per year since 2015?"<br>"How many trials started each year for *[condition]*?" | count per time bucket |
-| **Distributions** | "How are *[condition]* trials distributed across phases?"<br>"What are the most common intervention types for *[drug/condition]* trials?" | count per category |
-| **Comparisons** | "Compare phases for trials involving *Drug A* vs *Drug B*."<br>"Compare sponsor categories across two conditions." | count per category, per group |
-| **Geographic patterns** | "Which countries have the most recruiting trials for *[condition]*?" | count per location (ranked) |
-| **Relationships / networks** | "Show a network of sponsors ↔ drugs for *[condition]* trials."<br>"Which drugs frequently co-occur in combination studies (drug ↔ drug network)?" | nodes + weighted edges |
+**Time trends**
+- "How has the number of trials for *[drug]* changed per year since 2015?"
+- "How many trials started each year for *[condition]*?"
+
+**Distributions**
+- "How are *[condition]* trials distributed across phases?"
+- "What are the most common intervention types for *[drug/condition]* trials?"
+
+**Comparisons**
+- "Compare phases for trials involving *Drug A* vs *Drug B*."
+- "Compare sponsor categories across two conditions."
+
+**Geographic patterns**
+- "Which countries have the most recruiting trials for *[condition]*?"
+
+**Relationships/networks**
+- "Show a network of sponsors ↔ drugs for *[condition]* trials."
+- "Which drugs frequently co-occur in combination studies (drug ↔ drug network)?"
+
+To repeat, these are just some example queries and visualization possible. You are not restricted to these in your assignment.
 
 ---
+---
+
+# Our notes (interpretation, not part of the brief)
+
+## The end goal in one paragraph
+
+A user asks a clinical-trial question in plain English, optionally with structured filters. The service works out what's being asked, pulls the matching trial records from the ClinicalTrials.gov Data API, aggregates them, picks a suitable chart type, and returns a **JSON visualization spec** (`type`, `title`, `encoding`, `data` plus metadata) that a frontend can render without guessing. The graded deliverable is the backend and its output schema; a UI is optional. The bonus is making every number traceable to the specific trials behind it, each with its NCT ID and an exact excerpt or field value from the API.
+
+```
+request ─► 1. interpret ─► 2. retrieve from CT.gov ─► 3. choose chart type ─► 4. build spec ─► response
+(query +                                                                                     (visualization
+ optional fields)                                                                              + meta
+                                                                                              + [bonus] citations)
+```
+
+## What the example response tells us
+
+- Top level is `{ "visualization": {...}, "meta": {...} }`.
+- `data` is a flat array of records, and `encoding` refers to record keys by name (`{"field": "phase"}`), similar to Vega-Lite.
+- `meta` echoes the filters that were applied and names the source.
+- The example has no citations, so citations are an addition on top of the core schema (they're the §5 bonus).
+
+## Requirement levels
+
+| Level | Item |
+|---|---|
+| **Required** | Accept `query`; define and document optional fields with validation |
+| **Required** | Interpret → retrieve from CT.gov → choose viz type → produce spec |
+| **Required** | Spec has `type`, `title`, `encoding`, `data`, plus response metadata |
+| **Required** | Documented request and response schemas |
+| **Required** | Submission zip: code, README (run / schemas / design / limitations / AI-tool use / validation / deliberate vs. generated), 3–5 example runs with actual JSON |
+| **Strongly rewarded** | Multiple viz types and broad query coverage from **one coherent approach**; meaningful network graphs |
+| **Bonus** | Deep citations: per-datum `nct_id` + exact excerpt or field value |
+| **Bonus / optional** | Frontend demo, deployed endpoint, demo video |
 
 ## What the grading emphasizes
 
-These are read off the criteria above. They aren't design decisions yet.
+1. **Grounding.** The data source is "authoritative", and 20% of the grade covers avoiding hallucination-prone steps and adding validation. Numbers must come from the API, not from the model. Citations (the bonus) are how you *prove* that.
+2. **One coherent approach, not one-off hacks.** This is stated in both §4 and §7. New question types should come from combining general pieces, not from a hand-written handler per question.
+3. **Network graphs are explicitly rewarded**, in both §4 and §7.
+4. **Schemas are graded twice:** the 10% I/O criterion, and the documentation requirements in §3.1 and §3.2.
+5. **Real-world data handling** (missing fields, inconsistent naming, pagination, volume) is part of the 35% system-design score.
+6. **Show the work.** Testing, validation, and visible iteration are rewarded, and the README has to explain them.
 
-1. **Grounding is the central theme.** The data source is called "authoritative", hallucination avoidance gets 20%, citations must quote the API *exactly*, and deep traceability is the bonus. Every number in the output has to come from real API data and be verifiable against it.
-2. **Generality over special cases.** "Without one-off hacks" means new question classes should come from composing general pieces, not from a hand-written handler per example query.
-3. **Network graphs score extra.** The brief explicitly calls out graphs as "richer" and worth more than single-chart systems.
-4. **Schemas are graded twice.** Input/output design is worth 10%, and both schemas must be documented well enough that a frontend engineer never has to guess.
-5. **Real-world data is messy.** The API data has missing fields, inconsistent naming, pagination, and rate limits. Handling it sensibly is explicitly part of the 35% system-design score.
-6. **Show the work.** Tests, validation, and visible iteration are rewarded, and the README has to explain how correctness was checked.
+## Open questions / things we must define
 
----
-
-## Deliverables checklist
-
-**Service behavior**
-- [ ] Accepts `query` (required, string)
-- [ ] Accepts optional structured fields, with defined validation
-- [ ] Interprets the question (free text + structured fields together)
-- [ ] Retrieves data from the ClinicalTrials.gov Data API
-- [ ] Decides whether a visualization is needed, and which type
-- [ ] Returns `type`, `title`, `encoding`, `data`
-- [ ] Returns render metadata (units, sorting, time granularity, grouping…)
-- [ ] Returns notes (assumptions, filters applied, interpretation)
-- [ ] Every datum carries citations: `nct_id` + exact excerpt / field value
-- [ ] Covers several question classes: trends, distributions, comparisons, geographic, networks
-
-**Submission**
-- [ ] Zip file with all source code
-- [ ] README: run instructions (install / configure / start)
-- [ ] README: request schema (names, types, required/optional, validation)
-- [ ] README: response schema (renderer-ready)
-- [ ] README: design decisions & tradeoffs
-- [ ] README: limitations & future improvements
-- [ ] README: AI tools used, how correctness was validated, deliberate vs. generated parts
-- [ ] 3–5 example queries with **actual** JSON outputs
-- [ ] *(Optional)* small UI / deployed endpoint / demo video
-
----
-
-## Open questions / gaps
-
-1. **Missing content.** We don't have §4, the start of §5, or the illustrative example response for §3.2. If the full PDF is available, those pages may add hard requirements (non-functional requirements such as latency or error handling, or a stricter citation format).
-2. **"Identify if a visualization is needed."** This implies some questions may not need a chart (e.g. "How many Phase 3 trials does X have?" is a single number). The response schema needs a well-defined shape for that case.
-3. **"Exact text excerpt … (or a specific field/value)."** A verbatim field value seems to satisfy the requirement. Free-text snippets aren't required, but they are an option.
-4. **Ambiguous semantics we'll have to pin down and document:** which date counts as "the trial's year" (start, first-posted, or completion), what "trials for [drug]" means (intervention field vs. any mention), and how multi-phase trials (e.g. Phase 1/2) and multi-country trials get counted.
+1. **§1 vs §4 tension.** §1 says to *"identify if a visualization is needed"*, but §4 says *"the answer to the query must be a visualization."* The likely reading is that every answer is a visualization and step 3 is mainly about choosing the type. We still need a defined response for questions we can't answer (off-topic, unsupported, or zero matching trials).
+2. **"Exact text excerpt … (or a specific field/value)."** A verbatim field value appears to satisfy the citation definition.
+3. **Semantics we'll have to pin down and document:** which date counts as a trial's year (start, first-posted, or completion), what "trials for [drug]" means (intervention field vs. any mention), how to count multi-phase trials (e.g. Phase 1/2), how to count multi-country trials, and what "sponsor categories" maps to.
+4. **Due date.** "~24 hours" is the time expectation. The brief gives no submission deadline.
