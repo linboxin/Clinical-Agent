@@ -151,7 +151,7 @@ The values above are illustrative. **[docs/response-schema.md](docs/response-sch
 | The LLM only writes a structured plan; code computes everything | Numbers, titles and citations can't be hallucinated; the plan is inspectable and testable | Questions outside the plan language get "unsupported" instead of a free-form answer |
 | One operator set + a field registry (5 operators × 13 dimensions × 3 measures → 8 chart types) | New question classes are registry entries, not handlers; the prompt and `/capabilities` are generated from the registry | Some phrasing needs a clarification instead of a creative interpretation |
 | A composable plan language (any-of lists, exclusions, class expansion with grounded members, "count only listed values", declared unhandled constraints) | A PD-1-style question composes from general blocks, with no per-question code; nothing is silently dropped, and titles are built from filters, never model text | Class membership comes from model knowledge. It's shown in `meta.assumptions`, and every member is checked against the registry |
-| Server-side counting above the cap (idea adopted after comparing with another implementation) | Whole-registry questions get exact answers in seconds, each bar reproducible from its `source_query` | Citations are 3 samples per datum; local re-checks and normalization don't apply (stated in `meta`) |
+| Server-side counting above the cap (idea adopted after comparing with a separate AI-generated implementation of the brief) | Whole-registry questions get exact answers in seconds, each bar reproducible from its `source_query` | Citations are 3 samples per datum; local re-checks and normalization don't apply (stated in `meta`) |
 | Model-based name normalization: **built, then switched off by default** (adopted from that comparison) | It merges brand/code/generic names, but an audit of its cached answers found confident wrong mappings for investigational codes (REGN2810 → nivolumab), and one reached a shipped example | Off by default: brand and code names stay separate unless the registry record links them via `otherNames`. Registry-confirmed merges are the next step |
 | Code chooses the chart; preferences must be compatible | A pie or stacked bar over overlapping groups would double-count, so the rules are also validation | Less stylistic freedom |
 | A grounding tool in the agent loop (live hit counts → one repair) | Fixes misspellings and invented entities without user round-trips, and stays bounded (≤ 2 model calls) | One extra cheap API call per cohort; a typo that exists in the registry (one trial lists "pembrolizumb") passes grounding |
@@ -202,13 +202,13 @@ The values above are illustrative. **[docs/response-schema.md](docs/response-sch
 
 ## How this was built (brief §8)
 
-- **Tools:** Claude Code, two sessions.
+- **Tools:** Claude Code. Two sessions did the main build:
   - The first built the v1 MVP (contracts, registry, client, three operators, gate, 71 tests).
   - The second reviewed the design against the brief and the live API, then built v3: histogram and scatter, chart rules, the grounding repair loop, membership evidence, traces and evidence endpoints, follow-ups, evals, the demo, and the review and audit scripts.
 - **Design:** three written iterations (v1 → v2 → v3), each change justified in [DESIGN.md Appendix A](DESIGN.md#appendix-a-changes-from-v2-and-v1). The OpenAI-only constraint and the design-first workflow were set by the author.
 - **Comparison and testing drove iteration:**
   - a user test of "Excluding Keytruda, which PD-1 inhibitors…" exposed a confident wrong answer, which led to the general plan-language blocks;
-  - comparing with another implementation of this brief led to adopting server-side counting and model-based name normalization;
+  - comparing with a separate AI-generated implementation of the same brief led to adopting server-side counting and model-based name normalization;
   - a parallel review session then audited the normalizer's actual answers, found wrong code mappings (one in a shipped example), and also found the PD-1 class list was incomplete. The normalizer was switched off by default, drug matching was moved to the registry's own `otherNames`, and the prompt was fixed (v8);
   - a parallel Claude Code agent redesigned the `/demo` page while the backend changed; its screenshots also caught a schema-migration bug.
 - **Iteration driven by measurement:**
@@ -224,7 +224,7 @@ The values above are illustrative. **[docs/response-schema.md](docs/response-sch
   - the 30k cap (measured page cost);
   - the client-side rate limiter (the API returns 429 on bursts);
   - token matching for membership evidence (the literal-substring version mislabelled 490 of 601 Alzheimer's trials as synonym-only; token matching brought it to 130).
-- **Validated rather than trusted:** see "Validation". Generated code is accepted only when it passes the golden tests, the gate and the live checks. The commit history shows each step.
+- **Validated rather than trusted:** see "Validation". Generated code is accepted only when it passes the golden tests, the gate and the live checks. The commit history shows each step: the zip has no `.git`, so [docs/commit-history.md](docs/commit-history.md) lists every commit with its time.
 
 ## Repository
 
@@ -233,7 +233,7 @@ app/        service code (contracts, planner, ctgov client, analytics, viz, stor
 evals/      planner eval cases, runner, deterministic scoring
 scripts/    ask, run_examples, review_run, audit_citations, export_schemas, check_openai
 tests/      offline test suite
-docs/       response-schema.md (renderer guide), schemas/*.schema.json
+docs/       response-schema.md (renderer guide), schemas/*.schema.json, commit-history.md
 examples/   saved real request/response pairs
 ```
 

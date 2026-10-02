@@ -52,7 +52,7 @@ Each step involves silent judgment calls, so the numbers are hard to defend.
 | §7 AI design (20%) | D5–D7, §6 | Evals: 123/123 with gpt-5.4 (41 cases, v8); E2 shows the repair loop's value; normalizer audit (D11) |
 | §7 Code quality (20%) | §14, CI | ruff, mypy, 127 offline tests |
 | §7 I/O design (10%) | §5 | JSON Schema export, OpenAPI |
-| §8 Tools, validation, deliberate vs generated | README "How this was built" | Commit history |
+| §8 Tools, validation, deliberate vs generated | README "How this was built" | [Commit history](docs/commit-history.md) |
 
 **Guardrail:** any feature that doesn't trace to a row above goes into §16 (production path) instead of being built.
 
@@ -388,7 +388,7 @@ app/  main.py config.py factory.py pipeline.py storage.py telemetry.py registry.
       analytics/{prepare,values,count_by,time_trend,histogram,scatter,network,server_count,types}.py
       viz/{build,verify}.py   static/demo.html
 evals/{cases.yaml,run.py,scoring.py}   scripts/{ask,run_examples,review_run,audit_citations,export_schemas,check_openai}.py
-tests/   examples/   docs/{response-schema.md,schemas/}
+tests/   examples/   docs/{response-schema.md,schemas/,commit-history.md}
 ```
 
 ## 15. Build log
@@ -431,7 +431,7 @@ tests/   examples/   docs/{response-schema.md,schemas/}
 | Trigger | Finding | Change |
 |---|---|---|
 | A user test: "Excluding Keytruda, which PD-1 inhibitors have the most Phase 3 trials?" | Returned `ok` but was wrong. The class name was searched literally (20 trials), the exclusion was silently dropped, and the title (model-written label) claimed an exclusion that never happened | General plan-language blocks (D9); titles and labels generated from filters; no-silent-drop rule. The same question now ranks nivolumab 149, tislelizumab 81, toripalimab 64, camrelizumab 63, sintilimab 63, … (after the fixes below) |
-| Comparing with another implementation of this brief | It counted large result sets on the server and normalized names with a model | Adopted both, with stricter guarantees: never-partial semantics, a `source_query` per datum, and validated/cached/disclosed normalization (D10, D11) |
+| Comparing with a separate AI-generated implementation of this brief | It counted large result sets on the server and normalized names with a model | Adopted both, with stricter guarantees: never-partial semantics, a `source_query` per datum, and validated/cached/disclosed normalization (D10, D11) |
 | Stored runs failing to load after the plan changed (found by the UI agent) | Required plan fields missing in 1.0 records | Response schema 1.1 with read-time migration of 1.0 records |
 | Eval regression (v6): "COVID-19 vaccine trials" was reported as unhandled | Honest, but expressible as an intervention-name phrase | Prompt v7 hint; the case passes 3/3 |
 | Audit of the normalizer's cached answers (by a parallel review session) | ~20 of 98 code/brand mappings were wrong (REGN2810 → nivolumab, RO5185426 → binimetinib, LEE011 → lesinurad, BT062 → belantamab mafodotin, …), and example 13 put a cemiplimab trial in the nivolumab bar. The guardrails checked the *form* of answers, not their truth | Normalization off by default; listed drugs match through the record's own `otherNames`; examples 04, 06 and 13 regenerated with no model judgement in any count. Registry-confirmed merges are the production fix (§16) |
